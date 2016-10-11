@@ -1,0 +1,332 @@
+module tapi-connectivity {
+    namespace "urn:onf:params:xml:ns:yang:TapiConnectivity";
+    prefix tapi-connectivity;
+    import tapi {
+        prefix tapi;
+    }
+    import ietf-network {
+      prefix net;
+    }
+    import ietf-network-topology {
+      prefix topo;
+    }
+    import tapi-topology {
+        prefix tapi-topology;
+    }
+    organization "ONF (Open Networking Foundation) IMP Working Group";
+    contact "WG Web: <https://www.opennetworking.org/technical-communities/areas/services/>
+        WG List: <mailto: <wg list name>@opennetworking.org>
+        WG Chair: your-WG-chair
+                <mailto:your-WG-chair@example.com>
+        Editor: your-name
+                <mailto:your-email@example.com>";
+    description "none";
+    revision 2016-10-04 {
+        description "Latest revision";
+        reference "RFC 6020 and RFC 6087";
+    }
+
+    augment "/net:network/topo:link" {
+      description
+        "";
+      uses connection-attrs;
+    }
+
+    grouping connection-attrs {
+            list route {
+                key 'local-id';
+                config false;
+                uses route;
+                description "none";
+            }
+            container state {
+                config false;
+                uses tapi:operational-state-pac;
+                description "none";
+            }
+            leaf layer-protocol-name {
+                type tapi:layer-protocol-name;
+                config false;
+                description "none";
+            }
+            leaf direction {
+                type tapi:forwarding-direction;
+                config false;
+                description "none";
+            }
+            description "The ForwardingConstruct (FC) object class models enabled potential for forwarding between two or more LTPs and like the LTP supports any transport protocol including all circuit and packet forms.
+                At the lowest level of recursion, a FC represents a cross-connection within an NE.";
+    }
+
+    augment "/net:network/net:node/topo:termination-point" {
+      description
+        "";
+      uses connection-end-point-attrs;
+    }
+
+    grouping connection-end-point-attrs {
+            list layer-protocol {
+                key 'local-id';
+                config false;
+                uses tapi:layer-protocol;
+                description "none";
+            }
+            container state {
+                config false;
+                uses tapi:operational-state-pac;
+                description "none";
+            }
+            leaf direction {
+                type tapi:termination-direction;
+                config false;
+                description "none";
+            }
+            description "The LogicalTerminationPoint (LTP) object class encapsulates the termination and adaptation functions of one or more transport layers. 
+                The structure of LTP supports all transport protocols including circuit and packet forms.";
+        }
+
+    augment "/net:network/topo:link/topo:source" {
+      description
+        "";
+      uses connection-port-attrs;
+    }
+
+    augment "/net:network/topo:link/topo:destination" {
+      description
+        "";
+      uses connection-port-attrs;
+    }
+
+    grouping connection-port-attrs {
+            leaf role {
+                type tapi:port-role;
+                config false;
+                description "Each EP of the FC has a role (e.g., working, protection, protected, symmetric, hub, spoke, leaf, root)  in the context of the FC with respect to the FC function. ";
+            }
+            leaf direction {
+                type tapi:port-direction;
+                config false;
+                description "The orientation of defined flow at the EndPoint.";
+            }
+            description "The association of the FC to LTPs is made via EndPoints.
+                The EndPoint (EP) object class models the access to the FC function. 
+                The traffic forwarding between the associated EPs of the FC depends upon the type of FC and may be associated with FcSwitch object instances.  
+                In cases where there is resilience the EndPoint may convey the resilience role of the access to the FC. 
+                It can represent a protected (resilient/reliable) point or a protecting (unreliable working or protection) point.
+                The EP replaces the Protection Unit of a traditional protection model. 
+                The ForwadingConstruct can be considered as a component and the EndPoint as a Port on that component";
+    }
+
+    grouping connectivity-constraint {
+            leaf service-type {
+                type service-type;
+                config false;
+                description "none";
+            }
+            leaf service-level {
+                type string;
+                config false;
+                description "An abstract value the meaning of which is mutually agreed – typically represents metrics such as - Class of service, priority, resiliency, availability";
+            }
+            leaf-list service-layer {
+                type tapi:layer-protocol-name;
+                config false;
+                description "none";
+            }
+            container requested-capacity {
+                config false;
+                uses tapi-topology:capacity;
+                description "none";
+            }
+            list cost-characteristic {
+                key 'cost-name cost-value cost-algorithm';
+                config false;
+                uses tapi-topology:cost-characteristic;
+                description "The list of costs where each cost relates to some aspect of the TopologicalEntity.";
+            }
+            list risk-characteristic {
+                key 'risk-characteristic-name';
+                config false;
+                uses tapi-topology:risk-characteristic;
+                description "A list of risk characteristics for consideration in an analysis of shared risk. Each element of the list represents a specific risk consideration.";
+            }
+            list latency-characteristic {
+                key 'traffic-property-name latency-value';
+                config false;
+                uses tapi-topology:queuing-latency;
+                description "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic.";
+            }
+            /*
+            leaf-list include-topology {
+                type leafref {
+                    path '/tapi-topology:topology/tapi-topology:uuid';
+                }
+                config false;
+                description "none";
+            }
+            leaf-list avoid-topology {
+                type leafref {
+                    path '/tapi-topology:topology/tapi-topology:uuid';
+                }
+                config false;
+                description "none";
+            }
+            list include-path {
+                key 'local-id';
+                config false;
+                uses tapi-topology:te-link;
+                description "none";
+            }
+            list exclude-path {
+                key 'local-id';
+                config false;
+                uses tapi-topology:te-link;
+                description "none";
+            }
+            */
+            uses tapi:local-class;
+            description "none";
+        }
+
+    augment "/net:network/topo:link" {
+      description
+        "";
+      uses connectivity-service-attrs;
+    }
+
+    grouping connectivity-service-attrs {
+            container conn-constraint {
+                uses connectivity-constraint;
+                description "none";
+            }
+            container schedule {
+                uses tapi:time-range;
+                description "none";
+            }
+            container state {
+                uses tapi:admin-state-pac;
+                description "none";
+            }
+            leaf layer-protocol-name {
+                type tapi:layer-protocol-name;
+                description "none";
+            }
+            leaf direction {
+                type tapi:forwarding-direction;
+                description "none";
+            }
+            description "The ForwardingConstruct (FC) object class models enabled potential for forwarding between two or more LTPs and like the LTP supports any transport protocol including all circuit and packet forms.
+                At the lowest level of recursion, a FC represents a cross-connection within an NE.";
+        }
+
+        augment "/net:network/topo:link/topo:source" {
+          description
+            "";
+          uses connectivity-service-port-attrs;
+        }
+
+        augment "/net:network/topo:link/topo:destination" {
+          description
+            "";
+          uses connectivity-service-port-attrs;
+        }
+
+        grouping connectivity-service-port-attrs {
+            leaf role {
+                type tapi:port-role;
+                config false;
+                description "Each EP of the FC has a role (e.g., working, protection, protected, symmetric, hub, spoke, leaf, root)  in the context of the FC with respect to the FC function. ";
+            }
+            leaf direction {
+                type tapi:port-direction;
+                config false;
+                description "The orientation of defined flow at the EndPoint.";
+            }
+            leaf service-layer {
+                type tapi:layer-protocol-name;
+                config false;
+                description "none";
+            }
+            description "The association of the FC to LTPs is made via EndPoints.
+                The EndPoint (EP) object class models the access to the FC function. 
+                The traffic forwarding between the associated EPs of the FC depends upon the type of FC and may be associated with FcSwitch object instances.  
+                In cases where there is resilience the EndPoint may convey the resilience role of the access to the FC. 
+                It can represent a protected (resilient/reliable) point or a protecting (unreliable working or protection) point.
+                The EP replaces the Protection Unit of a traditional protection model. 
+                The ForwadingConstruct can be considered as a component and the EndPoint as a Port on that component";
+        }
+        grouping route {
+            leaf-list lower-connection {
+                type leafref {
+                    path '/tapi-connectivity:connection/tapi-connectivity:uuid';
+                }
+                config false;
+                min-elements 1;
+                description "none";
+            }
+            uses tapi:local-class;
+            description "The FC Route (FcRoute) object class models the individual routes of an FC. 
+                The route of an FC object is represented by a list of FCs at a lower level. 
+                Note that depending on the service supported by an FC, an the FC can have multiple routes.";
+        }
+
+        list service-end-point {
+            key 'uuid';
+            uses service-end-point;
+            description "none";
+        }
+        grouping service-end-point {
+            list layer-protocol {
+                key 'local-id';
+                config false;
+                min-elements 1;
+                uses tapi:layer-protocol;
+                description "none";
+            }
+            leaf-list mapped-node-edge-point {
+                type leafref {
+                    path '/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:uuid';
+                }
+                config false;
+                description "none";
+            }
+            list connection-end-point {
+                key 'uuid';
+                config false;
+                uses connection-end-point;
+                description "none";
+            }
+            container state {
+                config false;
+                uses tapi:lifecycle-state-pac;
+                description "none";
+            }
+            leaf direction {
+                type tapi:termination-direction;
+                config false;
+                description "none";
+            }
+            uses tapi:resource;
+            description "The LogicalTerminationPoint (LTP) object class encapsulates the termination and adaptation functions of one or more transport layers. 
+                The structure of LTP supports all transport protocols including circuit and packet forms.";
+        }
+
+    /***********************
+    * package type-definitions
+    **********************/ 
+        typedef service-type {
+            type enumeration {
+                enum point-to-point-connectivity {
+                    description "none";
+                }
+                enum point-to-multipoint-connectivty {
+                    description "none";
+                }
+                enum multipoint-connectivity {
+                    description "none";
+                }
+            }
+            description "none";
+        }
+
+}
