@@ -1,0 +1,15 @@
+<connectivity-service xmlns="urn:onf:params:xml:ns:yang:TapiConnectivity"
+                      xmlns:nrp="urn:onf:params:xml:ns:yang:NRP_Interface">
+  <uuid>sample-connectivity-service</uuid>
+  <connection>tapi-connection</connection>
+  <service-port>
+    <local-id>a</local-id>
+    <service-end-point>sample-service-end-a</service-end-point>
+  </service-port>
+  <service-port>
+    <local-id>z</local-id>
+    <service-end-point>sample-service-end-z</service-end-point>
+  </service-port>
+  <layer-protocol-name>eth</layer-protocol-name>
+  <direction>bidirectional</direction>
+</connectivity-service>

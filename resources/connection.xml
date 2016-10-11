@@ -1,0 +1,26 @@
+<connection xmlns="urn:onf:params:xml:ns:yang:TapiConnectivity"
+            xmlns:nrp="urn:onf:params:xml:ns:yang:NRP_Interface">
+  <uuid>tapi-connection</uuid>
+  <connection-port>
+    <local-id>node-a:GigabitEthernet0/0/1/0</local-id>
+    <connection-end-point>
+      <server-node-edge-poin>
+        <network-ref>tapi-topology</network-ref>
+        <node-ref>node-a</node-ref>
+        <tp-ref>GigabitEthernet0/0/1/0</tp-ref>
+      </server-node-edge-poin>
+    </connection-end-point>
+  </connection-port>
+  <connection-port>
+    <local-id>node-a:GigabitEthernet0/0/2/0</local-id>
+    <connection-end-point>
+      <server-node-edge-poin>
+        <network-ref>tapi-topology</network-ref>
+        <node-ref>node-a</node-ref>
+        <tp-ref>GigabitEthernet0/0/2/0</tp-ref>
+      </server-node-edge-poin>
+    </connection-end-point>
+  </connection-port>
+  <layer-protocol-name>eth</layer-protocol-name>
+  <direction>bidirectional</direction>
+</connection>

@@ -1,0 +1,10 @@
+<service-end-point xmlns="urn:onf:params:xml:ns:yang:TapiConnectivity"
+                   xmlns:nrp="urn:onf:params:xml:ns:yang:NRP_Interface">
+  <uuid>sample-service-end-a</uuid>
+  <mapped-node-edge-point>
+    <network-ref>tapi-topology</network-ref>
+    <node-ref>node-a</node-ref>
+    <tp-ref>GigabitEthernet0/0/1/0</tp-ref>
+  </mapped-node-edge-point>
+  <nrp:cg-ety-trm-sample-attr>sample-value</nrp:cg-ety-trm-sample-attr>
+</service-end-point>

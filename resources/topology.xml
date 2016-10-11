@@ -7,11 +7,17 @@
     <lnk:termination-point>
       <lnk:tp-id>GigabitEthernet0/0/1/0</lnk:tp-id>
     </lnk:termination-point>
+    <lnk:termination-point>
+      <lnk:tp-id>GigabitEthernet0/0/2/0</lnk:tp-id>
+    </lnk:termination-point>
   </node>
   <node>
     <node-id>node-z</node-id>
     <lnk:termination-point>
       <lnk:tp-id>GigabitEthernet0/0/1/1</lnk:tp-id>
+    </lnk:termination-point>
+    <lnk:termination-point>
+      <lnk:tp-id>GigabitEthernet0/0/2/1</lnk:tp-id>
     </lnk:termination-point>
   </node>
   <lnk:link>
