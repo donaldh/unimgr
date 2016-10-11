@@ -1,0 +1,173 @@
+module nrp-interface {
+    namespace "urn:onf:params:xml:ns:yang:NRP_Interface";
+    prefix nrp-interface;
+    import tapi {
+        prefix tapi;
+    }
+    import tapi-connectivity {
+        prefix tapi-connectivity;
+    }
+    organization "ONF (Open Networking Foundation) IMP Working Group";
+    contact "WG Web: <https://www.opennetworking.org/technical-communities/areas/services/>
+        WG List: <mailto: <wg list name>@opennetworking.org>
+        WG Chair: your-WG-chair
+                <mailto:your-WG-chair@example.com>
+        Editor: your-name
+                <mailto:your-email@example.com>";
+    description "none";
+    revision 2016-10-11 {
+        description "Latest revision";
+        reference "RFC 6020 and RFC 6087";
+    }
+    augment "/tapi-connectivity:connectivity-service" {
+        uses cg-eth-conn-serv-spec;
+        description "none";
+    }
+    augment "/tapi-connectivity:connectivity-service/tapi-connectivity:service-port" {
+        uses cg-eth-frame-flow-cpa-aspec;
+        description "none";
+    }
+    augment "/tapi-connectivity:service-end-point" {
+        uses cg-ety-trm-spec;
+        description "none";
+    }
+    augment "/tapi-connectivity:service-end-point" {
+        uses cg-eth-frame-aggr-trm-spec;
+        description "none";
+    }
+    /***********************
+    * package diagrams
+    **********************/ 
+        container uni {
+            uses uni-attrs;
+            description "none";
+        }
+        grouping uni-attrs {
+            description "none";
+        }
+        container evc-per-uni {
+            uses evc-per-uni-attrs;
+            description "none";
+        }
+        grouping evc-per-uni-attrs {
+            description "none";
+        }
+        container evc {
+            uses evc-attrs;
+            description "none";
+        }
+        grouping evc-attrs {
+            description "none";
+        }
+        container service-endpoint {
+            uses service-endpoint-attrs;
+            description "none";
+        }
+        grouping service-endpoint-attrs {
+            description "none";
+        }
+        container mef-route {
+            uses mef-route-attrs;
+            description "none";
+        }
+        grouping mef-route-attrs {
+            description "none";
+        }
+        grouping cg-eth-conn-serv-spec {
+            container cg-eth-inni-cs-spec {
+                uses cg-eth-inni-cs-spec;
+                description "none";
+            }
+            container cg-eth-uni-cs-spec {
+                uses cg-eth-uni-cs-spec;
+                description "none";
+            }
+            container cg-eth-enni-cs-spec {
+                uses cg-eth-enni-cs-spec;
+                description "none";
+            }
+            uses tapi:extensions-spec;
+            description "none";
+        }
+        grouping cg-eth-inni-cs-spec {
+            description "none";
+        }
+        grouping cg-eth-frame-flow-cpa-aspec {
+            container cg-eth-oper-flow-point-spec {
+                uses cg-eth-oper-flow-point-spec;
+                description "none";
+            }
+            container cg-eth-internal-flow-point-spec {
+                uses cg-eth-internal-flow-point-spec;
+                description "none";
+            }
+            container cg-eth-subscr-flow-point-spec {
+                uses cg-eth-subscr-flow-point-spec;
+                description "none";
+            }
+            uses tapi:extensions-spec;
+            description "none";
+        }
+        grouping cg-eth-oper-flow-point-spec {
+            description "none";
+        }
+        grouping cg-ety-trm-spec {
+          leaf cg-ety-trm-sample-attr {
+            type string;
+          }
+            uses tapi:extensions-spec;
+            description "none";
+        }
+        grouping cg-eth-frame-aggr-trm-spec {
+            container cg-eth-uni-spec {
+                uses cg-eth-uni-spec;
+                description "none";
+            }
+            container cg-eth-enni-spec {
+                uses cg-eth-enni-spec;
+                description "none";
+            }
+            container cg-inni-spec {
+                uses cg-inni-spec;
+                description "none";
+            }
+            uses tapi:extensions-spec;
+            description "none";
+        }
+        grouping cg-eth-uni-spec {
+            container cg-eth-sp-uni-spec {
+                uses cg-eth-sp-un-spec;
+                description "none";
+            }
+            container cg-eth-op-uni-spec {
+                uses cg-eth-op-uni-spec;
+                description "none";
+            }
+            description "none";
+        }
+        grouping cg-eth-sp-un-spec {
+            description "none";
+        }
+        grouping cg-eth-internal-flow-point-spec {
+            description "none";
+        }
+        grouping cg-eth-subscr-flow-point-spec {
+            description "none";
+        }
+        grouping cg-eth-enni-spec {
+            description "none";
+        }
+        grouping cg-inni-spec {
+            description "none";
+        }
+        grouping cg-eth-op-uni-spec {
+            description "none";
+        }
+        grouping cg-eth-uni-cs-spec {
+            description "none";
+        }
+        grouping cg-eth-enni-cs-spec {
+            description "none";
+        }
+
+}
