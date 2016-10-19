@@ -63,6 +63,12 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>unimgr-nrp-tapi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!--     OVSDB dependency -->
         <dependency>
             <groupId>org.opendaylight.ovsdb</groupId>
