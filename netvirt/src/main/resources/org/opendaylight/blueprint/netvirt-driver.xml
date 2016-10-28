@@ -22,5 +22,4 @@
   <bean class="org.opendaylight.unimgr.mef.netvirt.ElanInterfaceListener">
     <argument index="0" ref="dataBroker" />
   </bean>
-
 </blueprint>

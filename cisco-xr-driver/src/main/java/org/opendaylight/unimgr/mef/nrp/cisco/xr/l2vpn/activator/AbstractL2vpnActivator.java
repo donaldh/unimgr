@@ -17,6 +17,7 @@ import org.opendaylight.unimgr.mef.nrp.cisco.xr.common.helper.InterfaceHelper;
 import org.opendaylight.unimgr.mef.nrp.cisco.xr.l2vpn.helper.L2vpnHelper;
 import org.opendaylight.unimgr.mef.nrp.common.MountPointHelper;
 import org.opendaylight.unimgr.mef.nrp.common.ResourceActivator;
+import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.asr9k.policymgr.cfg.rev150518.PolicyManager;
 import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ifmgr.cfg.rev150730.InterfaceActive;
 import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ifmgr.cfg.rev150730.InterfaceConfigurations;
 import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ifmgr.cfg.rev150730._interface.configurations.InterfaceConfiguration;
@@ -46,31 +47,42 @@ public abstract class AbstractL2vpnActivator implements ResourceActivator {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractL2vpnActivator.class);
 
+    protected DataBroker dataBroker;
+
     private MountPointService mountService;
 
-    protected AbstractL2vpnActivator(MountPointService mountService) {
+    protected AbstractL2vpnActivator(DataBroker dataBroker, MountPointService mountService) {
+        this.dataBroker = dataBroker;
         this.mountService = mountService;
     }
 
     @Override
-    public void activate(String nodeName, String outerName, String innerName, FcPort port, FcPort neighbor, long mtu) {
+    public void activate(String nodeName, String outerName, String innerName, FcPort port, FcPort neighbor, long mtu) throws TransactionCommitFailedException {
+        //TODO
+        java.util.Optional<PolicyManager> qosConfig = activateQos(innerName, port);
         InterfaceConfigurations interfaceConfigurations = activateInterface(port, neighbor, mtu);
         Pseudowires pseudowires = activatePseudowire(neighbor);
         XconnectGroups xconnectGroups = activateXConnect(outerName, innerName, port, neighbor, pseudowires);
         L2vpn l2vpn = activateL2Vpn(xconnectGroups);
 
-        doActivate(nodeName, outerName, innerName, interfaceConfigurations, l2vpn);
+        doActivate(nodeName, outerName, innerName, interfaceConfigurations, l2vpn, qosConfig);
     }
 
     @Override
-    public void deactivate(String nodeName, String outerName, String innerName, FcPort port, FcPort neighbor, long mtu) {
+    public void deactivate(String nodeName, String outerName, String innerName, FcPort port, FcPort neighbor, long mtu) throws TransactionCommitFailedException {
         InstanceIdentifier<P2pXconnect> xconnectId = deactivateXConnect(outerName, innerName);
         InstanceIdentifier<InterfaceConfiguration> interfaceConfigurationId = deactivateInterface(port);
 
         doDeactivate(nodeName, outerName, innerName, xconnectId, interfaceConfigurationId);
     }
 
-    protected void doActivate(String nodeName, String outerName, String innerName, InterfaceConfigurations interfaceConfigurations, L2vpn l2vpn) {
+    protected void doActivate(String nodeName,
+                              String outerName,
+                              String innerName,
+                              InterfaceConfigurations interfaceConfigurations,
+                              L2vpn l2vpn,
+                              java.util.Optional<PolicyManager> qosConfig) throws TransactionCommitFailedException {
+
         Optional<DataBroker> optional = MountPointHelper.getDataBroker(mountService, nodeName);
         if (!optional.isPresent()) {
             LOG.error("Could not retrieve MountPoint for {}", nodeName);
@@ -80,17 +92,15 @@ public abstract class AbstractL2vpnActivator implements ResourceActivator {
         WriteTransaction transaction = optional.get().newWriteOnlyTransaction();
         transaction.merge(LogicalDatastoreType.CONFIGURATION, InterfaceHelper.getInterfaceConfigurationsId(), interfaceConfigurations);
         transaction.merge(LogicalDatastoreType.CONFIGURATION, L2vpnHelper.getL2vpnId(), l2vpn);
-
-        try {
-            transaction.submit().checkedGet();
-            LOG.info("Service activated: {} {} {}", nodeName, outerName, innerName);
-        } catch (TransactionCommitFailedException e) {
-            LOG.error("Transaction failed", e);
-        }
+        transaction.submit().checkedGet();
     }
 
-    protected void doDeactivate(String nodeName, String outerName, String innerName,
-                                InstanceIdentifier<P2pXconnect>  xconnectId, InstanceIdentifier<InterfaceConfiguration> interfaceConfigurationId) {
+    protected void doDeactivate(String nodeName,
+                                String outerName,
+                                String innerName,
+                                InstanceIdentifier<P2pXconnect> xconnectId,
+                                InstanceIdentifier<InterfaceConfiguration> interfaceConfigurationId) throws TransactionCommitFailedException {
+
         Optional<DataBroker> optional = MountPointHelper.getDataBroker(mountService, nodeName);
         if (!optional.isPresent()) {
             LOG.error("Could not retrieve MountPoint for {}", nodeName);
@@ -100,14 +110,10 @@ public abstract class AbstractL2vpnActivator implements ResourceActivator {
         WriteTransaction transaction = optional.get().newWriteOnlyTransaction();
         transaction.delete(LogicalDatastoreType.CONFIGURATION, xconnectId);
         transaction.delete(LogicalDatastoreType.CONFIGURATION, interfaceConfigurationId);
-
-        try {
-            transaction.submit().checkedGet();
-            LOG.info("Service activated: {} {} {}", nodeName, outerName, innerName);
-        } catch (TransactionCommitFailedException e) {
-            LOG.error("Transaction failed", e);
-        }
+        transaction.submit().checkedGet();
     }
+
+    protected abstract java.util.Optional<PolicyManager> activateQos(String name, FcPort port);
 
     protected abstract InterfaceConfigurations activateInterface(FcPort portA, FcPort portZ, long mtu);
 

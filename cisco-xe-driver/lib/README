@@ -1,0 +1,2 @@
+To instal jar in local repository run command :
+mvn install:install-file -Dfile=compiler-0.9.5-POC.jar -DgroupId=com.github.spullara.mustache.java -DartifactId=compiler -Dversion=0.9.5-POC -Dpackaging=jar

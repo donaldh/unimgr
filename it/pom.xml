@@ -11,7 +11,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
   <parent>
     <groupId>org.opendaylight.controller</groupId>
     <artifactId>mdsal-it-parent</artifactId>
-    <version>1.5.0-SNAPSHOT</version>
+    <version>1.4.0-Boron</version>
     <relativePath/>
   </parent>
 
@@ -22,7 +22,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
   <packaging>bundle</packaging>
 
   <properties>
-    <skipITs>false</skipITs>
+    <skipITs>true</skipITs>
     <karaf.distro.groupId>org.opendaylight.unimgr</karaf.distro.groupId>
     <karaf.distro.artifactId>unimgr-karaf</karaf.distro.artifactId>
     <karaf.distro.version>${project.version}</karaf.distro.version>
