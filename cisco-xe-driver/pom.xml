@@ -33,28 +33,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-install-plugin</artifactId>
-				<version>2.5.2</version>
-				<inherited>false</inherited>
-				<executions>
-					<execution>
-						<id>install-mustache-jar</id>
-						<phase>validate</phase>
-						<goals>
-							<goal>install-file</goal>
-						</goals>
-						<configuration>
-							<groupId>com.github.spullara.mustache.java</groupId>
-							<artifactId>compiler</artifactId>
-							<version>${com.github.spullara.mustache.java.version}</version>
-							<packaging>jar</packaging>
-							<file>${basedir}/lib/compiler-0.9.5-POC.jar</file>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<source>1.8</source>
@@ -70,6 +48,12 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
 			<artifactId>unimgr-impl</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>cisco-xe-dependencies</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
+        </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
