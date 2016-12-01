@@ -1,0 +1,37 @@
+//module define notification for various event sources\
+module eventsource {
+    yang-version 1;
+        namespace "urn:opendaylight:params:xml:ns:yang:eventsource:api";
+        prefix "eventsource";
+
+        //Date to change?
+        revision "2015-04-08" {
+            description "Initial revision of eventsource-api model";
+        }
+
+        typedef source-identifier{
+            type string {
+                length 1..max;
+            }
+        }
+
+        notification example-event-source-notification {
+
+                description
+                    "Simple notification used in event source example.";
+
+                leaf source-id {
+                    type source-identifier;
+                    mandatory true;
+                    description
+                        "source identifier";
+                }
+
+                leaf message {
+                    type string;
+                    mandatory true;
+                    description
+                        "message / content of notification";
+                }
+            }
+}

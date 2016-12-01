@@ -7,6 +7,7 @@
  */
 package org.opendaylight.unimgr.mef.nrp.cisco.xr.l2vpn.driver;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.unimgr.mef.nrp.api.ActivationDriver;
@@ -64,7 +65,7 @@ public class L2vpnXconnectDriverBuilderTest {
 
         //then
         assertTrue(result.isPresent());
-        assertEquals(driverBuilder.getDriver().getClass(), result.get().getClass());
+        Assert.assertEquals(driverBuilder.getDriver().getClass(), result.get().getClass());
     }
 
     @Test

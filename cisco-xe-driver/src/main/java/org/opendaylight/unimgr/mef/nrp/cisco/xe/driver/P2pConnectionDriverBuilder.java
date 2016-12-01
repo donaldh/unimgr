@@ -12,10 +12,10 @@ import java.util.Optional;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
-import org.opendaylight.unimgr.mef.nrp.api.ActivationDriver;
 import org.opendaylight.unimgr.mef.nrp.api.ActivationDriverBuilder;
-import org.opendaylight.unimgr.mef.nrp.cisco.xe.activator.P2pConnectionActivator;
 import org.opendaylight.unimgr.mef.nrp.common.ResourceActivatorException;
+import org.opendaylight.unimgr.mef.nrp.api.ActivationDriver;
+import org.opendaylight.unimgr.mef.nrp.cisco.xe.activator.P2pConnectionActivator;
 import org.opendaylight.yang.gen.v1.urn.onf.core.network.module.rev160630.forwarding.constructs.ForwardingConstruct;
 import org.opendaylight.yang.gen.v1.urn.onf.core.network.module.rev160630.g_forwardingconstruct.FcPort;
 import org.slf4j.Logger;
@@ -29,7 +29,6 @@ public class P2pConnectionDriverBuilder implements ActivationDriverBuilder {
     private static final String GROUP_NAME = "local";
     private static final String XE_TOPOLOGY_ID = "topology-cisco-xe";
     private P2pConnectionActivator activator;
-
 
 
     public P2pConnectionDriverBuilder(DataBroker dataBroker) {

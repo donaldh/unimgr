@@ -111,7 +111,15 @@
     <feature>odl-openflowplugin-flow-services-rest</feature>
     <feature>odl-openflowplugin-flow-services</feature>
     <feature>odl-openflowplugin-southbound</feature>
+    <!--<feature>odl-unimgr-event-source</feature>-->
     <bundle>mvn:org.opendaylight.unimgr/ovs-driver/{{VERSION}}</bundle>
+  </feature>
+
+  <feature name="odl-unimgr-event-source" version="${project.version}" description='OpenDaylight :: UniMgr :: Event Source'>
+    <feature version='${project.version}'>odl-unimgr</feature>
+    <feature>odl-restconf</feature>
+    <feature>odl-message-bus</feature>
+    <bundle>mvn:org.opendaylight.unimgr/event-source/{{VERSION}}</bundle>
   </feature>
 
 </features>

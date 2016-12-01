@@ -11,6 +11,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.unimgr.mef.nrp.api.ActivationDriver;
 import org.opendaylight.unimgr.mef.nrp.api.ActivationDriverBuilder;
+import org.opendaylight.unimgr.mef.notification.api.EventSourceApi;
 import org.opendaylight.unimgr.mef.nrp.common.ResourceNotAvailableException;
 import org.opendaylight.unimgr.mef.nrp.ovs.activator.OvsActivator;
 import org.opendaylight.unimgr.utils.CapabilitiesService;
@@ -29,11 +30,13 @@ public class OvsDriver implements ActivationDriverBuilder {
 
     private OvsActivator activator;
     private final DataBroker dataBroker;
+    private final EventSourceApi eventSourceApi;
     private static final String GROUP_NAME = "local";
     private static final long MTU_VALUE = 1522;
 
-    public OvsDriver(DataBroker dataBroker){
+    public OvsDriver(DataBroker dataBroker, EventSourceApi eventSourceApi){
         this.dataBroker = dataBroker;
+        this.eventSourceApi = eventSourceApi;
         activator = new OvsActivator(dataBroker);
     }
 
@@ -83,6 +86,8 @@ public class OvsDriver implements ActivationDriverBuilder {
             public void activate() throws TransactionCommitFailedException, ResourceNotAvailableException {
                 String aEndNodeName = aEnd.getNode().getValue();
                 activator.activate(aEndNodeName, uuid, GROUP_NAME, aEnd, zEnd, MTU_VALUE);
+                //TODO: check it and add sth on deactivate
+                eventSourceApi.generateExampleEventSource(aEnd.getNode().getValue());
             }
 
             @Override

@@ -13,10 +13,12 @@ import org.opendaylight.controller.md.sal.binding.api.MountPointService;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.unimgr.mef.nrp.api.ActivationDriver;
 import org.opendaylight.unimgr.mef.nrp.api.ActivationDriverBuilder;
-import org.opendaylight.unimgr.utils.CapabilitiesService;
 import org.opendaylight.unimgr.mef.nrp.cisco.xr.l2vpn.activator.L2vpnBridgeActivator;
+import org.opendaylight.unimgr.utils.CapabilitiesService;
 import org.opendaylight.yang.gen.v1.urn.onf.core.network.module.rev160630.forwarding.constructs.ForwardingConstruct;
 import org.opendaylight.yang.gen.v1.urn.onf.core.network.module.rev160630.g_forwardingconstruct.FcPort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
@@ -29,6 +31,7 @@ import static org.opendaylight.unimgr.utils.CapabilitiesService.NodeContext.Node
  */
 public class L2vpnBridgeDriverBuilder implements ActivationDriverBuilder {
 
+    private static final Logger LOG = LoggerFactory.getLogger(L2vpnBridgeDriverBuilder.class);
     private final DataBroker dataBroker;
 
     private L2vpnBridgeActivator activator;

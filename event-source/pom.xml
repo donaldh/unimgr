@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-Copyright (c) 2015 Cable Television Laboratories, Inc. All rights reserved.
-
-This program and the accompanying materials are made available under the
-terms of the Eclipse Public License v1.0 which accompanies this distribution,
-and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
@@ -17,14 +11,17 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
     </parent>
 
     <properties>
-        <ovsdb.version>1.3.0-Boron</ovsdb.version>
+        <checkstyle.skip>true</checkstyle.skip>
+        <powermock.version>1.6.4</powermock.version>
+        <openflow.version>0.3.0-Boron</openflow.version>
     </properties>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opendaylight.unimgr</groupId>
-    <artifactId>unimgr-impl</artifactId>
+    <artifactId>event-source</artifactId>
     <version>0.2.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
+
     <build>
         <plugins>
             <plugin>
@@ -41,25 +38,10 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.opendaylight.unimgr.mef.nrp.common,
-                            org.opendaylight.unimgr.mef.nrp.api,
-                            org.opendaylight.unimgr.api,
-                            org.opendaylight.unimgr.utils
+                            org.opendaylight.unimgr.mef.notification.api
                         </Export-Package>
                     </instructions>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.6</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
@@ -67,35 +49,22 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>unimgr-api</artifactId>
+            <artifactId>unimgr-impl</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>unimgr-presto-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>unimgr-nrp-tapi</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <!--     OVSDB dependency -->
-        <dependency>
-            <groupId>org.opendaylight.ovsdb</groupId>
-            <artifactId>southbound-impl</artifactId>
-            <version>${ovsdb.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.opendaylight.netconf</groupId>
-            <artifactId>netconf-topology</artifactId>
-            <version>1.1.0-Boron</version>
         </dependency>
 
         <!-- dependencies to use AbstractDataBrokerTest -->
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+
+        <!-- Testing Dependencies -->
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal-binding-broker-impl</artifactId>
@@ -107,8 +76,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
-
-        <!-- Testing Dependencies -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -150,13 +117,11 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
             <groupId>org.opendaylight.mdsal.model</groupId>
             <artifactId>ietf-yang-types-20130715</artifactId>
         </dependency>
+
+        <!--EventSource dependencies-->
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>messagebus-spi</artifactId>
         </dependency>
     </dependencies>
 </project>
