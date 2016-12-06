@@ -75,7 +75,6 @@ public class ExampleEventSource implements EventSource {
         this.scheduler = Executors.newScheduledThreadPool(1);
         this.domPublish = domPublish;
 
-        //TODO: set Notifications and run scheduler
         setAvailableNotifications();
 
         startMessageGenerator();
@@ -99,22 +98,27 @@ public class ExampleEventSource implements EventSource {
         Date revisionDate = cal.getTime();
 
         URI uriSample = null;
-        //URI uriTest = null;
+        URI uriTest = null;
+        URI uriOVS = null;
         try {
-            uriSample = new URI("urn:opendaylight:unimgr:mef:nrp:impl:notification");
-           // uriTest = new URI("urn:opendaylight:coretutorials:hweventsource:test:notification");
+            uriSample = new URI("urn:opendaylight:unimgr:mef:notification:es:example:notification");
+            uriTest = new URI("urn:opendaylight:unimgr:mef:notification:es:test:notification");
+            uriOVS = new URI("ovs");
         } catch (URISyntaxException e) {
             throw new RuntimeException("Bad URI for notification", e);
         }
 
         QName qnSample = QName.create(uriSample,revisionDate,"example-message");
-        //QName qnTest = QName.create(uriTest,revisionDate,"sample-message");
+        QName qnTest = QName.create(uriTest,revisionDate,"example-message");
+        QName qnOvs = QName.create(uriOVS,revisionDate,"example-message");
 
         SchemaPath spSample = SchemaPath.create(true, qnSample);
-        //SchemaPath spTest = SchemaPath.create(true, qnTest);
+        SchemaPath spTest = SchemaPath.create(true, qnTest);
+        SchemaPath spOvs = SchemaPath.create(true, qnOvs);
 
         listSchemaPaths.add(spSample);
-        //listSchemaPaths.add(spTest);
+        listSchemaPaths.add(spTest);
+        listSchemaPaths.add(spOvs);
     }
 
     @Override
@@ -124,6 +128,7 @@ public class ExampleEventSource implements EventSource {
 
     @Override
     public List<SchemaPath> getAvailableNotifications() {
+        LOG.info("getAvailableNotifications: {}",this.listSchemaPaths.toString());
         return Collections.unmodifiableList(this.listSchemaPaths);
     }
 
@@ -138,6 +143,7 @@ public class ExampleEventSource implements EventSource {
         final NotificationPattern notificationPattern = joinTopicInput.getNotificationPattern();
         // obtaining list of SchamePath of notifications which match with notification pattern
         final List<SchemaPath> matchingNotifications = getMatchingNotifications(notificationPattern);
+        LOG.info("JoinTopic matching notifications: {}",matchingNotifications.toString());
         JoinTopicStatus joinTopicStatus = JoinTopicStatus.Down;
         if(Util.isNullOrEmpty(matchingNotifications) == false){
             // if there is at least one SchemaPath matched with NotificationPattern then topic is add into the list
@@ -168,6 +174,7 @@ public class ExampleEventSource implements EventSource {
         public MessageGenerator(String EventSourceIdent, String messageText) {
             this.messageText = messageText;
             this.eventSourceIdent = EventSourceIdent;
+            LOG.info("MessageGenerator constructor with values: {} {}",messageText, eventSourceIdent);
         }
 
         /*
@@ -180,6 +187,8 @@ public class ExampleEventSource implements EventSource {
         public void run() {
             // message is generated every run of method
             String message = this.messageText + " [" + Calendar.getInstance().getTime().toString() +"]";
+            LOG.info("MessageGenerator.run: {} {}",messageText, message);
+            LOG.info("MessageGenerator.run acceptedTopics: {} ",listAcceptedTopics.toString());
             LOG.debug("Sample message generated: {}",message);
 
             for(TopicId jointTopic : listAcceptedTopics){
@@ -298,8 +307,9 @@ public class ExampleEventSource implements EventSource {
     private List<SchemaPath> getMatchingNotifications(NotificationPattern notificationPattern){
         // wildcard notification pattern is converted into regex pattern
         // notification pattern could be changed into regex syntax in the future
+        LOG.info("getMatchingNotifications notification: {}",notificationPattern.getValue());
         final String regex = Util.wildcardToRegex(notificationPattern.getValue());
-
+        LOG.info("getMatchingNotifications regex: {}",regex);
         final Pattern pattern = Pattern.compile(regex);
 
         return Util.selectSchemaPath(getAvailableNotifications(), pattern);

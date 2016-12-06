@@ -12,10 +12,12 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.model.api.SchemaPath;
 
 import com.google.common.util.concurrent.Futures;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public final class Util {
-
+    private static final Logger LOG = LoggerFactory.getLogger(Util.class);
     public static String getUUIDIdent() {
         UUID uuid = UUID.randomUUID();
         return uuid.toString();
@@ -38,7 +40,10 @@ public final class Util {
 
         for (final SchemaPath notification : list) {
             final String namespace = notification.getLastComponent().getNamespace().toString();
+            LOG.info("Util - namespace: {}",namespace);
+            LOG.info("Util - pattern: {}",pattern);
             if (pattern.matcher(namespace).matches()) {
+                LOG.info("Notification {} matched by pattern {}",namespace,pattern);
                 selection.add(notification);
             }
         }

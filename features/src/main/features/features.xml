@@ -122,4 +122,12 @@
     <bundle>mvn:org.opendaylight.unimgr/event-source/{{VERSION}}</bundle>
   </feature>
 
+  <feature name="odl-unimgr-uagent" version="${project.version}" description='OpenDaylight :: UniMgr :: Uagent'>
+    <feature version='${project.version}'>odl-unimgr</feature>
+    <feature>odl-unimgr-event-source</feature>
+    <feature version="${netconf.version}">odl-message-bus</feature>
+    <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
+    <bundle>mvn:org.opendaylight.unimgr/uagent/{{VERSION}}</bundle>
+    <configfile finalname="${configfile.directory}/02-eventsource-config-uagent.xml">mvn:org.opendaylight.unimgr/uagent/{{VERSION}}/xml/config</configfile>
+  </feature>
 </features>
