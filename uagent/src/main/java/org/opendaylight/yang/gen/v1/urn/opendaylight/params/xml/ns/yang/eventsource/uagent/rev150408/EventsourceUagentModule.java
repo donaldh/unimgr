@@ -6,6 +6,7 @@ import org.opendaylight.controller.hweventsource.uagent.UserAgent;
 import org.opendaylight.controller.md.sal.dom.api.DOMNotificationService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.messagebus.eventaggregator.rev141202.EventAggregatorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +37,6 @@ public class EventsourceUagentModule extends org.opendaylight.yang.gen.v1.urn.op
                 .getService(DOMNotificationService.class);
         final File outputFile = new File(getOutputFileName());
         UserAgent ua = UserAgent.create(notifyService,rpcRegistry, outputFile);
-
         if(ua != null){
             LOG.info("HweventsourceUagent has been initialized");
         } else {

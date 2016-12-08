@@ -1,19 +1,18 @@
 package org.opendaylight.unimgr.mef.notification.impl;
 
+import com.google.common.util.concurrent.Futures;
+import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.model.api.SchemaPath;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Future;
 import java.util.regex.Pattern;
-
-import org.opendaylight.yangtools.yang.common.RpcResult;
-import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-import org.opendaylight.yangtools.yang.model.api.SchemaPath;
-
-import com.google.common.util.concurrent.Futures;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 public final class Util {

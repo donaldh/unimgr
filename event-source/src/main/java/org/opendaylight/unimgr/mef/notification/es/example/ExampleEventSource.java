@@ -51,7 +51,6 @@ import static com.google.common.util.concurrent.Futures.immediateFuture;
  */
 public class ExampleEventSource implements EventSource {
     private static final Logger LOG = LoggerFactory.getLogger(ExampleEventSource.class);
-    public static final QName sample_notification_QNAME = QName.create("urn:cisco:params:xml:ns:yang:messagebus:sample","2015-03-16","example-notification").intern();
     public static final String XMLNS_ATTRIBUTE_KEY = "xmlns";
     public static final String XMLNS_URI = "http://www.w3.org/2000/xmlns/";
 
@@ -162,10 +161,10 @@ public class ExampleEventSource implements EventSource {
     }
 
     /*
- * This private class is responsible to generate messages in given interval and publish notification if an topic has been joined
- * Text of message is composed by constructor parameter String messageText and time. Time is added to simulate
- * changes of message content.
- */
+     * This private class is responsible to generate messages in given interval and publish notification if an topic has been joined
+     * Text of message is composed by constructor parameter String messageText and time. Time is added to simulate
+     * changes of message content.
+     */
     private class MessageGenerator implements Runnable {
 
         private final String messageText;
@@ -302,8 +301,8 @@ public class ExampleEventSource implements EventSource {
     }
 
     /*
- * Method return list of SchemaPath matched by notificationPattern
- */
+     * Method return list of SchemaPath matched by notificationPattern
+     */
     private List<SchemaPath> getMatchingNotifications(NotificationPattern notificationPattern){
         // wildcard notification pattern is converted into regex pattern
         // notification pattern could be changed into regex syntax in the future

@@ -15,20 +15,19 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 public class ExampleEventSourceGenerator {
 
     private final DOMNotificationPublishService domPublish;
-    private final Broker domBroker;
 
     public ExampleEventSourceGenerator(Broker domBroker){
-        this.domBroker = domBroker;
         ExampleEventSourceBIProvider providerBI = new ExampleEventSourceBIProvider();
         Broker.ProviderSession domCtx = domBroker.registerProvider(providerBI);
 
         this.domPublish = domCtx.getService(DOMNotificationPublishService.class);
     }
 
-    public void generateExampleEventSource(String nodeName,EventSourceRegistry eventSourceRegistry){
+    public ExampleEventSource generateExampleEventSource(String nodeName,EventSourceRegistry eventSourceRegistry){
         Node node = getNewNode(nodeName);
         ExampleEventSource exampleEventSource = new ExampleEventSource(domPublish,node);
         eventSourceRegistry.registerEventSource(exampleEventSource);
+        return exampleEventSource;
 
     }
 

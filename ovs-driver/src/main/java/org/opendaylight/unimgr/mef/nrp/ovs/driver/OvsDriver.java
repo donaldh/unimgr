@@ -86,7 +86,6 @@ public class OvsDriver implements ActivationDriverBuilder {
             public void activate() throws TransactionCommitFailedException, ResourceNotAvailableException {
                 String aEndNodeName = aEnd.getNode().getValue();
                 activator.activate(aEndNodeName, uuid, GROUP_NAME, aEnd, zEnd, MTU_VALUE);
-                //TODO: check it and add sth on deactivate
                 eventSourceApi.generateExampleEventSource(aEnd.getNode().getValue());
             }
 
@@ -94,6 +93,7 @@ public class OvsDriver implements ActivationDriverBuilder {
             public void deactivate() throws TransactionCommitFailedException, ResourceNotAvailableException {
                 String aEndNodeName = aEnd.getNode().getValue();
                 activator.deactivate(aEndNodeName, uuid, GROUP_NAME, aEnd, zEnd, MTU_VALUE);
+                //TODO: delete EventSource?
             }
 
             @Override
