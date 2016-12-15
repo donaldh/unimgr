@@ -14,9 +14,8 @@ import org.opendaylight.yangtools.yang.model.api.SchemaPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
@@ -31,23 +30,27 @@ public class EventSourceApiImpl implements EventSourceApi{
     private final BindingAwareBroker broker;
     private EventAggregatorService eventAggregatorService;
     private List<EventSource> eventSourceList;
+    private Map<TopicId, SchemaPath> topics;
 
-    public EventSourceApiImpl(Broker domBroker, EventSourceRegistry eventSourceRegistry,BindingAwareBroker broker) { //EventAggregatorService eventAggregatorService){
+    public EventSourceApiImpl(Broker domBroker, EventSourceRegistry eventSourceRegistry,BindingAwareBroker broker) {
         LOG.info("EventSourceApiImpl constructor reached.");
         this.domBroker = domBroker;
         this.eventSourceRegistry = eventSourceRegistry;
         this.broker = broker;
         initEventAggregatorService();
+        eventSourceList = Collections.synchronizedList(new ArrayList<EventSource>());
+        topics = new ConcurrentHashMap<>();
     }
 
     @Override
-    public void generateExampleEventSource(String nodeName){
+    public ExampleEventSource generateExampleEventSource(String nodeName){
         LOG.info(" generateExampleEventSource() has started.");
         ExampleEventSourceGenerator exampleEventSourceGenerator = new ExampleEventSourceGenerator(domBroker);
         ExampleEventSource exampleEventSource = exampleEventSourceGenerator.generateExampleEventSource(nodeName,eventSourceRegistry);
         eventSourceList.add(exampleEventSource);
-        addTopicForNotification(exampleEventSource,nodeName);
+        addTopicForNotification(exampleEventSource);
         LOG.info(" generateExampleEventSource() has finished.");
+        return exampleEventSource;
     }
 
     @Override
@@ -56,26 +59,90 @@ public class EventSourceApiImpl implements EventSourceApi{
     }
 
     /**
-     * Method to initialize EventAggregatorService needed to create and destroy topics.
-     */
-    public void initEventAggregatorService(){
-        final BindingAwareBroker.ProviderContext bindingCtx = broker.registerProvider(new Providers.BindingAware());
-        final RpcProviderRegistry rpcRegistry = bindingCtx.getSALService(RpcProviderRegistry.class);
-        eventAggregatorService = rpcRegistry.getRpcService(EventAggregatorService.class);
-    }
-
-    /**
-     * Method create topic corresponding to event source (created for given nodeName).
+     * Method create topics corresponding to event source (created for given nodeName).
      *
      * @param nodeName Name of the node included in EventSource.
      */
+    @Override
     public void createTopicToEventSource(String nodeName){
         List<EventSource> resultList = eventSourceList.stream()
-                .filter(event -> nodeName.equals(event.getSourceNodeKey().getNodeId().getValue()))
+                .filter(eventSource -> checkEventSourceByNode(eventSource,nodeName))
                 .collect(Collectors.toList());
 
         resultList.stream()
-                .forEach(eventSource -> addTopicForNotification(eventSource,nodeName));
+                .forEach(eventSource -> addTopicForNotification(eventSource));
+    }
+
+    /**
+     * Method destroy all topics corresponding to EventSource created by {@link #createTopicToEventSource(String) createTopicToEventSourceAt} method
+     *
+     * @param nodeName Name of the node included in EventSource.
+     */
+    @Override
+    public void destroyEventSourceTopics(String nodeName){
+        List<EventSource> resultList = eventSourceList.stream()
+                .filter(eventSource -> checkEventSourceByNode(eventSource,nodeName))
+                .collect(Collectors.toList());
+
+        resultList.stream()
+                .forEach(eventSource -> destroyEventSourceTopicsHelper(eventSource));
+        deleteEventSource(nodeName);
+    }
+
+    @Override
+    public void destroyTopic(String topicId){
+        destroyTopic(new TopicId(topicId));
+    }
+
+    @Override
+    public void deleteEventSource(String nodeName){
+        List<EventSource> toDelete = eventSourceList.stream()
+                .filter(eventSource -> checkEventSourceByNode(eventSource,nodeName))
+                .collect(Collectors.toList());
+
+        toDelete.stream()
+                .forEach(eventSource -> deleteEventSource(eventSource));
+    }
+
+    @Override
+    public void deleteEventSource(EventSource eventSource){
+        destroyEventSourceTopicsHelper(eventSource);
+        eventSourceList.remove(eventSource);
+        try {
+            eventSource.close();
+        } catch (Exception e) {
+            LOG.warn("EventSource closure error: {}",e);
+        }
+    }
+
+    public boolean checkEventSourceByNode(EventSource eventSource, String nodeName){
+        String esNodeValue = eventSource.getSourceNodeKey().getNodeId().getValue();
+        return nodeName.equals(esNodeValue);
+    }
+
+    private void destroyEventSourceTopicsHelper(EventSource eventSource){
+        List<SchemaPath> notifications = eventSource.getAvailableNotifications();
+        notifications.stream()
+                .forEach(notification -> handleNotificationDestroy(notification));
+    }
+
+    private void handleNotificationDestroy(SchemaPath schemaPath){
+        if(!topics.containsValue(schemaPath)){
+            return ;
+        }
+        Set<Map.Entry<TopicId, SchemaPath>> toDelete = topics.entrySet().stream()
+                .filter(topic -> topic.getValue().equals(schemaPath))
+                .collect(Collectors.toSet());
+
+        toDelete.stream()
+                .forEach(topic -> destroyTopic(topic.getKey()));
+    }
+
+    private void destroyTopic(TopicId topicId){
+        topics.remove(topicId);
+        DestroyTopicInputBuilder destroyTopicInputBuilder = new DestroyTopicInputBuilder();
+        destroyTopicInputBuilder.setTopicId(topicId);
+        eventAggregatorService.destroyTopic(destroyTopicInputBuilder.build());
     }
 
     private CreateTopicInput createTopicInput(String nodeName, String notificationPatternName){
@@ -87,8 +154,9 @@ public class EventSourceApiImpl implements EventSourceApi{
         return createTopicInputBuilder.build();
     }
 
-    private void addTopicForNotification(EventSource eventSource,String nodeName){
+    private void addTopicForNotification(EventSource eventSource){
         LOG.info("addTopicForNotification");
+        String nodeName = eventSource.getSourceNodeKey().getNodeId().getValue();
         List<SchemaPath> notifications = eventSource.getAvailableNotifications();
         String notificationPattern;
         for(SchemaPath notification:notifications){
@@ -98,6 +166,7 @@ public class EventSourceApiImpl implements EventSourceApi{
             Future<RpcResult<CreateTopicOutput>> topicOutput = eventAggregatorService.createTopic(topicInput);
             try {
                 TopicId topicId = topicOutput.get().getResult().getTopicId();
+                topics.put(topicId,notification);
                 LOG.info("Topic for node: {} and notification pattern: {} created with id: {}",nodeName,notificationPattern,topicId.getValue());
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -107,13 +176,29 @@ public class EventSourceApiImpl implements EventSourceApi{
         }
     }
 
+    /**
+     * Method to initialize EventAggregatorService needed to create and destroy topics.
+     */
+    public void initEventAggregatorService(){
+        final BindingAwareBroker.ProviderContext bindingCtx = broker.registerProvider(new Providers.BindingAware());
+        final RpcProviderRegistry rpcRegistry = bindingCtx.getSALService(RpcProviderRegistry.class);
+        eventAggregatorService = rpcRegistry.getRpcService(EventAggregatorService.class);
+    }
+
     public void startUp(){
         LOG.info("Bundle EventSourceApiImpl has started.");
-        eventSourceList = Collections.synchronizedList(new ArrayList<EventSource>());
         this.generateExampleEventSource("EventSource3000");
     }
 
     public List<EventSource> getEventSourceList() {
         return eventSourceList;
+    }
+
+    public Map<TopicId, SchemaPath> getTopics() {
+        return topics;
+    }
+
+    public String getSchemaPathString(SchemaPath schemaPath){
+        return schemaPath.getLastComponent().getNamespace().toString();
     }
 }

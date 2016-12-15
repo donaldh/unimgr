@@ -82,7 +82,7 @@ public class ExampleEventSource implements EventSource {
 
     private void startMessageGenerator(){
         // message generator is started as scheduled task
-        scheduler.scheduleAtFixedRate(new MessageGenerator(sourceNode.getNodeId().getValue(), this.messageText), messageGeneratePeriod, messageGeneratePeriod, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(new MessageGenerator(sourceNode.getNodeId().getValue(), this.messageText), 0, messageGeneratePeriod, TimeUnit.SECONDS);
     }
 
     /*
@@ -186,7 +186,6 @@ public class ExampleEventSource implements EventSource {
         public void run() {
             // message is generated every run of method
             String message = this.messageText + " [" + Calendar.getInstance().getTime().toString() +"]";
-            LOG.info("MessageGenerator.run: {} {}",messageText, message);
             LOG.info("MessageGenerator.run acceptedTopics: {} ",listAcceptedTopics.toString());
             LOG.debug("Sample message generated: {}",message);
 

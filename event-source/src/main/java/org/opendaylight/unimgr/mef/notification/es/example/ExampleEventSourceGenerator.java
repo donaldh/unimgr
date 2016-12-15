@@ -19,7 +19,6 @@ public class ExampleEventSourceGenerator {
     public ExampleEventSourceGenerator(Broker domBroker){
         ExampleEventSourceBIProvider providerBI = new ExampleEventSourceBIProvider();
         Broker.ProviderSession domCtx = domBroker.registerProvider(providerBI);
-
         this.domPublish = domCtx.getService(DOMNotificationPublishService.class);
     }
 

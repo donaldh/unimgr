@@ -87,7 +87,6 @@ public class UserAgent implements DOMNotificationListener, UagentTopicReadServic
         this.outputFile = outputFile;
     }
 
-
     private void registerListener(DOMNotificationService notifyService){
         this.listenerReg = notifyService.registerNotificationListener(this,SchemaPath.create(true, TopicNotification.QNAME));
     }
