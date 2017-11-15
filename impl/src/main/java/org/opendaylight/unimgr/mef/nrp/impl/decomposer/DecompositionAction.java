@@ -19,7 +19,7 @@ import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.SimpleGraph;
+import org.jgrapht.graph.SimpleDirectedGraph;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
@@ -105,7 +105,7 @@ public class DecompositionAction {
                 throw new FailureResult("There are no nodes in {0} topology", TapiConstants.PRESTO_SYSTEM_TOPO);
             }
 
-            Graph<Vertex, DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class);
+            Graph<Vertex, DefaultEdge> graph = new SimpleDirectedGraph<Vertex, DefaultEdge>(DefaultEdge.class);
             topo.getNode().stream().map(this::nodeToGraph).forEach(vs -> {
                 List<Vertex> vertices = vs.collect(Collectors.toList());
                 vertices.forEach(v -> sipToNep.put(v.getSip(), v));

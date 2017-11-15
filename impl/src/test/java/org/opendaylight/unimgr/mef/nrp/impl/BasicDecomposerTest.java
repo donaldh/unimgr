@@ -14,6 +14,7 @@ import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -23,8 +24,12 @@ import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.unimgr.mef.nrp.api.FailureResult;
 import org.opendaylight.unimgr.mef.nrp.api.Subrequrest;
 import org.opendaylight.unimgr.mef.nrp.impl.decomposer.BasicDecomposer;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.tapi.common.rev170712.ForwardingDirection;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.tapi.common.rev170712.OperationalState;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.tapi.common.rev170712.PortDirection;
 import org.opendaylight.yangtools.yang.common.OperationFailedException;
+
+import javax.sound.sampled.Port;
 
 /**
  * @author bartosz.michalik@amartus.com
@@ -76,13 +81,28 @@ public class BasicDecomposerTest extends AbstractTestWithTopo {
 
     @Test
     public void twoNodesTest() throws FailureResult, OperationFailedException {
-        //having
+        //having three nodes, but only two nodes connected
         ReadWriteTransaction tx = dataBroker.newReadWriteTransaction();
         n(tx, "n1", "n1:1", "n1:2", "n1:3");
         n(tx, "n2", "n2:1", "n2:2", "n2:3");
         n(tx, "n3", "n3:1", "n3:2", "n3:3");
         l(tx, "n1", "n1:1", "n2", "n2:1", OperationalState.Enabled);
         l(tx, "n2", "n2:3", "n3", "n3:3", OperationalState.Enabled);
+        tx.submit().checkedGet();
+        //when
+        List<Subrequrest> decomposed = decomposer.decompose(Arrays.asList(ep("n1:2"), ep("n2:2")), null);
+        assertNotNull(decomposed);
+        assertEquals(2, decomposed.size());
+    }
+
+    @Test
+    public void twoNodesTestDirection() throws FailureResult, OperationFailedException {
+        //having three nodes, but only two nodes connected, with directional links and ports
+        ReadWriteTransaction tx = dataBroker.newReadWriteTransaction();
+        n(tx, true, "n1", Stream.of(new Pair("n1:1", PortDirection.Output)));
+        n(tx, true, "n2", Stream.of(new Pair("n2:1", PortDirection.Output), new Pair ("n2:2", PortDirection.Input)));
+        n(tx, true, "n3", Stream.of(new Pair("n3:1", PortDirection.Input)));
+        l(tx, "n1", "n1:1", "n2", "n2:1", OperationalState.Enabled, ForwardingDirection.Bidirectional);
         tx.submit().checkedGet();
         //when
         List<Subrequrest> decomposed = decomposer.decompose(Arrays.asList(ep("n1:2"), ep("n2:2")), null);
@@ -104,6 +124,23 @@ public class BasicDecomposerTest extends AbstractTestWithTopo {
         List<Subrequrest> decomposed = decomposer.decompose(Arrays.asList(ep("n1:2"), ep("n3:2")), null);
         assertNotNull(decomposed);
         assertEquals(3, decomposed.size());
+    }
+
+    @Test
+    public void threeNodesTestDirection() throws FailureResult, OperationFailedException {
+        //having three nodes, but only two nodes connected, with directional links and ports
+        ReadWriteTransaction tx = dataBroker.newReadWriteTransaction();
+        n(tx, true, "n1", Stream.of(new Pair("n1:1", PortDirection.Output), new Pair("n1:2", PortDirection.Input)));
+        n(tx, true, "n2", Stream.of(new Pair("n2:1", PortDirection.Output), new Pair ("n2:2", PortDirection.Input)));
+        n(tx, true, "n3", Stream.of(new Pair("n3:1", PortDirection.Input), new Pair("3:2", PortDirection.Output)));
+        l(tx, "n1", "n1:1", "n2", "n2:1", OperationalState.Enabled, ForwardingDirection.Bidirectional);
+        l(tx, "n2", "n2:2", "n3", "n3:1", OperationalState.Enabled, ForwardingDirection.Bidirectional);
+        l(tx, "n3", "n3:2", "n1", "n1:2", OperationalState.Enabled, ForwardingDirection.Bidirectional);
+        tx.submit().checkedGet();
+        //when
+        List<Subrequrest> decomposed = decomposer.decompose(Arrays.asList(ep("n1:2"), ep("n3:2")), null);
+        assertNotNull(decomposed);
+        assertEquals(2, decomposed.size());
     }
 
     @Test

@@ -12,6 +12,7 @@ import static org.opendaylight.unimgr.mef.nrp.api.TapiConstants.PRESTO_SYSTEM_TO
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,10 +23,7 @@ import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.unimgr.mef.nrp.api.EndPoint;
 import org.opendaylight.unimgr.mef.nrp.common.NrpDao;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.tapi.common.rev170712.Eth;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.tapi.common.rev170712.ForwardingDirection;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.tapi.common.rev170712.OperationalState;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.tapi.common.rev170712.Uuid;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.tapi.common.rev170712.*;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.tapi.common.rev170712.context.attrs.ServiceInterfacePointBuilder;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.tapi.connectivity.rev170712.ConnectivityServiceEndPoint;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.tapi.connectivity.rev170712.create.connectivity.service.input.EndPointBuilder;
@@ -60,11 +58,15 @@ public abstract class AbstractTestWithTopo extends AbstractDataBrokerTest {
     }
 
     protected void l(ReadWriteTransaction tx, String nA, String nepA, String nB, String nepB, OperationalState state) {
+        l(tx, nA, nepA, nB, nepB, state, ForwardingDirection.Bidirectional);
+    }
+
+    protected void l(ReadWriteTransaction tx, String nA, String nepA, String nB, String nepB, OperationalState state, ForwardingDirection dir) {
         Uuid uuid = new Uuid(nepA + "-" + nepB);
         Link link = new LinkBuilder()
                 .setUuid(uuid)
                 .setKey(new LinkKey(uuid))
-                .setDirection(ForwardingDirection.Bidirectional)
+                .setDirection(dir)
                 .setLayerProtocolName(Collections.singletonList(Eth.class))
                 .setNode(toIds(nA, nB).collect(Collectors.toList()))
                 .setNodeEdgePoint(toIds(nepA, nepB).collect(Collectors.toList()))
@@ -83,22 +85,48 @@ public abstract class AbstractTestWithTopo extends AbstractDataBrokerTest {
     }
 
     protected Node n(ReadWriteTransaction tx, boolean addSips, String node, String ... endpoints) {
+        return n(tx, addSips, node, Arrays.asList(endpoints).stream().map(i -> new Pair(i, PortDirection.Bidirectional)));
+    }
+
+    protected Node n(ReadWriteTransaction tx, boolean addSips, String node, Stream<Pair> endpoints) {
+        List<Pair> eps = endpoints.collect(Collectors.toList());
         NrpDao nrpDao = new NrpDao(tx);
         if (addSips) {
-            Arrays.stream(endpoints).map(e -> new ServiceInterfacePointBuilder()
+            eps.stream().map(e -> new ServiceInterfacePointBuilder()
                 .setUuid(new Uuid("sip:" + e))
                 .build())
                 .forEach(nrpDao::addSip);
         }
 
-        return nrpDao.createSystemNode(node, Arrays.stream(endpoints)
+        return nrpDao.createSystemNode(node, eps.stream()
                 .map(e-> {
-                    OwnedNodeEdgePointBuilder builder = new OwnedNodeEdgePointBuilder().setUuid(new Uuid(e));
+                    OwnedNodeEdgePointBuilder builder = new OwnedNodeEdgePointBuilder()
+                            .setLinkPortDirection(e.getDir())
+                            .setUuid(new Uuid(e.getId()));
                     if (addSips) {
                         builder.setMappedServiceInterfacePoint(Collections.singletonList(new Uuid("sip:" + e)));
                     }
                     return builder.build();
                 }).collect(Collectors.toList()));
+    }
+
+
+    static class Pair {
+        private String id;
+        private PortDirection dir;
+
+        public Pair(String id, PortDirection dir) {
+            this.id = id;
+            this.dir = dir;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public PortDirection getDir() {
+            return dir;
+        }
     }
 
     protected Node n(ReadWriteTransaction tx, String node, String ... endpoints) {
