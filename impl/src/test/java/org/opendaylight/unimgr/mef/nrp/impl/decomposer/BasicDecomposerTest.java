@@ -26,9 +26,7 @@ import org.opendaylight.unimgr.mef.nrp.api.Subrequrest;
 import org.opendaylight.unimgr.mef.nrp.impl.AbstractTestWithTopo;
 import org.opendaylight.unimgr.mef.nrp.impl.NrpInitializer;
 import org.opendaylight.unimgr.mef.nrp.impl.decomposer.BasicDecomposer;
-import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.common.rev171113.ForwardingDirection;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.common.rev171113.OperationalState;
-import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.common.rev171113.PortDirection;
 import org.opendaylight.yangtools.yang.common.OperationFailedException;
 
 import javax.sound.sampled.Port;
@@ -97,8 +95,6 @@ public class BasicDecomposerTest extends AbstractTestWithTopo {
         assertEquals(2, decomposed.size());
     }
 
-
-
     @Test
     public void threeNodesTest() throws FailureResult, OperationFailedException {
         //having
@@ -114,8 +110,6 @@ public class BasicDecomposerTest extends AbstractTestWithTopo {
         assertNotNull(decomposed);
         assertEquals(3, decomposed.size());
     }
-
-
 
     @Test
     public void threeNodesDisabledLinkTest() throws FailureResult, OperationFailedException {

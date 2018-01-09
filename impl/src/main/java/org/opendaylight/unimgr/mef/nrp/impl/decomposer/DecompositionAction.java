@@ -106,7 +106,7 @@ class DecompositionAction {
         return ep;
     }
 
-    private final Predicate<Vertex> isInput = v -> v.getDir() == PortDirection.BIDIRECTIONAL || v.getDir() == PortDirection.INPUT;
+    private final Predicate<Vertex> isInput = v -> v.getDir() == PortDirection.BIDIRECTIONAL|| v.getDir() == PortDirection.INPUT;
     private final Predicate<Vertex> isOutput = v -> v.getDir() == PortDirection.BIDIRECTIONAL || v.getDir() == PortDirection.OUTPUT;
 
     private void interconnectNode(Graph<Vertex, DefaultEdge> graph, List<Vertex> vertices) {

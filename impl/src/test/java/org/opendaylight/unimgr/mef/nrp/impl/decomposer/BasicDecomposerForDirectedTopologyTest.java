@@ -211,11 +211,11 @@ public class BasicDecomposerForDirectedTopologyTest extends AbstractTestWithTopo
         n(tx, true, "n3", Stream.of(pO("n3:1"), pB("n3:2"), pO("n3:3"), pI("n3:4")));
         n(tx, true, "n4", Stream.of(pO("n4:1"), pI("n4:2"), pB("n4:3"), pB("n4:4")));
         n(tx, true, "n5", Stream.of(pI("n5:1"), pB("n5:2"), pB("n5:3"), pO("n5:4")));
-        l(tx, "n1", "n1:4", "n2", "n2:4", OperationalState.ENABLED, ForwardingDirection.BIDIRECTIONAL);
         l(tx, "n2", "n2:3", "n3", "n3:4", OperationalState.ENABLED, ForwardingDirection.BIDIRECTIONAL);
         l(tx, "n3", "n3:1", "n1", "n1:1", OperationalState.ENABLED, ForwardingDirection.BIDIRECTIONAL);
         l(tx, "n3", "n3:3", "n5", "n5:1", OperationalState.ENABLED, ForwardingDirection.BIDIRECTIONAL);
         l(tx, "n4", "n4:1", "n1", "n1:3", OperationalState.ENABLED, ForwardingDirection.BIDIRECTIONAL);
+        l(tx, "n1", "n1:4", "n2", "n2:4", OperationalState.ENABLED, ForwardingDirection.BIDIRECTIONAL);
         l(tx, "n5", "n5:4", "n4", "n4:2", OperationalState.ENABLED, ForwardingDirection.BIDIRECTIONAL);
         try {
             tx.submit().checkedGet();
