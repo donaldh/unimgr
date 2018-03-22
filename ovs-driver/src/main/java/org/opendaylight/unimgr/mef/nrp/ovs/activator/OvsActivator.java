@@ -71,7 +71,7 @@ public class OvsActivator implements ResourceActivator {
         if (!OpenFlowUtils.isTablePreconfigured(table)) {
             LOG.debug("Table is not preconfigured. Adding base flows.");
             flowsToWrite.addAll(OpenFlowUtils.getBaseFlows(interswitchLinks));
-            flowsToDelete.addAll(OpenFlowUtils.getExistingFlows(table));
+            flowsToDelete.addAll(OpenFlowUtils.getExistingFlowsWithoutLLDP(table));
         }
 
         OvsActivatorHelper ovsActivatorHelper = new OvsActivatorHelper(topologyTransaction, endPoint);

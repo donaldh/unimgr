@@ -7,6 +7,7 @@
  */
 package org.opendaylight.unimgr.mef.nrp.ovs.util;
 
+import org.opendaylight.controller.liblldp.EtherTypes;
 import org.opendaylight.unimgr.mef.nrp.common.ResourceNotAvailableException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -138,13 +139,23 @@ public class OpenFlowUtils {
     }
 
     /**
-     * Returns list of flows installed in flow table
+     * Returns list of flows installed in flow table. Flows which match LLDP packets are filtered out.
      *
      * @param table flow table
      * @return list of flows
      */
-    public static List<Flow> getExistingFlows(Table table) {
-        return table.getFlow().stream().map(x -> new FlowBuilder(x).build()).collect(Collectors.toList());
+    public static List<Flow> getExistingFlowsWithoutLLDP(Table table) {
+        return table.getFlow().stream().map(x -> new FlowBuilder(x).build()).
+                filter(flow -> {
+                    try {
+                        if (flow.getMatch().getEthernetMatch().getEthernetType().getType().getValue().equals(Long.valueOf(EtherTypes.LLDP.intValue())))
+                            return false;
+                    }catch (NullPointerException npe){
+                        return true;
+                    }
+                    return true;
+                }).
+                collect(Collectors.toList());
     }
 
     private static List<Flow> createInterswitchFlows(List<Link> interswitchLinks) {
