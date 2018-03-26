@@ -335,6 +335,7 @@ public class LegatoUtils {
 		return Optional.absent();
 	}
 	
+	
 	@SuppressWarnings("deprecation")
 	public static Optional<?> readProfile(String string, DataBroker dataBroker, LogicalDatastoreType store,
 			InstanceIdentifier<?> child) {
@@ -380,21 +381,21 @@ public class LegatoUtils {
 				LOG.info("IN DEFAULT CASE :  NO MATCH");
 			}
 		} catch (final ReadFailedException e) {
-			LOG.error("Unable to read node with Id {}, err: {} ", e);
+			LOG.error("Unable to read node ", e);
 		}
 		return Optional.absent();
 	}
 	
 	
 	@SuppressWarnings("deprecation")
-	public static void deleteProfileFromOperationalDB(InstanceIdentifier<?> nodeIdentifier,DataBroker dataBroker) {
+	public static void deleteFromOperationalDB(InstanceIdentifier<?> nodeIdentifier,DataBroker dataBroker) {
 		WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
 		tx.delete(LogicalDatastoreType.OPERATIONAL, nodeIdentifier);
 
 		try {
 			tx.submit().checkedGet();
 		} catch (org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException e) {
-			LOG.error("Error in deleteProfileFromOperationalDB(). Err: ", e);
+			LOG.error("Error in deleteFromOperationalDB(). Err: ", e);
 		}
 	}
 
