@@ -21,5 +21,7 @@ public class LegatoConstants {
 	public static final String BWP_PROFILES = "BWP_PROFILES";
 	public static final String POINTTOPOINT = "POINTTOPOINT";
 	public static final String MULTIPOINTTOMULTIPOINT = "MULTIPOINTTOMULTIPOINT";
+	public static final String l2CP_EEC_PROFILES = "l2CP_EEC_PROFILES";
+	public static final String L2CP_PEERING_PROFILES = "L2CP_PEERING_PROFILES";
 	
 }

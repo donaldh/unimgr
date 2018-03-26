@@ -15,6 +15,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.common.types.rev171221.ColorMode;
@@ -361,6 +362,20 @@ public class LegatoUtils {
 						.read(store, bwpProfileId);
 				return bwpProfileFuture.checkedGet();
 				
+			case LegatoConstants.l2CP_EEC_PROFILES:
+				final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.l2cp.eec.profiles.Profile> l2cpEec_ProfileId =child
+				.firstIdentifierOf(org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.l2cp.eec.profiles.Profile.class);
+				final CheckedFuture<Optional<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.l2cp.eec.profiles.Profile>, ReadFailedException> l2cpEecProfileFuture = read
+						.read(store, l2cpEec_ProfileId);
+				return l2cpEecProfileFuture.checkedGet();
+				
+			case LegatoConstants.L2CP_PEERING_PROFILES:
+				final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.l2cp.peering.profiles.Profile> l2cpPeering_ProfileId =child
+				.firstIdentifierOf(org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.l2cp.peering.profiles.Profile.class);
+				final CheckedFuture<Optional<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.l2cp.peering.profiles.Profile>, ReadFailedException> l2cpPeeringProfileFuture = read
+						.read(store, l2cpPeering_ProfileId);
+				return l2cpPeeringProfileFuture.checkedGet();	
+				
 			default:
 				LOG.info("IN DEFAULT CASE :  NO MATCH");
 			}
@@ -368,6 +383,19 @@ public class LegatoUtils {
 			LOG.error("Unable to read node with Id {}, err: {} ", e);
 		}
 		return Optional.absent();
+	}
+	
+	
+	@SuppressWarnings("deprecation")
+	public static void deleteProfileFromOperationalDB(InstanceIdentifier<?> nodeIdentifier,DataBroker dataBroker) {
+		WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
+		tx.delete(LogicalDatastoreType.OPERATIONAL, nodeIdentifier);
+
+		try {
+			tx.submit().checkedGet();
+		} catch (org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException e) {
+			LOG.error("Error in deleteProfileFromOperationalDB(). Err: ", e);
+		}
 	}
 
 }
