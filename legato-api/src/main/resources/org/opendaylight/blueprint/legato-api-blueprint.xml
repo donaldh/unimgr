@@ -24,6 +24,15 @@
    <bean id="mef-bwp-profile" class="org.opendaylight.legato.LegatoBwpProfileController">
        <argument ref="dataBroker" />
    </bean>
+   
+   <bean id="mef-l2cp-eec-profile" class="org.opendaylight.legato.LegatoL2cpEecController">
+       <argument ref="dataBroker" />
+   </bean>
+   
+    <bean id="mef-l2cp-peering-profile" class="org.opendaylight.legato.LegatoL2cpPeeringController">
+       <argument ref="dataBroker" />
+   </bean>
+   
 </blueprint>
 
 
