@@ -254,11 +254,11 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
 					EVC_UUIDMap.remove(evcId);
 				}
 
-				// delete EVC node from OPERATIONAL DB
-				deleteEvcFromOperationalDB(InstanceIdentifier
+				// delete EVC node from OPERATIONAL DB				
+				LegatoUtils.deleteFromOperationalDB(InstanceIdentifier
 						.create(MefServices.class).child(CarrierEthernet.class)
 						.child(SubscriberServices.class)
-						.child(Evc.class, new EvcKey(new EvcIdType(evcId))));
+						.child(Evc.class, new EvcKey(new EvcIdType(evcId))), dataBroker);
 
 			} else {
 				LOG.info("UUID does not exists for EVC Id : {}", evcId);
@@ -333,12 +333,12 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
 										new EvcKey(new EvcIdType(evcId))));
 
 				// update EVC Node in OPERATIONAL DB
-				if (OptionalEvc.isPresent()) {
-					deleteEvcFromOperationalDB(InstanceIdentifier
+				if (OptionalEvc.isPresent()) {					
+					LegatoUtils.deleteFromOperationalDB(InstanceIdentifier
 							.create(MefServices.class)
 							.child(CarrierEthernet.class)
 							.child(SubscriberServices.class)
-							.child(Evc.class, new EvcKey(new EvcIdType(evcId))));
+							.child(Evc.class, new EvcKey(new EvcIdType(evcId))), dataBroker);
 
 					UpdateEvcOnOperationalDB(OptionalEvc.get());
 				}
@@ -379,18 +379,6 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
 			LOG.error("Error in UpdateEvcOnOperationalDB(). Err: ", e);
 		}
 
-	}
-
-	private void deleteEvcFromOperationalDB(
-			InstanceIdentifier<Evc> nodeIdentifier) {
-		WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
-		tx.delete(LogicalDatastoreType.OPERATIONAL, nodeIdentifier);
-
-		try {
-			tx.submit().checkedGet();
-		} catch (org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException e) {
-			LOG.error("Error in deleteEvcFromOperationalDB(). Err: ", e);
-		}
 	}
 
 }
