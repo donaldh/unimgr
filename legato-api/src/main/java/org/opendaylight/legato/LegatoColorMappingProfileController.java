@@ -8,23 +8,20 @@
 
 package org.opendaylight.legato;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.legato.util.LegatoConstants;
 import org.opendaylight.legato.util.LegatoUtils;
 import org.opendaylight.unimgr.api.UnimgrDataTreeChangeListener;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.MefGlobal;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.BwpFlowParameterProfiles;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.BwpFlowParameterProfilesBuilder;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.bwp.flow.parameter.profiles.Profile;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.bwp.flow.parameter.profiles.ProfileKey;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.ColorMappingProfiles;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.ColorMappingProfilesBuilder;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.color.mapping.profiles.Profile;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.color.mapping.profiles.ProfileKey;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -32,22 +29,24 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
 
-public class LegatoBwpProfileController extends UnimgrDataTreeChangeListener<Profile> {
+public class LegatoColorMappingProfileController extends UnimgrDataTreeChangeListener<Profile> {
 
-	public LegatoBwpProfileController(DataBroker dataBroker) {
+	private static final Logger LOG = LoggerFactory.getLogger(LegatoColorMappingProfileController.class);
+	private ListenerRegistration<LegatoColorMappingProfileController> dataTreeChangeListenerRegistration;
+	private static final InstanceIdentifier<Profile> CMP_PROFILE_IID = InstanceIdentifier.builder(MefGlobal.class)
+			.child(ColorMappingProfiles.class).child(Profile.class).build();
+
+	public LegatoColorMappingProfileController(DataBroker dataBroker) {
 		super(dataBroker);
 		registerListener();
+		// TODO Auto-generated constructor stub
 	}
-
-	private static final Logger LOG = LoggerFactory.getLogger(LegatoBwpProfileController.class);
-	private static final InstanceIdentifier<Profile> BWP_PROFILE_IID = InstanceIdentifier.builder(MefGlobal.class)
-			.child(BwpFlowParameterProfiles.class).child(Profile.class).build();
-	private ListenerRegistration<LegatoBwpProfileController> dataTreeChangeListenerRegistration;
 
 	private void registerListener() {
 		LOG.info("Initializing LegatoSlsProfileController:init() ");
+
 		dataTreeChangeListenerRegistration = dataBroker.registerDataTreeChangeListener(
-				new DataTreeIdentifier<Profile>(LogicalDatastoreType.CONFIGURATION, BWP_PROFILE_IID), this);
+				new DataTreeIdentifier<Profile>(LogicalDatastoreType.CONFIGURATION, CMP_PROFILE_IID), this);
 
 	}
 
@@ -56,7 +55,6 @@ public class LegatoBwpProfileController extends UnimgrDataTreeChangeListener<Pro
 		if (dataTreeChangeListenerRegistration != null) {
 			dataTreeChangeListenerRegistration.close();
 		}
-
 	}
 
 	@Override
@@ -66,15 +64,16 @@ public class LegatoBwpProfileController extends UnimgrDataTreeChangeListener<Pro
 			addToOperationalDB(newDataObject.getRootNode().getDataAfter());
 
 		}
-
 	}
-
+	
 	private void addToOperationalDB(Profile profile) {
-		BwpFlowParameterProfiles bwpProfiles = new BwpFlowParameterProfilesBuilder().setProfile(Collections.singletonList(profile)).build();
-		InstanceIdentifier<BwpFlowParameterProfiles> profilesTx = InstanceIdentifier.create(MefGlobal.class)
-				.child(BwpFlowParameterProfiles.class);
-		LegatoUtils.addToOperationalDB(bwpProfiles, profilesTx, dataBroker);
+		ColorMappingProfiles colorMappingProfiles = new ColorMappingProfilesBuilder().setProfile(Collections.singletonList(profile)).build();	
+		InstanceIdentifier<ColorMappingProfiles> profilesTx = InstanceIdentifier.create(MefGlobal.class)
+				.child(ColorMappingProfiles.class);
+		LegatoUtils.addToOperationalDB(colorMappingProfiles, profilesTx, dataBroker);
+
 	}
+
 
 	@Override
 	public void remove(DataTreeModification<Profile> removedDataObject) {
@@ -82,7 +81,7 @@ public class LegatoBwpProfileController extends UnimgrDataTreeChangeListener<Pro
 			LOG.info("  Node removed  " + removedDataObject.getRootNode().getIdentifier());
 			try {
 				assert removedDataObject.getRootNode().getDataBefore() != null;
-				LegatoUtils.deleteFromOperationalDB(InstanceIdentifier.create(MefGlobal.class).child(BwpFlowParameterProfiles.class)
+				LegatoUtils.deleteFromOperationalDB(InstanceIdentifier.create(MefGlobal.class).child(ColorMappingProfiles.class)
 						.child(Profile.class, new ProfileKey(removedDataObject.getRootNode().getDataBefore().getId())),dataBroker);
 			} catch (Exception ex) {
 				LOG.error("error: ", ex);
@@ -90,22 +89,17 @@ public class LegatoBwpProfileController extends UnimgrDataTreeChangeListener<Pro
 		}
 	}
 
-	
 
 	@Override
 	public void update(DataTreeModification<Profile> modifiedDataObject) {
-		// TODO Auto-generated method stub
-
 		if (modifiedDataObject.getRootNode() != null && modifiedDataObject.getRootPath() != null) {
 			LOG.info("  Node modified  " + modifiedDataObject.getRootNode().getIdentifier());
-			
 			try {
 				assert modifiedDataObject.getRootNode().getDataAfter() != null;
-
 				InstanceIdentifier<Profile> instanceIdentifier = InstanceIdentifier.create(MefGlobal.class)
-						.child(BwpFlowParameterProfiles.class).child(Profile.class, new ProfileKey(modifiedDataObject.getRootNode().getDataAfter().getId()));
+						.child(ColorMappingProfiles.class).child(Profile.class, new ProfileKey(modifiedDataObject.getRootNode().getDataAfter().getId()));
 				Optional<Profile> OptionalProfile = (Optional<Profile>) LegatoUtils.readProfile(
-						LegatoConstants.BWP_PROFILES, dataBroker, LogicalDatastoreType.CONFIGURATION, instanceIdentifier);
+						LegatoConstants.CMP_PROFILES, dataBroker, LogicalDatastoreType.CONFIGURATION, instanceIdentifier);
 				if (OptionalProfile.isPresent()) {
 					LegatoUtils.deleteFromOperationalDB(instanceIdentifier,dataBroker);
 					addToOperationalDB(OptionalProfile.get());
@@ -116,5 +110,4 @@ public class LegatoBwpProfileController extends UnimgrDataTreeChangeListener<Pro
 		}
 	}
 
-	
 }
