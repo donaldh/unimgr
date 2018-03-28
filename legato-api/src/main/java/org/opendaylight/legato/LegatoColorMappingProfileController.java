@@ -67,10 +67,15 @@ public class LegatoColorMappingProfileController extends UnimgrDataTreeChangeLis
 	}
 	
 	private void addToOperationalDB(Profile profile) {
+		try {
+			assert profile != null;
 		ColorMappingProfiles colorMappingProfiles = new ColorMappingProfilesBuilder().setProfile(Collections.singletonList(profile)).build();	
 		InstanceIdentifier<ColorMappingProfiles> profilesTx = InstanceIdentifier.create(MefGlobal.class)
 				.child(ColorMappingProfiles.class);
 		LegatoUtils.addToOperationalDB(colorMappingProfiles, profilesTx, dataBroker);
+		} catch (Exception ex) {
+			LOG.error("error: ", ex);
+		}
 
 	}
 

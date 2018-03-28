@@ -36,8 +36,6 @@ public class LegatoEecProfileController extends UnimgrDataTreeChangeListener<Pro
 	private static final InstanceIdentifier<Profile> EEC_PROFILE_IID = InstanceIdentifier.builder(MefGlobal.class)
 			.child(EecProfiles.class).child(Profile.class).build();
 
-
-
 	public LegatoEecProfileController(DataBroker dataBroker) {
 		super(dataBroker);
 		registerListener();
@@ -70,11 +68,15 @@ public class LegatoEecProfileController extends UnimgrDataTreeChangeListener<Pro
 	}
 
 	private void addToOperationalDB(Profile profile) {
-		EecProfiles eecProfiles = new EecProfilesBuilder().setProfile(Collections.singletonList(profile)).build();
-		InstanceIdentifier<EecProfiles> profilesTx = InstanceIdentifier.create(MefGlobal.class)
-				.child(EecProfiles.class);
-		LegatoUtils.addToOperationalDB(eecProfiles, profilesTx, dataBroker);
-
+		try {
+			assert profile != null;
+			EecProfiles eecProfiles = new EecProfilesBuilder().setProfile(Collections.singletonList(profile)).build();
+			InstanceIdentifier<EecProfiles> profilesTx = InstanceIdentifier.create(MefGlobal.class)
+					.child(EecProfiles.class);
+			LegatoUtils.addToOperationalDB(eecProfiles, profilesTx, dataBroker);
+		} catch (Exception ex) {
+			LOG.error("error: ", ex);
+		}
 	}
 
 	@Override
@@ -83,9 +85,11 @@ public class LegatoEecProfileController extends UnimgrDataTreeChangeListener<Pro
 			LOG.info("  Node removed  " + removedDataObject.getRootNode().getIdentifier());
 			try {
 				assert removedDataObject.getRootNode().getDataBefore() != null;
-				LegatoUtils.deleteFromOperationalDB(InstanceIdentifier.create(MefGlobal.class).child(EecProfiles.class)
-						.child(Profile.class, new ProfileKey(removedDataObject.getRootNode().getDataBefore().getId())),
-						dataBroker);
+				LegatoUtils
+						.deleteFromOperationalDB(
+								InstanceIdentifier.create(MefGlobal.class).child(EecProfiles.class).child(Profile.class,
+										new ProfileKey(removedDataObject.getRootNode().getDataBefore().getId())),
+								dataBroker);
 			} catch (Exception ex) {
 				LOG.error("error: ", ex);
 			}
