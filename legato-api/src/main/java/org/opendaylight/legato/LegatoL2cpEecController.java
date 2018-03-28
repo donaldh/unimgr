@@ -7,13 +7,11 @@
  */
 package org.opendaylight.legato;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.legato.util.LegatoConstants;
 import org.opendaylight.legato.util.LegatoUtils;
@@ -68,34 +66,30 @@ public class LegatoL2cpEecController  extends UnimgrDataTreeChangeListener<Profi
 		if(newDataObject.getRootNode() != null && newDataObject.getRootPath() != null ){
 			LOG.info( "ClassName :: LegatoL2cpEecController, Method:: add(), Message:: Node Added  " + newDataObject.getRootNode().getIdentifier());
 			
-			addNode(newDataObject.getRootNode().getDataAfter());
+			addToOperationalDB(newDataObject.getRootNode().getDataAfter());
 		}
 	}
 	
-	
-	@SuppressWarnings("deprecation")
-	private void addNode(Profile profileObj) {
+	/* Add node in Operational DB*/
+	private void addToOperationalDB(Profile profileObj) {
+
 		LOG.info(" inside addNode()");
 
 		try {
 			assert profileObj != null;
-			List<Profile> proList = new ArrayList<Profile>();
-			proList.add(profileObj);
-			
-			WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
-			tx.merge(LogicalDatastoreType.OPERATIONAL, L2CP_EEC_PROFILES_ID_OPERATIONAL,
-					new L2cpEecProfilesBuilder().setProfile(proList).build());
 
-			tx.submit().checkedGet();
-		} catch (org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException e) {
+			L2cpEecProfiles l2cpEecProfiles = new L2cpEecProfilesBuilder()
+					.setProfile(Collections.singletonList(profileObj)).build();
+			LegatoUtils.addToOperationalDB(l2cpEecProfiles, L2CP_EEC_PROFILES_ID_OPERATIONAL, dataBroker);
+		} catch (Exception e) {
 			LOG.error("Error in addNode(). Err: ", e);
 		}
-
 		LOG.info(" ********** END addNode() ****************** ");
 
 	}
-
 	
+	
+	/* Update node in Operational DB*/
 	@SuppressWarnings("unchecked")
 	@Override
 	public void update(DataTreeModification<Profile> modifiedDataObject) {
@@ -115,7 +109,7 @@ public class LegatoL2cpEecController  extends UnimgrDataTreeChangeListener<Profi
 					LegatoUtils.deleteFromOperationalDB(InstanceIdentifier.create(MefGlobal.class).child(L2cpEecProfiles.class)
 							.child(Profile.class, new ProfileKey(profile.getId())), dataBroker);
 
-					UpdateProfileOnOperationalDB(OptionalProfile.get());
+					addToOperationalDB(OptionalProfile.get());
 				}
 
 			} catch (Exception ex) {
@@ -125,23 +119,7 @@ public class LegatoL2cpEecController  extends UnimgrDataTreeChangeListener<Profi
 	}
 	
 
-	@SuppressWarnings("deprecation")
-	private void UpdateProfileOnOperationalDB(Profile profileObj) {
-		List<Profile> proList = new ArrayList<Profile>();
-		proList.add(profileObj);
-
-		WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
-		tx.merge(LogicalDatastoreType.OPERATIONAL, L2CP_EEC_PROFILES_ID_OPERATIONAL, new L2cpEecProfilesBuilder().setProfile(proList).build());
-
-		try {
-			tx.submit().checkedGet();
-		} catch (org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException e) {
-			LOG.error("Error in UpdateProfileOnOperationalDB(). Err: ", e);
-		}
-
-	}
-	
-	
+	/* Delete node in Operational DB*/
 	@Override
 	public void remove(DataTreeModification<Profile> removedDataObject) {
 		if (removedDataObject.getRootNode() != null && removedDataObject.getRootPath() != null) {
