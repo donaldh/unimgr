@@ -373,10 +373,10 @@ public class LegatoUtils {
 
 	public static <T extends DataObject> void addToOperationalDB(T typeOfProfile, InstanceIdentifier<T> profilesTx,
 			DataBroker dataBroker) {
-		WriteTransaction addProfileTx = dataBroker.newWriteOnlyTransaction();
-		addProfileTx.merge(LogicalDatastoreType.OPERATIONAL, profilesTx, typeOfProfile);
+		WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
+		tx.merge(LogicalDatastoreType.OPERATIONAL, profilesTx, typeOfProfile);
 		try {
-			addProfileTx.submit().checkedGet();
+			tx.submit().checkedGet();
 		} catch (org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException e) {
 			LOG.error("Error in adding data to OperationalDB(). Err: ", e);
 		}

@@ -67,10 +67,15 @@ public class LegatoCosProfileController extends UnimgrDataTreeChangeListener<Pro
 	}
 
 	public void addToOperationalDB(Profile profile) {
+		try {
+			assert profile != null;
 		CosProfiles cosProfiles = new CosProfilesBuilder().setProfile(Collections.singletonList(profile)).build();
 		InstanceIdentifier<CosProfiles> profilesTx = InstanceIdentifier.create(MefGlobal.class)
 				.child(CosProfiles.class);
 		LegatoUtils.addToOperationalDB(cosProfiles, profilesTx, dataBroker);
+		} catch (Exception ex) {
+			LOG.error("error: ", ex);
+		}
 	}
 
 	@Override

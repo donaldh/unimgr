@@ -70,10 +70,15 @@ public class LegatoBwpProfileController extends UnimgrDataTreeChangeListener<Pro
 	}
 
 	private void addToOperationalDB(Profile profile) {
+		try {
+			assert profile != null;
 		BwpFlowParameterProfiles bwpProfiles = new BwpFlowParameterProfilesBuilder().setProfile(Collections.singletonList(profile)).build();
 		InstanceIdentifier<BwpFlowParameterProfiles> profilesTx = InstanceIdentifier.create(MefGlobal.class)
 				.child(BwpFlowParameterProfiles.class);
 		LegatoUtils.addToOperationalDB(bwpProfiles, profilesTx, dataBroker);
+		} catch (Exception ex) {
+			LOG.error("error: ", ex);
+		}
 	}
 
 	@Override
