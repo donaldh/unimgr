@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.legato;
+package org.opendaylight.unimgr.mef.legato;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,10 +19,10 @@ import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
-import org.opendaylight.legato.util.LegatoConstants;
-import org.opendaylight.legato.util.LegatoUtils;
 
 import org.opendaylight.unimgr.api.UnimgrDataTreeChangeListener;
+import org.opendaylight.unimgr.mef.legato.util.LegatoConstants;
+import org.opendaylight.unimgr.mef.legato.util.LegatoUtils;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.legato.services.rev171215.MefServices;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.legato.services.rev171215.mef.services.CarrierEthernet;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.legato.services.rev171215.mef.services.carrier.ethernet.SubscriberServices;
