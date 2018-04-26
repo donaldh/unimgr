@@ -363,17 +363,24 @@ public class LegatoUtils {
         return Optional.absent();
     }
 
-    @SuppressWarnings("deprecation")
-    public static void deleteFromOperationalDB(InstanceIdentifier<?> nodeIdentifier, DataBroker dataBroker) {
-        WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
-        tx.delete(LogicalDatastoreType.OPERATIONAL, nodeIdentifier);
-
+      @SuppressWarnings("deprecation")
+      public static boolean deleteFromOperationalDB(InstanceIdentifier<?> nodeIdentifier,
+          DataBroker dataBroker) {
+        
+        LOG.info("Received a request to delete node {}", nodeIdentifier);
+        boolean result = false;
+    
+        final WriteTransaction transaction = dataBroker.newWriteOnlyTransaction();
+        transaction.delete(LogicalDatastoreType.OPERATIONAL, nodeIdentifier);
+    
         try {
-            tx.submit().checkedGet();
+          transaction.submit().checkedGet();
+          result = true;
         } catch (org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException e) {
-            LOG.error("Error in deleteFromOperationalDB(). Err: ", e);
+          LOG.error("Unable to remove node ", nodeIdentifier, e);
         }
-    }
+        return result;
+      }
 
     public static <T extends DataObject> void addToOperationalDB(T typeOfProfile, InstanceIdentifier<T> profilesTx,
             DataBroker dataBroker) {
