@@ -63,6 +63,8 @@ import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.connectivity
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.connectivity.rev171113.DeleteConnectivityServiceInput;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.connectivity.rev171113.DeleteConnectivityServiceInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.connectivity.rev171113.TapiConnectivityService;
+import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.connectivity.rev171113.UpdateConnectivityServiceInput;
+import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.connectivity.rev171113.UpdateConnectivityServiceOutput;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.powermock.api.mockito.PowerMockito;
@@ -169,31 +171,81 @@ public class EvcIntegrationTest {
           .child(Evc.class, new EvcKey(new EvcIdType(evc.getEvcId())));
 
       final Optional<Evc> optEvc = mock(Optional.class);
-      Evc evc = mock(Evc.class, Mockito.RETURNS_MOCKS);
       when(optEvc.isPresent()).thenReturn(true);
       when(optEvc.get()).thenReturn(evc);
 
-      when(dataBroker.newWriteOnlyTransaction()).thenReturn(transaction);
-      doNothing().when(transaction).put(any(LogicalDatastoreType.class),
-          any(InstanceIdentifier.class), any(Evc.class));
-      
       MemberModifier.suppress(MemberMatcher.method(LegatoUtils.class, Constants.READ_EVC, DataBroker.class, LogicalDatastoreType.class, InstanceIdentifier.class));
       when(LegatoUtils.readEvc(any(DataBroker.class), any(LogicalDatastoreType.class), evcKey)).thenReturn(optEvc);
       
       final List<Evc> evcList = new ArrayList<Evc>();
-      evcList.add(optEvc.get());
+      evcList.add(evc);
       InstanceIdentifier<SubscriberServices> EVC_IID_OPERATIONAL = InstanceIdentifier.builder(MefServices.class).child(CarrierEthernet.class)
               .child(SubscriberServices.class).build();
-     
-      verify(transaction).merge(LogicalDatastoreType.OPERATIONAL, EVC_IID_OPERATIONAL, new SubscriberServicesBuilder().setEvc(evcList).build());
+      
+      doNothing().when(transaction).put(any(LogicalDatastoreType.class),
+          any(InstanceIdentifier.class), any(Evc.class));
+      when(dataBroker.newWriteOnlyTransaction()).thenReturn(transaction);
+      assertEquals(true, UpdateEvcInOperationalDB(evc, EVC_IID_OPERATIONAL, dataBroker));
+      verify(transaction).put(any(LogicalDatastoreType.class), any(InstanceIdentifier.class), any(Evc.class));
       verify(transaction).submit();
-
+      
     } catch (Exception ex) {
     }
 
   }
   
   
+  @SuppressWarnings("unchecked")
+  @Test
+  public void updateEvc() throws InterruptedException, ExecutionException {
+    final Map<String, Object> evcMap = mock(Map.class);
+    MemberModifier.suppress(MemberMatcher.method(LegatoUtils.class, Constants.PARSE_NODES, Evc.class));
+    when(LegatoUtils.parseNodes(evc)).thenReturn(evcMap);
+
+    UpdateConnectivityServiceInput updateConnectivityServiceInput =  mock(UpdateConnectivityServiceInput.class);
+    assertEquals(true, callUpdateConnectionService(updateConnectivityServiceInput));
+    
+    InstanceIdentifier<?> evcKey = InstanceIdentifier.create(MefServices.class)
+        .child(CarrierEthernet.class).child(SubscriberServices.class)
+        .child(Evc.class, new EvcKey(new EvcIdType(evc.getEvcId())));
+
+    MemberModifier.suppress(MemberMatcher.method(LegatoUtils.class, Constants.READ_EVC, DataBroker.class, LogicalDatastoreType.class, InstanceIdentifier.class));
+    final Optional<Evc> optEvc = mock(Optional.class);
+    when(LegatoUtils.readEvc(any(DataBroker.class), any(LogicalDatastoreType.class), any(InstanceIdentifier.class))).thenReturn(optEvc);
+    when(optEvc.isPresent()).thenReturn(true);
+    when(optEvc.get()).thenReturn(evc);
+    
+    when(dataBroker.newWriteOnlyTransaction()).thenReturn(transaction);
+    doNothing().when(transaction).delete(any(LogicalDatastoreType.class),
+                                         any(InstanceIdentifier.class));
+    when(transaction.submit()).thenReturn(checkedFuture);
+    assertEquals(true, LegatoUtils.deleteFromOperationalDB(evcKey, dataBroker));
+    verify(transaction).delete(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
+    verify(transaction).submit();
+    
+    InstanceIdentifier<SubscriberServices> EVC_IID_OPERATIONAL = InstanceIdentifier.builder(MefServices.class).child(CarrierEthernet.class)
+        .child(SubscriberServices.class).build();
+    
+    WriteTransaction transaction2 = Mockito.mock(WriteTransaction.class);
+    when(dataBroker.newWriteOnlyTransaction()).thenReturn(transaction2);
+    doNothing().when(transaction2).put(any(LogicalDatastoreType.class), any(InstanceIdentifier.class), any(Evc.class));
+    when(transaction2.submit()).thenReturn(checkedFuture);
+    assertEquals(true, UpdateEvcInOperationalDB(evc, EVC_IID_OPERATIONAL, dataBroker));
+    verify(transaction2).put(any(LogicalDatastoreType.class), any(InstanceIdentifier.class), any(Evc.class));
+    verify(transaction2).submit();
+  }
+  
+    private boolean callUpdateConnectionService(
+        UpdateConnectivityServiceInput updateConnectivityServiceInput) {
+      try {
+        Future<RpcResult<UpdateConnectivityServiceOutput>> response =
+            this.prestoConnectivityService.updateConnectivityService(updateConnectivityServiceInput);
+        return true;
+  
+      } catch (Exception ex) {
+        return false;
+      }
+    }
   
   
   @SuppressWarnings({"unchecked", "rawtypes"})
@@ -241,6 +293,28 @@ public class EvcIntegrationTest {
       } catch (Exception ex) {
         return false;
       }
+    }
+    
+   
+    public static boolean UpdateEvcInOperationalDB(Evc evc,
+        InstanceIdentifier<SubscriberServices> nodeIdentifier, DataBroker dataBroker) {
+      
+      boolean result = false;
+  
+      List<Evc> evcList = new ArrayList<Evc>();
+      evcList.add(evc);
+  
+      final WriteTransaction transaction = dataBroker.newWriteOnlyTransaction();
+      transaction.put(LogicalDatastoreType.OPERATIONAL, nodeIdentifier,
+          new SubscriberServicesBuilder().setEvc(evcList).build());
+  
+      try {
+        transaction.submit().checkedGet();
+        result = true;
+      } catch (org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException e) {
+      }
+      return result;
+  
     }
 
 }
