@@ -5,6 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
+
 package org.opendaylight.unimgr.mef.legato.utils;
 
 import static org.junit.Assert.assertEquals;
@@ -55,42 +56,38 @@ import ch.qos.logback.core.Appender;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({LogicalDatastoreType.class, LegatoUtils.class, InstanceIdentifier.class})
 public class LegatoUtilsTest {
-  
-  @Rule
-  public final ExpectedException exception = ExpectedException.none();
-  @Mock private DataBroker dataBroker;
-  @Mock private WriteTransaction transaction;
-  
-  
-  @SuppressWarnings({ "rawtypes", "deprecation" })
-  @Mock private CheckedFuture checkedFuture;
-  @SuppressWarnings("rawtypes")
-  @Mock private Appender mockAppender;
-  @SuppressWarnings("unchecked")
-  private static final InstanceIdentifier<Evc> MOCK_EVC_IID = PowerMockito.mock(InstanceIdentifier.class);
-  private ch.qos.logback.classic.Logger root;
-  private static final EvcIdType EVC_NODE_ID = new EvcIdType("EVC1");
-  
-  
-  @SuppressWarnings("unchecked")
-  @Before
+
+    @Rule
+    public final ExpectedException exception = ExpectedException.none();
+    @Mock private DataBroker dataBroker;
+    @Mock private WriteTransaction transaction;
+
+
+    @SuppressWarnings({ "rawtypes", "deprecation" })
+    @Mock private CheckedFuture checkedFuture;
+    @SuppressWarnings("rawtypes")
+    @Mock private Appender mockAppender;
+    @SuppressWarnings("unchecked")
+    private static final InstanceIdentifier<Evc> MOCK_EVC_IID = PowerMockito.mock(InstanceIdentifier.class);
+    private ch.qos.logback.classic.Logger root;
+    private static final EvcIdType EVC_NODE_ID = new EvcIdType("EVC1");
+
+    @SuppressWarnings("unchecked")
+    @Before
     public void setUp() throws Exception {
         PowerMockito.mockStatic(LegatoUtils.class, Mockito.CALLS_REAL_METHODS);
         root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         when(mockAppender.getName()).thenReturn("MOCK");
         root.addAppender(mockAppender);
-  
     }
 
-  
     @SuppressWarnings({"unchecked", "deprecation"})
     @Test
     public void testReadEvc() throws ReadFailedException{
-  
         InstanceIdentifier<Evc> EVC_IID = InstanceIdentifier.create(MefServices.class)
             .child(CarrierEthernet.class).child(SubscriberServices.class)
             .child(Evc.class, new EvcKey(new EvcIdType(EVC_NODE_ID)));
-        
+
         ReadOnlyTransaction transaction = mock(ReadOnlyTransaction.class);
         when(dataBroker.newReadOnlyTransaction()).thenReturn(transaction);
         CheckedFuture<Optional<Evc>, ReadFailedException> nodeFuture = mock(CheckedFuture.class);
@@ -102,15 +99,14 @@ public class LegatoUtilsTest {
         assertNotNull(expectedOpt);
         assertEquals(expectedOpt, optNode);
     }
-    
-    
+
     @SuppressWarnings({"unchecked", "deprecation"})
     @Test
     public void testReadProfiles() throws ReadFailedException {
-       
+
         InstanceIdentifier<Profile> PROFILE_ID = InstanceIdentifier.create(MefGlobal.class)
             .child(SlsProfiles.class).child(Profile.class, new ProfileKey(new Identifier1024("1")));
-    
+
         ReadOnlyTransaction transaction = mock(ReadOnlyTransaction.class);
         when(dataBroker.newReadOnlyTransaction()).thenReturn(transaction);
         CheckedFuture<Optional<Profile>, ReadFailedException> nodeFuture = mock(CheckedFuture.class);
@@ -122,7 +118,7 @@ public class LegatoUtilsTest {
         verify(transaction).read(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
         assertNotNull(expectedOpt);
         assertEquals(expectedOpt, optNode);
-      
+
     }
-    
+
 }

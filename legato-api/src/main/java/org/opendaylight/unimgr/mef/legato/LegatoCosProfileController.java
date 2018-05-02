@@ -48,7 +48,6 @@ public class LegatoCosProfileController extends UnimgrDataTreeChangeListener<Pro
         LOG.info("Initializing LegatoSlsProfileController:init() ");
         dataTreeChangeListenerRegistration = dataBroker.registerDataTreeChangeListener(
                 new DataTreeIdentifier<Profile>(LogicalDatastoreType.CONFIGURATION, PROFILE_IID), this);
-
     }
 
     @Override
@@ -63,9 +62,7 @@ public class LegatoCosProfileController extends UnimgrDataTreeChangeListener<Pro
         if (newDataObject.getRootNode() != null && newDataObject.getRootPath() != null) {
             LOG.info("  Node Added  " + newDataObject.getRootNode().getIdentifier());
             addToOperationalDB(newDataObject.getRootNode().getDataAfter());
-
         }
-
     }
 
     public void addToOperationalDB(Profile profile) {
@@ -96,7 +93,6 @@ public class LegatoCosProfileController extends UnimgrDataTreeChangeListener<Pro
                 LOG.error("error: ", ex);
             }
         }
-
     }
 
     @Override
@@ -120,8 +116,7 @@ public class LegatoCosProfileController extends UnimgrDataTreeChangeListener<Pro
             } catch (Exception ex) {
                 LOG.error("error: ", ex);
             }
-
         }
-
     }
+
 }

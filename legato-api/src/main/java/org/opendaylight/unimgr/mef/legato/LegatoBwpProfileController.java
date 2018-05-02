@@ -56,7 +56,6 @@ public class LegatoBwpProfileController extends UnimgrDataTreeChangeListener<Pro
         if (dataTreeChangeListenerRegistration != null) {
             dataTreeChangeListenerRegistration.close();
         }
-
     }
 
     @Override
@@ -64,9 +63,7 @@ public class LegatoBwpProfileController extends UnimgrDataTreeChangeListener<Pro
         if (newDataObject.getRootNode() != null && newDataObject.getRootPath() != null) {
             LOG.info("  Node Added  " + newDataObject.getRootNode().getIdentifier());
             addToOperationalDB(newDataObject.getRootNode().getDataAfter());
-
         }
-
     }
 
     private void addToOperationalDB(Profile profile) {
@@ -95,7 +92,6 @@ public class LegatoBwpProfileController extends UnimgrDataTreeChangeListener<Pro
         }
     }
 
-    
 
     @Override
     public void update(DataTreeModification<Profile> modifiedDataObject) {
@@ -120,6 +116,5 @@ public class LegatoBwpProfileController extends UnimgrDataTreeChangeListener<Pro
             }
         }
     }
-
     
 }

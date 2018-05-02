@@ -5,6 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
+
 package org.opendaylight.unimgr.mef.legato.global.l2cp;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -37,97 +38,96 @@ import org.powermock.modules.junit4.PowerMockRunner;
  */
 @RunWith(PowerMockRunner.class)
 public class LegatoL2cpEecProfileImplTest {
-  
-  private LegatoL2cpEecController legatoL2cpEecController;
-  
-  @Before
-  public void setUp() throws Exception {
-    legatoL2cpEecController = mock(LegatoL2cpEecController.class, Mockito.CALLS_REAL_METHODS);
-  }
-  
-  @SuppressWarnings("unchecked")
-  @Test
-  public void testL2cpEecDataTreeChangeListener() {
-      Collection<DataTreeModification<Profile>> collection = new ArrayList<DataTreeModification<Profile>>();
-      DataTreeModification<Profile> evc = getDataTree(ModificationType.WRITE);
-      collection.add(evc);
-      evc = getDataTree(ModificationType.DELETE);
-      collection.add(evc);
-      evc = getDataTree(ModificationType.SUBTREE_MODIFIED);
-      collection.add(evc);
-      legatoL2cpEecController.onDataTreeChanged(collection);
-      verify(legatoL2cpEecController, times(1)).add(any(DataTreeModification.class));
-      verify(legatoL2cpEecController, times(1)).remove(any(DataTreeModification.class));
-      verify(legatoL2cpEecController, times(1)).update(any(DataTreeModification.class));
-  }
-  
-  
-  private DataTreeModification<Profile> getDataTree(final ModificationType modificationType) {
-    final DataObjectModification<Profile> evcDataObjModification = new DataObjectModification<Profile>() {
-        @Override
-        public Collection<DataObjectModification<? extends DataObject>> getModifiedChildren() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-        @Override
-        public <C extends Identifiable<K> & ChildOf<? super Profile>, K extends Identifier<C>> DataObjectModification<C> getModifiedChildListItem(
-                Class<C> arg0, K arg1) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-        @Override
-        public <C extends ChildOf<? super Profile>> DataObjectModification<C> getModifiedChildContainer(Class<C> arg0) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-        @Override
-        public DataObjectModification<? extends DataObject> getModifiedChild(PathArgument arg0) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-        @Override
-        public <C extends Augmentation<Profile> & DataObject> DataObjectModification<C> getModifiedAugmentation(
-                Class<C> arg0) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-        @Override
-        public ModificationType getModificationType() {
-            return modificationType;
-        }
-        @Override
-        public PathArgument getIdentifier() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-        @Override
-        public Class<Profile> getDataType() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-        @Override
-        public Profile getDataBefore() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-        @Override
-        public Profile getDataAfter() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-    };
-    DataTreeModification<Profile> modifiedEvc = new DataTreeModification<Profile>() {
-        @Override
-        public DataTreeIdentifier<Profile> getRootPath() {
-            return null;
-        }
-        @Override
-        public DataObjectModification<Profile> getRootNode() {
-            return evcDataObjModification;
-        }
-    };
-    return modifiedEvc;
-}
-  
+
+    private LegatoL2cpEecController legatoL2cpEecController;
+
+    @Before
+    public void setUp() throws Exception {
+        legatoL2cpEecController = mock(LegatoL2cpEecController.class, Mockito.CALLS_REAL_METHODS);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testL2cpEecDataTreeChangeListener() {
+        Collection<DataTreeModification<Profile>> collection = new ArrayList<DataTreeModification<Profile>>();
+        DataTreeModification<Profile> evc = getDataTree(ModificationType.WRITE);
+        collection.add(evc);
+        evc = getDataTree(ModificationType.DELETE);
+        collection.add(evc);
+        evc = getDataTree(ModificationType.SUBTREE_MODIFIED);
+        collection.add(evc);
+        legatoL2cpEecController.onDataTreeChanged(collection);
+        verify(legatoL2cpEecController, times(1)).add(any(DataTreeModification.class));
+        verify(legatoL2cpEecController, times(1)).remove(any(DataTreeModification.class));
+        verify(legatoL2cpEecController, times(1)).update(any(DataTreeModification.class));
+    }
+
+
+    private DataTreeModification<Profile> getDataTree(final ModificationType modificationType) {
+        final DataObjectModification<Profile> evcDataObjModification = new DataObjectModification<Profile>() {
+            @Override
+            public Collection<DataObjectModification<? extends DataObject>> getModifiedChildren() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+            @Override
+            public <C extends Identifiable<K> & ChildOf<? super Profile>, K extends Identifier<C>> DataObjectModification<C> getModifiedChildListItem(
+                    Class<C> arg0, K arg1) {
+                // TODO Auto-generated method stub
+                return null;
+            }
+            @Override
+            public <C extends ChildOf<? super Profile>> DataObjectModification<C> getModifiedChildContainer(Class<C> arg0) {
+                // TODO Auto-generated method stub
+                return null;
+            }
+            @Override
+            public DataObjectModification<? extends DataObject> getModifiedChild(PathArgument arg0) {
+                // TODO Auto-generated method stub
+                return null;
+            }
+            @Override
+            public <C extends Augmentation<Profile> & DataObject> DataObjectModification<C> getModifiedAugmentation(
+                    Class<C> arg0) {
+                // TODO Auto-generated method stub
+                return null;
+            }
+            @Override
+            public ModificationType getModificationType() {
+                return modificationType;
+            }
+            @Override
+            public PathArgument getIdentifier() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+            @Override
+            public Class<Profile> getDataType() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+            @Override
+            public Profile getDataBefore() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+            @Override
+            public Profile getDataAfter() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+        };
+        DataTreeModification<Profile> modifiedEvc = new DataTreeModification<Profile>() {
+            @Override
+            public DataTreeIdentifier<Profile> getRootPath() {
+                return null;
+            }
+            @Override
+            public DataObjectModification<Profile> getRootNode() {
+                return evcDataObjModification;
+            }
+        };
+        return modifiedEvc;
+    }
 
 }

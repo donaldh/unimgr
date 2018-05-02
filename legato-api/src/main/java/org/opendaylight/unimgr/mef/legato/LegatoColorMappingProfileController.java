@@ -66,10 +66,9 @@ public class LegatoColorMappingProfileController extends UnimgrDataTreeChangeLis
         if (newDataObject.getRootNode() != null && newDataObject.getRootPath() != null) {
             LOG.info("  Node Added  " + newDataObject.getRootNode().getIdentifier());
             addToOperationalDB(newDataObject.getRootNode().getDataAfter());
-
         }
     }
-    
+
     private void addToOperationalDB(Profile profile) {
         try {
             assert profile != null;
@@ -80,7 +79,6 @@ public class LegatoColorMappingProfileController extends UnimgrDataTreeChangeLis
         } catch (Exception ex) {
             LOG.error("error: ", ex);
         }
-
     }
 
 
