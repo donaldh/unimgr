@@ -58,7 +58,6 @@ public class LegatoEecProfileController extends UnimgrDataTreeChangeListener<Pro
         if (dataTreeChangeListenerRegistration != null) {
             dataTreeChangeListenerRegistration.close();
         }
-
     }
 
     @Override
@@ -68,7 +67,6 @@ public class LegatoEecProfileController extends UnimgrDataTreeChangeListener<Pro
             addToOperationalDB(newDataObject.getRootNode().getDataAfter());
 
         }
-
     }
 
     private void addToOperationalDB(Profile profile) {
@@ -98,7 +96,6 @@ public class LegatoEecProfileController extends UnimgrDataTreeChangeListener<Pro
                 LOG.error("error: ", ex);
             }
         }
-
     }
 
     @Override
@@ -122,7 +119,6 @@ public class LegatoEecProfileController extends UnimgrDataTreeChangeListener<Pro
                 LOG.error("error: ", ex);
             }
         }
-
     }
 
 }

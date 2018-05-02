@@ -5,6 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
+
 package org.opendaylight.unimgr.mef.legato;
 
 import java.util.Collections;
@@ -59,8 +60,8 @@ private static final Logger LOG = LoggerFactory.getLogger(LegatoL2cpPeeringContr
                 new DataTreeIdentifier<Profile>(LogicalDatastoreType.CONFIGURATION, PROFILE_ID), this);
 
     }
-    
-    
+
+
 
     @Override
     public void add(DataTreeModification<Profile> newDataObject) {
@@ -71,8 +72,8 @@ private static final Logger LOG = LoggerFactory.getLogger(LegatoL2cpPeeringContr
         }
         
     }
-    
-    
+
+
     /* Add node in Operational DB*/
     private void addToOperationalDB(Profile profileObj) {
 
@@ -89,8 +90,8 @@ private static final Logger LOG = LoggerFactory.getLogger(LegatoL2cpPeeringContr
         LOG.info(" ********** END addNode() ****************** ");
 
     }
-    
-    
+
+
     /* Update node in Operational DB*/
     @SuppressWarnings("unchecked")
     @Override
@@ -120,8 +121,8 @@ private static final Logger LOG = LoggerFactory.getLogger(LegatoL2cpPeeringContr
         }
         
     }
-    
-    
+
+
     /* Delete node in Operational DB*/
     @Override
     public void remove(DataTreeModification<Profile> removedDataObject) {
@@ -140,8 +141,8 @@ private static final Logger LOG = LoggerFactory.getLogger(LegatoL2cpPeeringContr
         }
         
     }
-    
-    
+
+
     @Override
     public void close() throws Exception {
         if (dataTreeChangeListenerRegistration != null) {

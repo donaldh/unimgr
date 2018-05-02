@@ -5,6 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
+
 package org.opendaylight.unimgr.mef.legato.evc;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -40,36 +41,36 @@ import org.slf4j.LoggerFactory;
 @RunWith(PowerMockRunner.class)
 public class EvcDataTreeChangeListenerTest {
 
-  private LegatoServiceController legatoServiceController;
-  
-  private static final Logger LOG = LoggerFactory
+    private LegatoServiceController legatoServiceController;
+
+    private static final Logger LOG = LoggerFactory
       .getLogger(EvcDataTreeChangeListenerTest.class);
 
-  @Before
-  public void setUp() throws Exception {
-    legatoServiceController = mock(LegatoServiceController.class, Mockito.CALLS_REAL_METHODS);
-  }
+    @Before
+    public void setUp() throws Exception {
+        legatoServiceController = mock(LegatoServiceController.class, Mockito.CALLS_REAL_METHODS);
+    }
 
-  @SuppressWarnings("unchecked")
-  @Test
-  public void testEvcServiceDataTreeChangeListener() {
-    LOG.info("in side testEvcServiceDataTreeChangeListener() ");
-    
-    Collection<DataTreeModification<Evc>> collection = new ArrayList<DataTreeModification<Evc>>();
-    DataTreeModification<Evc> evc = getDataTree(ModificationType.WRITE);
-    collection.add(evc);
-    evc = getDataTree(ModificationType.DELETE);
-    collection.add(evc);
-    evc = getDataTree(ModificationType.SUBTREE_MODIFIED);
-    collection.add(evc);
-    legatoServiceController.onDataTreeChanged(collection);
-    verify(legatoServiceController, times(1)).add(any(DataTreeModification.class));
-    verify(legatoServiceController, times(1)).remove(any(DataTreeModification.class));
-    verify(legatoServiceController, times(1)).update(any(DataTreeModification.class));
-  }
-  
-  
-  private DataTreeModification<Evc> getDataTree(final ModificationType modificationType) {
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testEvcServiceDataTreeChangeListener() {
+        LOG.info("in side testEvcServiceDataTreeChangeListener() ");
+
+        Collection<DataTreeModification<Evc>> collection = new ArrayList<DataTreeModification<Evc>>();
+        DataTreeModification<Evc> evc = getDataTree(ModificationType.WRITE);
+        collection.add(evc);
+        evc = getDataTree(ModificationType.DELETE);
+        collection.add(evc);
+        evc = getDataTree(ModificationType.SUBTREE_MODIFIED);
+        collection.add(evc);
+        legatoServiceController.onDataTreeChanged(collection);
+        verify(legatoServiceController, times(1)).add(any(DataTreeModification.class));
+        verify(legatoServiceController, times(1)).remove(any(DataTreeModification.class));
+        verify(legatoServiceController, times(1)).update(any(DataTreeModification.class));
+    }
+
+
+    private DataTreeModification<Evc> getDataTree(final ModificationType modificationType) {
     final DataObjectModification<Evc> evcDataObjModification = new DataObjectModification<Evc>() {
         @Override
         public Collection<DataObjectModification<? extends DataObject>> getModifiedChildren() {
@@ -132,8 +133,8 @@ public class EvcDataTreeChangeListenerTest {
         public DataObjectModification<Evc> getRootNode() {
             return evcDataObjModification;
         }
-    };
+        };
     return modifiedEvc;
-}
+    }
 
 }

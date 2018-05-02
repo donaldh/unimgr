@@ -274,7 +274,7 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
 
         LOG.info(" ********** END deleteConnection() ****************** ");
     }
-        
+
     private void callCreateConnectionService(
             CreateConnectivityServiceInput createConnServiceInput, String evcId) {
         try {
@@ -368,7 +368,7 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
             return false;
         }
     }
-    
+
     private void UpdateEvcOnOperationalDB(Evc evc) {
         List<Evc> evcList = new ArrayList<Evc>();
         evcList.add(evc);
@@ -382,7 +382,6 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
         } catch (org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException e) {
             LOG.error("Error in UpdateEvcOnOperationalDB(). Err: ", e);
         }
-
     }
 
 }

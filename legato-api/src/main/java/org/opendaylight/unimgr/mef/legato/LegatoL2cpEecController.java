@@ -5,6 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
+
 package org.opendaylight.unimgr.mef.legato;
 
 import java.util.Collections;
@@ -43,9 +44,8 @@ public class LegatoL2cpEecController  extends UnimgrDataTreeChangeListener<Profi
     private static final InstanceIdentifier<L2cpEecProfiles> L2CP_EEC_PROFILES_ID_OPERATIONAL = InstanceIdentifier
             .builder(MefGlobal.class).child(L2cpEecProfiles.class).build();
             
-    
+
     private ListenerRegistration<LegatoL2cpEecController> dataTreeChangeListenerRegistration;
-    
 
     public LegatoL2cpEecController(DataBroker dataBroker) {
         super(dataBroker);
@@ -59,8 +59,7 @@ public class LegatoL2cpEecController  extends UnimgrDataTreeChangeListener<Profi
                 new DataTreeIdentifier<Profile>(LogicalDatastoreType.CONFIGURATION, PROFILE_ID), this);
 
     }
-    
-    
+
     @Override
     public void add(DataTreeModification<Profile> newDataObject) {
         if(newDataObject.getRootNode() != null && newDataObject.getRootPath() != null ){
@@ -69,7 +68,7 @@ public class LegatoL2cpEecController  extends UnimgrDataTreeChangeListener<Profi
             addToOperationalDB(newDataObject.getRootNode().getDataAfter());
         }
     }
-    
+
     /* Add node in Operational DB*/
     private void addToOperationalDB(Profile profileObj) {
 
@@ -85,10 +84,9 @@ public class LegatoL2cpEecController  extends UnimgrDataTreeChangeListener<Profi
             LOG.error("Error in addNode(). Err: ", e);
         }
         LOG.info(" ********** END addNode() ****************** ");
-
     }
-    
-    
+
+
     /* Update node in Operational DB*/
     @SuppressWarnings("unchecked")
     @Override
@@ -97,7 +95,7 @@ public class LegatoL2cpEecController  extends UnimgrDataTreeChangeListener<Profi
             LOG.info( "ClassName :: LegatoL2cpEecController, Method:: update(), Message:: Node modified  " + modifiedDataObject.getRootNode().getIdentifier());
 
             Profile profile = modifiedDataObject.getRootNode().getDataAfter();
-            
+
             try {
                 assert profile != null;
                 Optional<Profile> OptionalProfile = (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.l2CP_EEC_PROFILES, dataBroker, LogicalDatastoreType.CONFIGURATION,
@@ -117,14 +115,14 @@ public class LegatoL2cpEecController  extends UnimgrDataTreeChangeListener<Profi
             }
         }
     }
-    
+
 
     /* Delete node in Operational DB*/
     @Override
     public void remove(DataTreeModification<Profile> removedDataObject) {
         if (removedDataObject.getRootNode() != null && removedDataObject.getRootPath() != null) {
             LOG.info( "ClassName :: LegatoL2cpEecController, Method:: remove(), Message:: Node removed  " + removedDataObject.getRootNode().getIdentifier());
-            
+
             Profile profileObj = removedDataObject.getRootNode().getDataBefore();
             try {
                 assert profileObj != null;
@@ -135,9 +133,9 @@ public class LegatoL2cpEecController  extends UnimgrDataTreeChangeListener<Profi
                 LOG.error("error: ", ex);
             }
         }
-        
     }
-    
+
+
 
     @Override
     public void close() throws Exception {
