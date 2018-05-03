@@ -8,9 +8,7 @@
 package org.opendaylight.unimgr.mef.legato.util;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -18,6 +16,7 @@ import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
+import org.opendaylight.unimgr.mef.legato.dao.EVCDao;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.common.types.rev171221.ColorMode;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.common.types.rev171221.NaturalNumber;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.common.types.rev171221.PositiveInteger;
@@ -69,8 +68,8 @@ import com.google.common.util.concurrent.CheckedFuture;
 public class LegatoUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(LegatoUtils.class);
-
-    public static final Map<String, Object> parseNodes(Evc evc) {
+    private static final EVCDao evcDao = new EVCDao();
+   /* public static final Map<String, Object> parseNodes(Evc evc) {
         Map<String, Object> evcMap;
         List<String> uniList;
         String vlanId;
@@ -99,8 +98,35 @@ public class LegatoUtils {
         evcMap.put(LegatoConstants.EVC_CON_TYPE,
                 (evc.getConnectionType().getName() != null) ? evc.getConnectionType().getName() : "");
         evcMap.put(LegatoConstants.EVC_UNI_LIST, uniList);
-
+        
         return evcMap;
+    }*/
+
+    public static final EVCDao getEVCDao(){
+        return evcDao;
+    }
+
+    public static final void parseNodes(Evc evc) {
+        List<String> uniList = new ArrayList<String>();
+        String vlanId;
+
+        assert evc != null;
+        uniList = new ArrayList<String>();
+        assert evc.getEndPoints().getEndPoint() != null && evc.getEndPoints().getEndPoint().size() > 0;
+        for (EndPoint endPoint : evc.getEndPoints().getEndPoint()) {
+            vlanId = "";
+            assert endPoint.getCeVlans().getCeVlan() != null;
+            for (VlanIdType vlanIdType : endPoint.getCeVlans().getCeVlan()) {
+                vlanId = vlanIdType.getValue().toString();
+            }
+
+            uniList.add(endPoint.getUniId().getValue().toString() + "#" + vlanId);
+        }
+        
+        evcDao.setEvcId(evc.getEvcId().getValue());
+        evcDao.setMaxFrameSize((evc.getMaxFrameSize().getValue() != null) ? evc.getMaxFrameSize().getValue() : 0);
+        evcDao.setConnectionType((evc.getConnectionType().getName() != null) ? evc.getConnectionType().getName() : "");
+        evcDao.setUniList(uniList);
     }
 
     public static final EndPoint2 buildCreateEthConnectivityEndPointAugmentation(String vlanId) {
@@ -165,12 +191,11 @@ public class LegatoUtils {
                 .setMaxFrameSize(new PositiveInteger(Long.parseLong(maxFrameSize))).build();
     }
 
-    public static final CreateConnectivityServiceInput buildCreateConnectivityServiceInput(Map<String, Object> evcMap,
-            String connType) {
+    public static final CreateConnectivityServiceInput buildCreateConnectivityServiceInput(EVCDao evcDao, String connType) {
 
         CreateConnectivityServiceInputBuilder createConnServiceInputBuilder = new CreateConnectivityServiceInputBuilder();
         List<org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.connectivity.rev171113.create.connectivity.service.input.EndPoint> endpointList;
-        List<String> uniList = new ArrayList<String>();
+        List<String> uniList = evcDao.getUniList();
         List<LayerProtocol> layerList = new ArrayList<LayerProtocol>();
 
         switch (connType.replace("-", "").toUpperCase()) {
@@ -190,8 +215,6 @@ public class LegatoUtils {
 
         layerList.add(new LayerProtocolBuilder().setLocalId("eth").setLayerProtocolName(ETH.class).build());
 
-        uniList = (List<String>) evcMap.get(LegatoConstants.EVC_UNI_LIST);
-
         // build end points
         assert uniList != null && uniList.size() > 0;
         endpointList = buildCreateEndpoints(uniList, layerList);
@@ -199,12 +222,12 @@ public class LegatoUtils {
         createConnServiceInputBuilder.setEndPoint(endpointList);
 
         createConnServiceInputBuilder.addAugmentation(CreateConnectivityServiceInput1.class,
-                LegatoUtils.buildCreateConServiceAugmentation(evcMap.get(LegatoConstants.EVC_MAX_FRAME).toString()));
+                LegatoUtils.buildCreateConServiceAugmentation(evcDao.getMaxFrameSize().toString()));
 
         return createConnServiceInputBuilder.build();
     }
 
-    public static final UpdateConnectivityServiceInput buildUpdateConnectivityServiceInput(Map<String, Object> evcMap,
+    public static final UpdateConnectivityServiceInput buildUpdateConnectivityServiceInput(EVCDao evcDao,
             String uniStr, String uuid, String connType) {
 
         UpdateConnectivityServiceInputBuilder updateConnServiceInputBuilder = new UpdateConnectivityServiceInputBuilder();
@@ -231,7 +254,7 @@ public class LegatoUtils {
 
         updateConnServiceInputBuilder.setEndPoint(buildUpdateEndpoints(uniStr, layerList));
         updateConnServiceInputBuilder.addAugmentation(UpdateConnectivityServiceInput1.class,
-                LegatoUtils.buildUpdateConServiceAugmentation(evcMap.get(LegatoConstants.EVC_MAX_FRAME).toString()));
+                LegatoUtils.buildUpdateConServiceAugmentation(evcDao.getMaxFrameSize().toString()));
         updateConnServiceInputBuilder.setServiceIdOrName(uuid);
 
         return updateConnServiceInputBuilder.build();

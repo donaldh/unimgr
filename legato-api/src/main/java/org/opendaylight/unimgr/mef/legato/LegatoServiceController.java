@@ -21,7 +21,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 
 import org.opendaylight.unimgr.api.UnimgrDataTreeChangeListener;
-import org.opendaylight.unimgr.mef.legato.util.LegatoConstants;
+import org.opendaylight.unimgr.mef.legato.dao.EVCDao;
 import org.opendaylight.unimgr.mef.legato.util.LegatoUtils;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.legato.services.rev171215.MefServices;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.legato.services.rev171215.mef.services.CarrierEthernet;
@@ -146,7 +146,7 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
 
         try {
             assert evc != null;
-            createConnection(LegatoUtils.parseNodes(evc));
+            createConnection(evc);
 
         } catch (Exception ex) {
             LOG.error("error: ", ex);
@@ -161,7 +161,7 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
 
         try {
             assert evc != null;
-            updateConnection(LegatoUtils.parseNodes(evc));
+            updateConnection(evc);
 
         } catch (Exception ex) {
             LOG.error("error: ", ex);
@@ -186,17 +186,19 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
 
     }
 
-    private void createConnection(Map<String, Object> evcMap) {
+    private void createConnection(Evc evc) {
         LOG.info("inside createConnection()");
 
         try {
-            assert evcMap != null
-                    && evcMap.get(LegatoConstants.EVC_UNI_LIST) != null && evcMap.get("EVC_CON_TYPE") != null;
-
-            LOG.info(" connection-type :{} ", evcMap.get("EVC_CON_TYPE"));
+            LegatoUtils.parseNodes(evc);
+            EVCDao evcDao =  LegatoUtils.getEVCDao();
+            assert evcDao != null 
+                    && evcDao.getUniList() != null && evcDao.getConnectionType() != null;
+            LOG.info(" connection-type :{} ", evcDao.getConnectionType());
+            
             callCreateConnectionService(
-                        LegatoUtils.buildCreateConnectivityServiceInput(evcMap, evcMap.get("EVC_CON_TYPE").toString()),
-                        evcMap.get(LegatoConstants.EVC_ID).toString());
+                        LegatoUtils.buildCreateConnectivityServiceInput(evcDao, evcDao.getConnectionType()),
+                        evcDao.getEvcId());
             
         } catch (Exception ex) {
 
@@ -205,36 +207,34 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
 
     }
     
-    private void updateConnection(Map<String, Object> evcMap) {
+    private void updateConnection(Evc evc) {
         LOG.info("inside updateConnection()");
 
         try {
-            assert evcMap != null
-                    && evcMap.get(LegatoConstants.EVC_UNI_LIST) != null && evcMap.get("EVC_CON_TYPE") != null;
-            LOG.info(" connection-type :{} ", evcMap.get("EVC_CON_TYPE"));
+            LegatoUtils.parseNodes(evc);
+            EVCDao evcDao =  LegatoUtils.getEVCDao();
+            assert evcDao != null
+                    && evcDao.getUniList() != null && evcDao.getConnectionType() != null;
+            LOG.info(" connection-type :{} ", evcDao.getConnectionType());
 
-                if (EVC_UUIDMap.containsKey(evcMap.get(LegatoConstants.EVC_ID))) {
+                if (EVC_UUIDMap.containsKey(evcDao.getEvcId())) {
                     LOG.info(
                             "Update UUID: {} of EVC Id: {} ",
-                            EVC_UUIDMap.get(evcMap.get(LegatoConstants.EVC_ID)),
-                            evcMap.get(LegatoConstants.EVC_ID));
+                            EVC_UUIDMap.get(evcDao.getEvcId()),
+                            evcDao.getEvcId());
 
-                    List<String> uniList = (List<String>) evcMap
-                            .get(LegatoConstants.EVC_UNI_LIST);
-
+                    List<String> uniList = evcDao.getUniList();
                     assert uniList != null && uniList.size() > 0;
 
                     for (String uniStr : uniList) {
                         callUpdateConnectionService(
                                 LegatoUtils.buildUpdateConnectivityServiceInput(
-                                        evcMap, uniStr, EVC_UUIDMap.get(evcMap
-                                                .get(LegatoConstants.EVC_ID)
-                                                .toString()), evcMap.get("EVC_CON_TYPE").toString()),
-                                evcMap.get(LegatoConstants.EVC_ID).toString());
+                                        evcDao, uniStr, EVC_UUIDMap.get(evcDao.getEvcId()), evcDao.getConnectionType()),
+                                                evcDao.getEvcId());
                     }
                 } else {
                     LOG.info("UUID does not exists for EVC Id : {}",
-                            evcMap.get(LegatoConstants.EVC_ID));
+                            evcDao.getEvcId());
                 }
         } catch (Exception ex) {
 

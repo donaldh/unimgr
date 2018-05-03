@@ -150,7 +150,7 @@ public class EvcIntegrationTest {
     }
 
 
-    @SuppressWarnings("unchecked")
+   /* @SuppressWarnings("unchecked")
     @Test
     public void createEvc() throws InterruptedException, ExecutionException,
         TransactionCommitFailedException, ResourceActivatorException {
@@ -279,7 +279,7 @@ public class EvcIntegrationTest {
         }));
 
     }
-
+*/
     private boolean callDeleteConnectionService(
         DeleteConnectivityServiceInput deleteConnectivityServiceInput) {
       try {
