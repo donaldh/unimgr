@@ -69,39 +69,7 @@ public class LegatoUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(LegatoUtils.class);
     private static final EVCDao evcDao = new EVCDao();
-   /* public static final Map<String, Object> parseNodes(Evc evc) {
-        Map<String, Object> evcMap;
-        List<String> uniList;
-        String vlanId;
-
-        assert evc != null;
-
-        uniList = new ArrayList<String>();
-        evcMap = new HashMap<String, Object>();
-
-        assert evc.getEndPoints().getEndPoint() != null && evc.getEndPoints().getEndPoint().size() > 0;
-        for (EndPoint endPoint : evc.getEndPoints().getEndPoint()) {
-            vlanId = "";
-            assert endPoint.getCeVlans().getCeVlan() != null;
-            for (VlanIdType vlanIdType : endPoint.getCeVlans().getCeVlan()) {
-                vlanId = vlanIdType.getValue().toString();
-            }
-
-            uniList.add(endPoint.getUniId().getValue().toString() + "#" + vlanId);
-
-        }
-
-        evcMap.put(LegatoConstants.EVC_ID, evc.getEvcId().getValue());
-        evcMap.put(LegatoConstants.EVC_MAX_FRAME,
-                (evc.getMaxFrameSize().getValue() != null) ? evc.getMaxFrameSize().getValue() : "");
-        evcMap.put(LegatoConstants.EVC_STATUS, (evc.getStatus() != null) ? evc.getStatus() : "");
-        evcMap.put(LegatoConstants.EVC_CON_TYPE,
-                (evc.getConnectionType().getName() != null) ? evc.getConnectionType().getName() : "");
-        evcMap.put(LegatoConstants.EVC_UNI_LIST, uniList);
-        
-        return evcMap;
-    }*/
-
+   
     public static final EVCDao getEVCDao(){
         return evcDao;
     }
