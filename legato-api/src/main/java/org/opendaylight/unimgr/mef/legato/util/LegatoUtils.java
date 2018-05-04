@@ -17,42 +17,32 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.unimgr.mef.legato.dao.EVCDao;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.common.types.rev171221.ColorMode;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.common.types.rev171221.NaturalNumber;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.common.types.rev171221.PositiveInteger;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.common.types.rev180321.ColorMode;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.common.types.rev180321.NaturalNumber;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.common.types.rev180321.PositiveInteger;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.legato.services.rev171215.mef.services.carrier.ethernet.subscriber.services.Evc;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.legato.services.rev171215.mef.services.carrier.ethernet.subscriber.services.evc.end.points.EndPoint;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.types.rev171215.VlanIdType;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.nrm.connectivity.rev171221.carrier.eth.connectivity.end.point.resource.CeVlanIdListAndUntagBuilder;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.nrm.connectivity.rev171221.carrier.eth.connectivity.end.point.resource.IngressBwpFlow;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.nrm.connectivity.rev171221.carrier.eth.connectivity.end.point.resource.IngressBwpFlowBuilder;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.nrm.connectivity.rev171221.vlan.id.list.and.untag.VlanId;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.nrm.connectivity.rev171221.vlan.id.list.and.untag.VlanIdBuilder;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev171221.CreateConnectivityServiceInput1;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev171221.CreateConnectivityServiceInput1Builder;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev171221.EndPoint2;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev171221.EndPoint2Builder;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev171221.EndPoint7;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev171221.EndPoint7Builder;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev171221.UpdateConnectivityServiceInput1;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev171221.UpdateConnectivityServiceInput1Builder;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev171221.nrp.connectivity.service.attrs.NrpCarrierEthConnectivityResource;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev171221.nrp.connectivity.service.attrs.NrpCarrierEthConnectivityResourceBuilder;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev171221.nrp.connectivity.service.end.point.attrs.NrpCarrierEthConnectivityEndPointResource;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev171221.nrp.connectivity.service.end.point.attrs.NrpCarrierEthConnectivityEndPointResourceBuilder;
-import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.common.rev171113.ETH;
-import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.common.rev171113.PortDirection;
-import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.common.rev171113.PortRole;
-import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.common.rev171113.Uuid;
-import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.connectivity.rev171113.CreateConnectivityServiceInput;
-import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.connectivity.rev171113.CreateConnectivityServiceInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.connectivity.rev171113.ServiceType;
-import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.connectivity.rev171113.UpdateConnectivityServiceInput;
-import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.connectivity.rev171113.UpdateConnectivityServiceInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.connectivity.rev171113.connectivity.service.end.point.LayerProtocol;
-import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.connectivity.rev171113.connectivity.service.end.point.LayerProtocolBuilder;
-import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.connectivity.rev171113.create.connectivity.service.input.ConnConstraintBuilder;
-import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.connectivity.rev171113.create.connectivity.service.input.EndPointBuilder;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.nrm.connectivity.rev180321.carrier.eth.connectivity.end.point.resource.CeVlanIdListAndUntagBuilder;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.nrm.connectivity.rev180321.carrier.eth.connectivity.end.point.resource.IngressBwpFlow;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.nrm.connectivity.rev180321.carrier.eth.connectivity.end.point.resource.IngressBwpFlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.nrm.connectivity.rev180321.vlan.id.list.and.untag.VlanId;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.nrm.connectivity.rev180321.vlan.id.list.and.untag.VlanIdBuilder;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev180321.*;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev180321.nrp.connectivity.service.attrs.NrpCarrierEthConnectivityResource;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev180321.nrp.connectivity.service.attrs.NrpCarrierEthConnectivityResourceBuilder;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev180321.nrp.connectivity.service.end.point.attrs.NrpCarrierEthConnectivityEndPointResource;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev180321.nrp.connectivity.service.end.point.attrs.NrpCarrierEthConnectivityEndPointResourceBuilder;
+import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.common.rev180307.*;
+import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.CreateConnectivityServiceInput;
+import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.CreateConnectivityServiceInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.ServiceType;
+import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.UpdateConnectivityServiceInput;
+import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.UpdateConnectivityServiceInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.connectivity.service.end.point.ServiceInterfacePoint;
+import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.connectivity.service.end.point.ServiceInterfacePointBuilder;
+import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.create.connectivity.service.input.ConnConstraintBuilder;
+import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.create.connectivity.service.input.EndPointBuilder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -69,7 +59,7 @@ public class LegatoUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(LegatoUtils.class);
 
-    public static final EVCDao parseNodes(Evc evc) {
+    public static EVCDao parseNodes(Evc evc) {
         List<String> uniList = new ArrayList<String>();
         String vlanId;
         EVCDao evcDao = new EVCDao();
@@ -94,37 +84,35 @@ public class LegatoUtils {
         return evcDao;
     }
 
-    public static final EndPoint2 buildCreateEthConnectivityEndPointAugmentation(String vlanId) {
+    public static EndPoint2 buildCreateEthConnectivityEndPointAugmentation(String vlanId) {
         return new EndPoint2Builder()
                 .setNrpCarrierEthConnectivityEndPointResource(buildNrpCarrierEthConnectivityEndPointResource(vlanId))
                 .build();
     }
 
-    public static final EndPoint7 buildUpdateEthConnectivityEndPointAugmentation(String vlanId) {
+    public static EndPoint7 buildUpdateEthConnectivityEndPointAugmentation(String vlanId) {
         return new EndPoint7Builder()
                 .setNrpCarrierEthConnectivityEndPointResource(buildNrpCarrierEthConnectivityEndPointResource(vlanId))
                 .build();
     }
 
-    public static final CreateConnectivityServiceInput1 buildCreateConServiceAugmentation(String maxFrameSize) {
-        CreateConnectivityServiceInput1 createConServiceAugmentation = new CreateConnectivityServiceInput1Builder()
+    public static CreateConnectivityServiceInput1 buildCreateConServiceAugmentation(String maxFrameSize) {
+        return new CreateConnectivityServiceInput1Builder()
                 .setNrpCarrierEthConnectivityResource(buildNrpCarrierEthConnectivityResource(maxFrameSize)).build();
-        return createConServiceAugmentation;
     }
 
-    public static final UpdateConnectivityServiceInput1 buildUpdateConServiceAugmentation(String maxFrameSize) {
-        UpdateConnectivityServiceInput1 updateConServiceAugmentation = new UpdateConnectivityServiceInput1Builder()
+    public static UpdateConnectivityServiceInput1 buildUpdateConServiceAugmentation(String maxFrameSize) {
+        return new UpdateConnectivityServiceInput1Builder()
                 .setNrpCarrierEthConnectivityResource(buildNrpCarrierEthConnectivityResource(maxFrameSize)).build();
-        return updateConServiceAugmentation;
     }
 
-    public static final NrpCarrierEthConnectivityEndPointResource buildNrpCarrierEthConnectivityEndPointResource(
+    public static NrpCarrierEthConnectivityEndPointResource buildNrpCarrierEthConnectivityEndPointResource(
             String vlanId) {
 
         NrpCarrierEthConnectivityEndPointResourceBuilder nrpCarrierEthConnectivityEndPointResourceBuilder = new NrpCarrierEthConnectivityEndPointResourceBuilder();
 
         CeVlanIdListAndUntagBuilder ceVlanIdListAndUntagBuilder = new CeVlanIdListAndUntagBuilder();
-        List<VlanId> vlanList = new ArrayList<VlanId>();
+        List<VlanId> vlanList = new ArrayList<>();
         VlanIdBuilder vlanIdBuilder = new VlanIdBuilder().setVlanId(new PositiveInteger(Long.parseLong(vlanId)));
         vlanList.add(vlanIdBuilder.build());
 
@@ -137,7 +125,7 @@ public class LegatoUtils {
 
     }
 
-    public static final IngressBwpFlow buildIngressBwFlow() {
+    public static IngressBwpFlow buildIngressBwFlow() {
         IngressBwpFlowBuilder ingressBwpFlowBuilder = new IngressBwpFlowBuilder()
                 .setRank(new PositiveInteger(LegatoConstants.LONG_VAL))
                 .setCir(new NaturalNumber(LegatoConstants.LONG_VAL))
@@ -150,18 +138,17 @@ public class LegatoUtils {
         return ingressBwpFlowBuilder.build();
     }
 
-    public static final NrpCarrierEthConnectivityResource buildNrpCarrierEthConnectivityResource(String maxFrameSize) {
+    public static NrpCarrierEthConnectivityResource buildNrpCarrierEthConnectivityResource(String maxFrameSize) {
         NrpCarrierEthConnectivityResourceBuilder nrpCarrierEthConnectivityResourceBuilder = new NrpCarrierEthConnectivityResourceBuilder();
         return nrpCarrierEthConnectivityResourceBuilder
                 .setMaxFrameSize(new PositiveInteger(Long.parseLong(maxFrameSize))).build();
     }
 
-    public static final CreateConnectivityServiceInput buildCreateConnectivityServiceInput(EVCDao evcDao, String connType) {
+    public static CreateConnectivityServiceInput buildCreateConnectivityServiceInput(EVCDao evcDao, String connType) {
 
         CreateConnectivityServiceInputBuilder createConnServiceInputBuilder = new CreateConnectivityServiceInputBuilder();
-        List<org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.connectivity.rev171113.create.connectivity.service.input.EndPoint> endpointList;
+        List<org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.create.connectivity.service.input.EndPoint> endpointList;
         List<String> uniList = evcDao.getUniList();
-        List<LayerProtocol> layerList = new ArrayList<LayerProtocol>();
 
         switch (connType.replace("-", "").toUpperCase()) {
         case LegatoConstants.POINTTOPOINT:
@@ -178,11 +165,10 @@ public class LegatoUtils {
             break;
         }
 
-        layerList.add(new LayerProtocolBuilder().setLocalId("eth").setLayerProtocolName(ETH.class).build());
 
         // build end points
         assert uniList != null && uniList.size() > 0;
-        endpointList = buildCreateEndpoints(uniList, layerList);
+        endpointList = buildCreateEndpoints(uniList, LayerProtocolName.ETH);
 
         createConnServiceInputBuilder.setEndPoint(endpointList);
 
@@ -192,22 +178,21 @@ public class LegatoUtils {
         return createConnServiceInputBuilder.build();
     }
 
-    public static final UpdateConnectivityServiceInput buildUpdateConnectivityServiceInput(EVCDao evcDao,
+    public static UpdateConnectivityServiceInput buildUpdateConnectivityServiceInput(EVCDao evcDao,
             String uniStr, String uuid, String connType) {
 
         UpdateConnectivityServiceInputBuilder updateConnServiceInputBuilder = new UpdateConnectivityServiceInputBuilder();
-        List<LayerProtocol> layerList = new ArrayList<LayerProtocol>();
 
         switch (connType.replace("-", "").toUpperCase()) {
         case LegatoConstants.POINTTOPOINT:
             updateConnServiceInputBuilder.setConnConstraint(
-                    new org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.connectivity.rev171113.update.connectivity.service.input.ConnConstraintBuilder()
+                    new org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.update.connectivity.service.input.ConnConstraintBuilder()
                             .setServiceLevel(LegatoConstants.BEST_EFFORT)
                             .setServiceType(ServiceType.POINTTOPOINTCONNECTIVITY).build());
             break;
         case LegatoConstants.MULTIPOINTTOMULTIPOINT:
             updateConnServiceInputBuilder.setConnConstraint(
-                    new org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.connectivity.rev171113.update.connectivity.service.input.ConnConstraintBuilder()
+                    new org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.update.connectivity.service.input.ConnConstraintBuilder()
                             .setServiceLevel(LegatoConstants.BEST_EFFORT)
                             .setServiceType(ServiceType.MULTIPOINTCONNECTIVITY).build());
             break;
@@ -215,9 +200,7 @@ public class LegatoUtils {
             break;
         }
 
-        layerList.add(new LayerProtocolBuilder().setLocalId("eth").setLayerProtocolName(ETH.class).build());
-
-        updateConnServiceInputBuilder.setEndPoint(buildUpdateEndpoints(uniStr, layerList));
+        updateConnServiceInputBuilder.setEndPoint(buildUpdateEndpoints(uniStr, LayerProtocolName.ETH));
         updateConnServiceInputBuilder.addAugmentation(UpdateConnectivityServiceInput1.class,
                 LegatoUtils.buildUpdateConServiceAugmentation(evcDao.getMaxFrameSize().toString()));
         updateConnServiceInputBuilder.setServiceIdOrName(uuid);
@@ -225,18 +208,23 @@ public class LegatoUtils {
         return updateConnServiceInputBuilder.build();
     }
 
-    private static List<org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.connectivity.rev171113.create.connectivity.service.input.EndPoint> buildCreateEndpoints(
-            List<String> uniList, List<LayerProtocol> layerList) {
-        List<org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.connectivity.rev171113.create.connectivity.service.input.EndPoint> endpointList = new ArrayList<org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.connectivity.rev171113.create.connectivity.service.input.EndPoint>();
+    private static List<org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.create.connectivity.service.input.EndPoint> buildCreateEndpoints(
+            List<String> uniList, LayerProtocolName layerProtocolName) {
+        List<org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.create.connectivity.service.input.EndPoint> endpointList = new ArrayList<org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.create.connectivity.service.input.EndPoint>();
 
         EndPointBuilder endPointBuilder;
         String[] uniArr;
 
         for (String uniStr : uniList) {
             uniArr = uniStr.split("#");
+
+            ServiceInterfacePoint sipRef = new ServiceInterfacePointBuilder()
+                    .setServiceInterfacePointId(new Uuid(uniArr[0])).build();
+
             endPointBuilder = new EndPointBuilder().setRole(PortRole.SYMMETRIC).setLocalId("e:" + uniArr[0])
-                    .setServiceInterfacePoint(new Uuid(uniArr[0])).setDirection(PortDirection.BIDIRECTIONAL)
-                    .setLayerProtocol(layerList).addAugmentation(EndPoint2.class,
+                    .setServiceInterfacePoint(sipRef).setDirection(PortDirection.BIDIRECTIONAL)
+                    .setLayerProtocolName(layerProtocolName)
+                    .addAugmentation(EndPoint2.class,
                             LegatoUtils.buildCreateEthConnectivityEndPointAugmentation(uniArr[1]));
 
             endpointList.add(endPointBuilder.build());
@@ -248,16 +236,19 @@ public class LegatoUtils {
         return endpointList;
     }
 
-    private static org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.connectivity.rev171113.update.connectivity.service.input.EndPoint buildUpdateEndpoints(
-            String uniStr, List<LayerProtocol> layerList) {
-        org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.connectivity.rev171113.update.connectivity.service.input.EndPointBuilder endPointBuilder = new org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.connectivity.rev171113.update.connectivity.service.input.EndPointBuilder();
+    private static org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.update.connectivity.service.input.EndPoint buildUpdateEndpoints(
+            String uniStr, LayerProtocolName layerProtocolName) {
+        org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.update.connectivity.service.input.EndPointBuilder endPointBuilder = new org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.update.connectivity.service.input.EndPointBuilder();
         String[] uniArr;
 
         if (StringUtils.isNotBlank(uniStr)) {
             uniArr = uniStr.split("#");
+            ServiceInterfacePoint sipRef = new ServiceInterfacePointBuilder()
+                    .setServiceInterfacePointId(new Uuid(uniArr[0])).build();
             endPointBuilder.setRole(PortRole.SYMMETRIC).setLocalId("e:" + uniArr[0])
-                    .setServiceInterfacePoint(new Uuid(uniArr[0])).setDirection(PortDirection.BIDIRECTIONAL)
-                    .setLayerProtocol(layerList).addAugmentation(EndPoint7.class,
+                    .setServiceInterfacePoint(sipRef).setDirection(PortDirection.BIDIRECTIONAL)
+                    .setLayerProtocolName(layerProtocolName)
+                    .addAugmentation(EndPoint7.class,
                             LegatoUtils.buildUpdateEthConnectivityEndPointAugmentation(uniArr[1]));
         }
 
@@ -266,7 +257,7 @@ public class LegatoUtils {
         return endPointBuilder.build();
     }
 
-    public static final Optional<Evc> readEvc(DataBroker dataBroker, LogicalDatastoreType store,
+    public static Optional<Evc> readEvc(DataBroker dataBroker, LogicalDatastoreType store,
             InstanceIdentifier<?> evcNode) {
         final ReadTransaction read = dataBroker.newReadOnlyTransaction();
         final InstanceIdentifier<Evc> evcId = evcNode.firstIdentifierOf(Evc.class);
