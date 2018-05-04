@@ -34,6 +34,7 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.unimgr.mef.legato.LegatoServiceController;
+import org.opendaylight.unimgr.mef.legato.dao.EVCDao;
 import org.opendaylight.unimgr.mef.legato.util.LegatoUtils;
 import org.opendaylight.unimgr.mef.legato.utils.Constants;
 import org.opendaylight.unimgr.mef.nrp.common.ResourceActivatorException;
@@ -150,17 +151,17 @@ public class EvcIntegrationTest {
     }
 
 
-   /* @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     @Test
     public void createEvc() throws InterruptedException, ExecutionException,
         TransactionCommitFailedException, ResourceActivatorException {
 
         try {
           assertNotNull(evc);
-          Map<String, Object> evcMap = LegatoUtils.parseNodes(evc);
+          EVCDao evcDao = LegatoUtils.parseNodes(evc);
 
           Future<RpcResult<CreateConnectivityServiceOutput>> result = this.prestoConnectivityService.createConnectivityService(LegatoUtils
-                  .buildCreateConnectivityServiceInput(evcMap, evcMap.get(Constants.EVC_CON_TYPE).toString()));
+                  .buildCreateConnectivityServiceInput(evcDao, evcDao.getConnectionType()));
           assertTrue(result.get().isSuccessful());
 
           InstanceIdentifier<?> evcKey = InstanceIdentifier.create(MefServices.class)
@@ -191,7 +192,7 @@ public class EvcIntegrationTest {
 
     }
 
-
+/*
     @SuppressWarnings("unchecked")
     @Test
     public void updateEvc() throws InterruptedException, ExecutionException {

@@ -68,15 +68,11 @@ import com.google.common.util.concurrent.CheckedFuture;
 public class LegatoUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(LegatoUtils.class);
-    private static final EVCDao evcDao = new EVCDao();
-   
-    public static final EVCDao getEVCDao(){
-        return evcDao;
-    }
 
-    public static final void parseNodes(Evc evc) {
+    public static final EVCDao parseNodes(Evc evc) {
         List<String> uniList = new ArrayList<String>();
         String vlanId;
+        EVCDao evcDao = new EVCDao();
 
         assert evc != null;
         uniList = new ArrayList<String>();
@@ -95,6 +91,7 @@ public class LegatoUtils {
         evcDao.setMaxFrameSize((evc.getMaxFrameSize().getValue() != null) ? evc.getMaxFrameSize().getValue() : 0);
         evcDao.setConnectionType((evc.getConnectionType().getName() != null) ? evc.getConnectionType().getName() : "");
         evcDao.setUniList(uniList);
+        return evcDao;
     }
 
     public static final EndPoint2 buildCreateEthConnectivityEndPointAugmentation(String vlanId) {

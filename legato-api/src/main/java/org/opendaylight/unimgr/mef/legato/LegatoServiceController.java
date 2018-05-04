@@ -190,8 +190,7 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
         LOG.info("inside createConnection()");
 
         try {
-            LegatoUtils.parseNodes(evc);
-            EVCDao evcDao =  LegatoUtils.getEVCDao();
+            EVCDao evcDao =  LegatoUtils.parseNodes(evc);
             assert evcDao != null 
                     && evcDao.getUniList() != null && evcDao.getConnectionType() != null;
             LOG.info(" connection-type :{} ", evcDao.getConnectionType());
@@ -211,8 +210,7 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
         LOG.info("inside updateConnection()");
 
         try {
-            LegatoUtils.parseNodes(evc);
-            EVCDao evcDao =  LegatoUtils.getEVCDao();
+            EVCDao evcDao =  LegatoUtils.parseNodes(evc);
             assert evcDao != null
                     && evcDao.getUniList() != null && evcDao.getConnectionType() != null;
             LOG.info(" connection-type :{} ", evcDao.getConnectionType());
