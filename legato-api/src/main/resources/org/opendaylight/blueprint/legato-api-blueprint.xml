@@ -11,7 +11,7 @@
 
    <reference id="dataBroker" interface="org.opendaylight.controller.md.sal.binding.api.DataBroker" />
   
-   <odl:rpc-service id="prestoConnectivityService" interface="org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.tapi.connectivity.rev171113.TapiConnectivityService" />
+   <odl:rpc-service id="prestoConnectivityService" interface="org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.TapiConnectivityService" />
  
    <bean id="mef-services" class="org.opendaylight.unimgr.mef.legato.LegatoServiceController" destroy-method="close">
    		<argument ref="dataBroker" />
@@ -21,7 +21,6 @@
    <bean id="mef-sls-profile" class="org.opendaylight.unimgr.mef.legato.LegatoSlsProfileController">
        <argument ref="dataBroker" />
    </bean>
-
 
 	<bean id="mef-cos-profile" class="org.opendaylight.unimgr.mef.legato.LegatoCosProfileController">
        <argument ref="dataBroker" />

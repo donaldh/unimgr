@@ -119,23 +119,8 @@ public class LegatoUtils {
         ceVlanIdListAndUntagBuilder.setVlanId(vlanList);
 
         nrpCarrierEthConnectivityEndPointResourceBuilder.setCeVlanIdListAndUntag(ceVlanIdListAndUntagBuilder.build());
-        nrpCarrierEthConnectivityEndPointResourceBuilder.setIngressBwpFlow(buildIngressBwFlow());
 
         return nrpCarrierEthConnectivityEndPointResourceBuilder.build();
-
-    }
-
-    public static IngressBwpFlow buildIngressBwFlow() {
-        IngressBwpFlowBuilder ingressBwpFlowBuilder = new IngressBwpFlowBuilder()
-                .setRank(new PositiveInteger(LegatoConstants.LONG_VAL))
-                .setCir(new NaturalNumber(LegatoConstants.LONG_VAL))
-                .setCirMax(new NaturalNumber(LegatoConstants.LONG_VAL))
-                .setCbs(new NaturalNumber(LegatoConstants.LONG_VAL)).setEir(new NaturalNumber(LegatoConstants.LONG_VAL))
-                .setEirMax(new NaturalNumber(LegatoConstants.LONG_VAL))
-                .setEbs(new NaturalNumber(LegatoConstants.LONG_VAL)).setCouplingFlag(true)
-                .setColorMode(ColorMode.COLORAWARE).setTokenRequestOffset(new NaturalNumber(LegatoConstants.LONG_VAL));
-
-        return ingressBwpFlowBuilder.build();
     }
 
     public static NrpCarrierEthConnectivityResource buildNrpCarrierEthConnectivityResource(String maxFrameSize) {
