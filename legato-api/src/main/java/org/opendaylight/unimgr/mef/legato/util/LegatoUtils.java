@@ -20,6 +20,8 @@ import org.opendaylight.unimgr.mef.legato.dao.EVCDao;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.common.types.rev180321.ColorMode;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.common.types.rev180321.NaturalNumber;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.common.types.rev180321.PositiveInteger;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.legato.services.rev171215.mef.services.carrier.ethernet.SubscriberServices;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.legato.services.rev171215.mef.services.carrier.ethernet.SubscriberServicesBuilder;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.legato.services.rev171215.mef.services.carrier.ethernet.subscriber.services.Evc;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.legato.services.rev171215.mef.services.carrier.ethernet.subscriber.services.evc.end.points.EndPoint;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.types.rev171215.VlanIdType;
@@ -327,27 +329,27 @@ public class LegatoUtils {
         return Optional.absent();
     }
 
-      @SuppressWarnings("deprecation")
-      public static boolean deleteFromOperationalDB(InstanceIdentifier<?> nodeIdentifier,
-          DataBroker dataBroker) {
-        
+    @SuppressWarnings("deprecation")
+    public static boolean deleteFromOperationalDB(InstanceIdentifier<?> nodeIdentifier,
+            DataBroker dataBroker) {
+
         LOG.info("Received a request to delete node {}", nodeIdentifier);
         boolean result = false;
-    
+
         final WriteTransaction transaction = dataBroker.newWriteOnlyTransaction();
         transaction.delete(LogicalDatastoreType.OPERATIONAL, nodeIdentifier);
-    
+
         try {
-          transaction.submit().checkedGet();
-          result = true;
+            transaction.submit().checkedGet();
+            result = true;
         } catch (org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException e) {
-          LOG.error("Unable to remove node ", nodeIdentifier, e);
+            LOG.error("Unable to remove node ", nodeIdentifier, e);
         }
         return result;
-      }
+    }
 
-    public static <T extends DataObject> void addToOperationalDB(T typeOfProfile, InstanceIdentifier<T> profilesTx,
-            DataBroker dataBroker) {
+    public static <T extends DataObject> void addToOperationalDB(T typeOfProfile,
+            InstanceIdentifier<T> profilesTx, DataBroker dataBroker) {
         WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
         tx.merge(LogicalDatastoreType.OPERATIONAL, profilesTx, typeOfProfile);
         try {
@@ -355,6 +357,28 @@ public class LegatoUtils {
         } catch (org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException e) {
             LOG.error("Error in adding data to OperationalDB(). Err: ", e);
         }
+
+    }
+    
+    @SuppressWarnings("deprecation")
+    public static boolean updateEvcInOperationalDB(Evc evc,
+            InstanceIdentifier<SubscriberServices> nodeIdentifier, DataBroker dataBroker) {
+
+        boolean result = false;
+
+        List<Evc> evcList = new ArrayList<Evc>();
+        evcList.add(evc);
+
+        final WriteTransaction transaction = dataBroker.newWriteOnlyTransaction();
+        transaction.put(LogicalDatastoreType.OPERATIONAL, nodeIdentifier,
+                new SubscriberServicesBuilder().setEvc(evcList).build());
+
+        try {
+            transaction.submit().checkedGet();
+            result = true;
+        } catch (org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException e) {
+        }
+        return result;
 
     }
 
