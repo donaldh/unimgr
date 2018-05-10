@@ -117,7 +117,7 @@ public class LegatoL2cpEecProfileImplTest {
                 return null;
             }
         };
-        DataTreeModification<Profile> modifiedEvc = new DataTreeModification<Profile>() {
+        DataTreeModification<Profile> modifiedPro = new DataTreeModification<Profile>() {
             @Override
             public DataTreeIdentifier<Profile> getRootPath() {
                 return null;
@@ -127,7 +127,7 @@ public class LegatoL2cpEecProfileImplTest {
                 return evcDataObjModification;
             }
         };
-        return modifiedEvc;
+        return modifiedPro;
     }
 
 }

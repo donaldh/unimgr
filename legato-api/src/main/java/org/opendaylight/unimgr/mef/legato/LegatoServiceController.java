@@ -8,7 +8,6 @@
 
 package org.opendaylight.unimgr.mef.legato;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,36 +15,29 @@ import java.util.concurrent.Future;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
-
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.unimgr.api.UnimgrDataTreeChangeListener;
 import org.opendaylight.unimgr.mef.legato.dao.EVCDao;
 import org.opendaylight.unimgr.mef.legato.util.LegatoUtils;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.legato.services.rev171215.MefServices;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.legato.services.rev171215.mef.services.CarrierEthernet;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.legato.services.rev171215.mef.services.carrier.ethernet.SubscriberServices;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.legato.services.rev171215.mef.services.carrier.ethernet.SubscriberServicesBuilder;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.legato.services.rev171215.mef.services.carrier.ethernet.subscriber.services.Evc;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.legato.services.rev171215.mef.services.carrier.ethernet.subscriber.services.EvcKey;
-
+import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.types.rev171215.EvcIdType;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.CreateConnectivityServiceInput;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.CreateConnectivityServiceOutput;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.DeleteConnectivityServiceInput;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.DeleteConnectivityServiceInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.TapiConnectivityService;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.UpdateConnectivityServiceInput;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.UpdateConnectivityServiceOutput;
-import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.TapiConnectivityService;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.types.rev171215.EvcIdType;
-
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Optional;
 
 /**
@@ -302,7 +294,7 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
 
                 // Add Node in OPERATIONAL DB
                 if (OptionalEvc.isPresent()) {
-                    UpdateEvcOnOperationalDB(OptionalEvc.get());
+                    LegatoUtils.updateEvcInOperationalDB(OptionalEvc.get(), EVC_IID_OPERATIONAL,  dataBroker);
                 }
 
             } else
@@ -342,7 +334,7 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
                             .child(SubscriberServices.class)
                             .child(Evc.class, new EvcKey(new EvcIdType(evcId))), dataBroker);
 
-                    UpdateEvcOnOperationalDB(OptionalEvc.get());
+                    LegatoUtils.updateEvcInOperationalDB(OptionalEvc.get(), EVC_IID_OPERATIONAL,  dataBroker);
                 }
 
             } else
@@ -366,20 +358,4 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
             return false;
         }
     }
-
-    private void UpdateEvcOnOperationalDB(Evc evc) {
-        List<Evc> evcList = new ArrayList<Evc>();
-        evcList.add(evc);
-
-        WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
-        tx.merge(LogicalDatastoreType.OPERATIONAL, EVC_IID_OPERATIONAL,
-                new SubscriberServicesBuilder().setEvc(evcList).build());
-
-        try {
-            tx.submit().checkedGet();
-        } catch (org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException e) {
-            LOG.error("Error in UpdateEvcOnOperationalDB(). Err: ", e);
-        }
-    }
-
 }

@@ -115,7 +115,7 @@ public class LegatoBwpProfileImplTest {
                 return null;
             }
         };
-        DataTreeModification<Profile> modifiedEvc = new DataTreeModification<Profile>() {
+        DataTreeModification<Profile> modifiedPro = new DataTreeModification<Profile>() {
             @Override
             public DataTreeIdentifier<Profile> getRootPath() {
                 return null;
@@ -126,7 +126,7 @@ public class LegatoBwpProfileImplTest {
             }
         };
 
-        return modifiedEvc;
+        return modifiedPro;
     }
 
 }
