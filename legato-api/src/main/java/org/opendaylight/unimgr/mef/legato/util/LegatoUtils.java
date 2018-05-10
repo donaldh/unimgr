@@ -17,15 +17,11 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.unimgr.mef.legato.dao.EVCDao;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.common.types.rev180321.ColorMode;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.common.types.rev180321.NaturalNumber;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.common.types.rev180321.PositiveInteger;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.legato.services.rev171215.mef.services.carrier.ethernet.subscriber.services.Evc;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.legato.services.rev171215.mef.services.carrier.ethernet.subscriber.services.evc.end.points.EndPoint;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.types.rev171215.VlanIdType;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.nrm.connectivity.rev180321.carrier.eth.connectivity.end.point.resource.CeVlanIdListAndUntagBuilder;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.nrm.connectivity.rev180321.carrier.eth.connectivity.end.point.resource.IngressBwpFlow;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.nrm.connectivity.rev180321.carrier.eth.connectivity.end.point.resource.IngressBwpFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.nrm.connectivity.rev180321.vlan.id.list.and.untag.VlanId;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.nrm.connectivity.rev180321.vlan.id.list.and.untag.VlanIdBuilder;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev180321.*;
@@ -68,7 +64,7 @@ public class LegatoUtils {
         uniList = new ArrayList<String>();
         assert evc.getEndPoints().getEndPoint() != null && evc.getEndPoints().getEndPoint().size() > 0;
         for (EndPoint endPoint : evc.getEndPoints().getEndPoint()) {
-            vlanId = "";
+            vlanId = "0";
             assert endPoint.getCeVlans().getCeVlan() != null;
             for (VlanIdType vlanIdType : endPoint.getCeVlans().getCeVlan()) {
                 vlanId = vlanIdType.getValue().toString();
@@ -110,14 +106,14 @@ public class LegatoUtils {
             String vlanId) {
 
         NrpCarrierEthConnectivityEndPointResourceBuilder nrpCarrierEthConnectivityEndPointResourceBuilder = new NrpCarrierEthConnectivityEndPointResourceBuilder();
-
+        
         CeVlanIdListAndUntagBuilder ceVlanIdListAndUntagBuilder = new CeVlanIdListAndUntagBuilder();
         List<VlanId> vlanList = new ArrayList<>();
-        VlanIdBuilder vlanIdBuilder = new VlanIdBuilder().setVlanId(new PositiveInteger(Long.parseLong(vlanId)));
-        vlanList.add(vlanIdBuilder.build());
-
+        if(Integer.parseInt(vlanId) > 0){
+            VlanIdBuilder vlanIdBuilder = new VlanIdBuilder().setVlanId(new PositiveInteger(Long.parseLong(vlanId)));
+            vlanList.add(vlanIdBuilder.build());
+        }    
         ceVlanIdListAndUntagBuilder.setVlanId(vlanList);
-
         nrpCarrierEthConnectivityEndPointResourceBuilder.setCeVlanIdListAndUntag(ceVlanIdListAndUntagBuilder.build());
 
         return nrpCarrierEthConnectivityEndPointResourceBuilder.build();
@@ -202,7 +198,7 @@ public class LegatoUtils {
 
         for (String uniStr : uniList) {
             uniArr = uniStr.split("#");
-
+            
             ServiceInterfacePoint sipRef = new ServiceInterfacePointBuilder()
                     .setServiceInterfacePointId(new Uuid(uniArr[0])).build();
 
