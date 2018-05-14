@@ -9,7 +9,6 @@
 package org.opendaylight.unimgr.mef.legato;
 
 import java.util.Collections;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
@@ -26,7 +25,6 @@ import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Optional;
 
 /**
@@ -46,8 +44,9 @@ public class LegatoBwpProfileController extends UnimgrDataTreeChangeListener<Pro
 
     private void registerListener() {
         LOG.info("Initializing LegatoSlsProfileController:init() ");
-        dataTreeChangeListenerRegistration = dataBroker.registerDataTreeChangeListener(
-                new DataTreeIdentifier<Profile>(LogicalDatastoreType.CONFIGURATION, BWP_PROFILE_IID), this);
+        dataTreeChangeListenerRegistration =
+                dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<Profile>(
+                        LogicalDatastoreType.CONFIGURATION, BWP_PROFILE_IID), this);
 
     }
 
@@ -66,13 +65,14 @@ public class LegatoBwpProfileController extends UnimgrDataTreeChangeListener<Pro
         }
     }
 
-    private void addToOperationalDB(Profile profile) {
+    public void addToOperationalDB(Profile profile) {
         try {
             assert profile != null;
-        BwpFlowParameterProfiles bwpProfiles = new BwpFlowParameterProfilesBuilder().setProfile(Collections.singletonList(profile)).build();
-        InstanceIdentifier<BwpFlowParameterProfiles> profilesTx = InstanceIdentifier.create(MefGlobal.class)
-                .child(BwpFlowParameterProfiles.class);
-        LegatoUtils.addToOperationalDB(bwpProfiles, profilesTx, dataBroker);
+            BwpFlowParameterProfiles bwpProfiles = new BwpFlowParameterProfilesBuilder()
+                    .setProfile(Collections.singletonList(profile)).build();
+            InstanceIdentifier<BwpFlowParameterProfiles> profilesTx = InstanceIdentifier
+                    .create(MefGlobal.class).child(BwpFlowParameterProfiles.class);
+            LegatoUtils.addToOperationalDB(bwpProfiles, profilesTx, dataBroker);
         } catch (Exception ex) {
             LOG.error("error: ", ex);
         }
@@ -84,11 +84,23 @@ public class LegatoBwpProfileController extends UnimgrDataTreeChangeListener<Pro
             LOG.info("  Node removed  " + removedDataObject.getRootNode().getIdentifier());
             try {
                 assert removedDataObject.getRootNode().getDataBefore() != null;
-                LegatoUtils.deleteFromOperationalDB(InstanceIdentifier.create(MefGlobal.class).child(BwpFlowParameterProfiles.class)
-                        .child(Profile.class, new ProfileKey(removedDataObject.getRootNode().getDataBefore().getId())),dataBroker);
+                deleteFromOperationalDB(removedDataObject.getRootNode().getDataBefore());
             } catch (Exception ex) {
                 LOG.error("error: ", ex);
             }
+        }
+    }
+
+    public void deleteFromOperationalDB(Profile profile) {
+        try {
+            assert profile != null;
+            LegatoUtils.deleteFromOperationalDB(
+                    InstanceIdentifier.create(MefGlobal.class).child(BwpFlowParameterProfiles.class)
+                            .child(Profile.class, new ProfileKey(profile.getId())),
+                    dataBroker);
+
+        } catch (Exception ex) {
+            LOG.error("error: ", ex);
         }
     }
 
@@ -99,22 +111,31 @@ public class LegatoBwpProfileController extends UnimgrDataTreeChangeListener<Pro
 
         if (modifiedDataObject.getRootNode() != null && modifiedDataObject.getRootPath() != null) {
             LOG.info("  Node modified  " + modifiedDataObject.getRootNode().getIdentifier());
-            
+
             try {
                 assert modifiedDataObject.getRootNode().getDataAfter() != null;
-
-                InstanceIdentifier<Profile> instanceIdentifier = InstanceIdentifier.create(MefGlobal.class)
-                        .child(BwpFlowParameterProfiles.class).child(Profile.class, new ProfileKey(modifiedDataObject.getRootNode().getDataAfter().getId()));
-                Optional<Profile> OptionalProfile = (Optional<Profile>) LegatoUtils.readProfile(
-                        LegatoConstants.BWP_PROFILES, dataBroker, LogicalDatastoreType.CONFIGURATION, instanceIdentifier);
-                if (OptionalProfile.isPresent()) {
-                    LegatoUtils.deleteFromOperationalDB(instanceIdentifier,dataBroker);
-                    addToOperationalDB(OptionalProfile.get());
-                }
+                updateFromOperationalDB(modifiedDataObject.getRootNode().getDataAfter());
             } catch (Exception ex) {
                 LOG.error("error: ", ex);
             }
         }
     }
-    
+
+
+    @SuppressWarnings("unchecked")
+    public void updateFromOperationalDB(Profile profile) {
+        assert profile != null;
+        InstanceIdentifier<Profile> instanceIdentifier =
+                InstanceIdentifier.create(MefGlobal.class).child(BwpFlowParameterProfiles.class)
+                        .child(Profile.class, new ProfileKey(profile.getId()));
+        Optional<Profile> OptionalProfile =
+                (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.BWP_PROFILES,
+                        dataBroker, LogicalDatastoreType.CONFIGURATION, instanceIdentifier);
+        if (OptionalProfile.isPresent()) {
+            LegatoUtils.deleteFromOperationalDB(instanceIdentifier, dataBroker);
+            addToOperationalDB(OptionalProfile.get());
+        }
+
+    }
+
 }

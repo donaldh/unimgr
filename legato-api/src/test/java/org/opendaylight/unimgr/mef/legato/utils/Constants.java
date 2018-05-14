@@ -18,6 +18,7 @@ public class Constants {
     public static final String EVC_ID = "EVC_ID";
     public static final String EVC_UNI = "EVC_UNI_LIST";
     public static final String EVC_CON_TYPE = "POINTTOPOINT";
+    public static final String SLS_PROFILES = "SLS_PROFILES";
     public static final String COSNAME = "EVPL";
     public static final String UNI_ID1 = "sip:ovs-node:s1:s1-eth1";
     public static final String UNI_ID2 = "sip:ovs-node:s2:s2-eth1";
@@ -36,4 +37,5 @@ public class Constants {
     public static final String UPDATE_CON_SERVICE_AUGMENTATION = "buildUpdateConServiceAugmentation";
     public static final int MAXFRAME_SIZE_TYPE = 1522;
     public static final int VLAN_ID_TYPE = 301;
+    public static final String ONE = "1";
 }
