@@ -51,7 +51,6 @@ import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev180321.nrp.co
 import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev180321.nrp.connectivity.service.end.point.attrs.NrpCarrierEthConnectivityEndPointResource;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.CreateConnectivityServiceInput;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.UpdateConnectivityServiceInput;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.api.support.membermodification.MemberMatcher;
@@ -95,16 +94,16 @@ public class LegatoUtilsTest {
                 .child(CarrierEthernet.class).child(SubscriberServices.class)
                 .child(Evc.class, new EvcKey(new EvcIdType(EVC_NODE_ID)));
 
-        ReadOnlyTransaction transaction = mock(ReadOnlyTransaction.class);
-        when(dataBroker.newReadOnlyTransaction()).thenReturn(transaction);
+        ReadOnlyTransaction readTransaction = mock(ReadOnlyTransaction.class);
+        when(dataBroker.newReadOnlyTransaction()).thenReturn(readTransaction);
         CheckedFuture<Optional<Evc>, ReadFailedException> nodeFuture = mock(CheckedFuture.class);
         Optional<Evc> optNode = mock(Optional.class);
-        when(transaction.read(any(LogicalDatastoreType.class), any(InstanceIdentifier.class)))
+        when(readTransaction.read(any(LogicalDatastoreType.class), any(InstanceIdentifier.class)))
                 .thenReturn(nodeFuture);
         when(nodeFuture.checkedGet()).thenReturn(optNode);
         Optional<Evc> expectedOpt =
                 LegatoUtils.readEvc(dataBroker, LogicalDatastoreType.CONFIGURATION, EVC_IID);
-        verify(transaction).read(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
+        verify(readTransaction).read(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
         assertNotNull(expectedOpt);
         assertEquals(expectedOpt, optNode);
     }
@@ -116,20 +115,20 @@ public class LegatoUtilsTest {
 
         final InstanceIdentifier<Profile> PROFILE_ID =
                 InstanceIdentifier.create(MefGlobal.class).child(SlsProfiles.class)
-                        .child(Profile.class, new ProfileKey(new Identifier1024("1")));
+                        .child(Profile.class, new ProfileKey(new Identifier1024(Constants.ONE)));
 
-        ReadOnlyTransaction transaction = mock(ReadOnlyTransaction.class);
-        when(dataBroker.newReadOnlyTransaction()).thenReturn(transaction);
+        ReadOnlyTransaction readTransaction = mock(ReadOnlyTransaction.class);
+        when(dataBroker.newReadOnlyTransaction()).thenReturn(readTransaction);
         CheckedFuture<Optional<Profile>, ReadFailedException> nodeFuture =
                 mock(CheckedFuture.class);
         Optional<Profile> optNode = mock(Optional.class);
-        when(transaction.read(any(LogicalDatastoreType.class), any(InstanceIdentifier.class)))
+        when(readTransaction.read(any(LogicalDatastoreType.class), any(InstanceIdentifier.class)))
                 .thenReturn(nodeFuture);
         when(nodeFuture.checkedGet()).thenReturn(optNode);
         Optional<Profile> expectedOpt =
-                (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.SLS_PROFILES,
+                (Optional<Profile>) LegatoUtils.readProfile(Constants.SLS_PROFILES,
                         dataBroker, LogicalDatastoreType.CONFIGURATION, PROFILE_ID);
-        verify(transaction).read(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
+        verify(readTransaction).read(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
         assertNotNull(expectedOpt);
         assertEquals(expectedOpt, optNode);
 
@@ -145,11 +144,11 @@ public class LegatoUtilsTest {
 
         when(dataBroker.newWriteOnlyTransaction()).thenReturn(transaction);
         doNothing().when(transaction).merge(any(LogicalDatastoreType.class),
-                any(InstanceIdentifier.class), any(Evc.class));
+                any(InstanceIdentifier.class), any(Profile.class));
         when(transaction.submit()).thenReturn(checkedFuture);
         LegatoUtils.addToOperationalDB(slsProfile, SLS_PROFILES_IID_OPERATIONAL, dataBroker);
         verify(transaction).merge(any(LogicalDatastoreType.class), any(InstanceIdentifier.class),
-                any(Node.class));
+                any(Profile.class));
         verify(transaction).submit();
     }
 
