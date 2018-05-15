@@ -13,6 +13,8 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.unimgr.mef.nrp.api.ActivationDriver;
@@ -23,11 +25,16 @@ import org.opendaylight.unimgr.mef.nrp.common.NrpDao;
 import org.opendaylight.unimgr.mef.nrp.impl.ActivationTransaction;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev180321.EndPoint7;
 import org.opendaylight.yang.gen.v1.urn.odl.unimgr.yang.unimgr.ext.rev170531.NodeAdiAugmentation;
+import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.common.rev180307.Uuid;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.UpdateConnectivityServiceInput;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.UpdateConnectivityServiceOutput;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.UpdateConnectivityServiceOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.connectivity.context.ConnectivityService;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.update.connectivity.service.output.ServiceBuilder;
+import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.topology.rev180307.OwnedNodeEdgePointRef;
+import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.topology.rev180307.link.NodeEdgePointBuilder;
+import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.topology.rev180307.node.OwnedNodeEdgePoint;
+import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.topology.rev180307.node.edge.point.MappedServiceInterfacePoint;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.topology.rev180307.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.topology.rev180307.topology.context.Topology;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
@@ -104,35 +111,67 @@ public class UpdateConnectivityAction implements Callable<RpcResult<UpdateConnec
     private ActivationTransaction prepareTransaction(NrpDao nrpDao, String serviceId) throws FailureResult {
         ActivationTransaction tx = new ActivationTransaction();
 
-        Optional<String> nodeUuid = getActivationDriverId(nrpDao);
-        if (nodeUuid.isPresent()) {
-            Optional<ActivationDriver> driver = service.getDriverRepo().getDriver(nodeUuid.get());
-            if (!driver.isPresent()) {
-                throw new IllegalStateException(MessageFormat.format("driver {} cannot be created", nodeUuid.get()));
+        Optional<? extends OwnedNodeEdgePointRef> nepRef = getNep(nrpDao);
+        if (nepRef.isPresent()) {
+            try {
+                Node node = nrpDao.getNode(nepRef.get().getNodeId());
+                NodeAdiAugmentation aug = node.getAugmentation(NodeAdiAugmentation.class);
+                if(aug != null) {
+                    Optional<ActivationDriver> driver = service.getDriverRepo().getDriver(aug.getActivationDriverId());
+                    if (!driver.isPresent()) {
+                        throw new IllegalStateException(MessageFormat.format("driver {} cannot be constructed", aug.getActivationDriverId()));
+                    }
+
+                    endpoint.setNepRef(nepRef.get());
+
+                    driver.get().initialize(Arrays.asList(endpoint), serviceId, null);
+                    tx.addDriver(driver.get());
+                } else {
+                    LOG.warn("No driver information for node {}", node.getUuid());
+                }
+            } catch (ReadFailedException e) {
+                LOG.warn("Error while reading node", e);
             }
-            driver.get().initialize(Arrays.asList(endpoint), serviceId, null);
-            tx.addDriver(driver.get());
+
         }
         return tx;
 
     }
 
-    private Optional<String> getActivationDriverId(NrpDao nrpDao) throws FailureResult {
-        Optional<String> result = Optional.empty();
+    private Optional<? extends OwnedNodeEdgePointRef> getNep(NrpDao nrpDao) throws FailureResult {
+
         try {
             Topology prestoTopo = nrpDao.getTopology(TapiConstants.PRESTO_SYSTEM_TOPO);
             if (prestoTopo.getNode() == null) {
                 throw new FailureResult("There are no nodes in {0} topology", TapiConstants.PRESTO_SYSTEM_TOPO);
             }
-            for (Node node : prestoTopo.getNode()) {
-                if (node.getOwnedNodeEdgePoint().stream().filter(nep -> nep.getMappedServiceInterfacePoint() != null).flatMap(nep -> nep.getMappedServiceInterfacePoint().stream())
-                        .anyMatch(sipUuid -> sipUuid.equals(endpoint.getEndpoint().getServiceInterfacePoint()))) {
-                    return Optional.of(node.getAugmentation(NodeAdiAugmentation.class).getActivationDriverId());
-                }
-            }
+
+            final Predicate<OwnedNodeEdgePoint> hasSip = nep -> nep.getMappedServiceInterfacePoint().stream()
+                    .anyMatch(sip ->
+                         sip.getServiceInterfacePointId().equals(
+                                 endpoint.getEndpoint().getServiceInterfacePoint().getServiceInterfacePointId()
+                         )
+                    );
+
+            final NodeEdgePointBuilder nepBuilder = new NodeEdgePointBuilder().setTopologyId(new Uuid(TapiConstants.PRESTO_SYSTEM_TOPO));
+            final Function<Node, Optional<? extends OwnedNodeEdgePointRef>> getSip = (Node node) -> node.getOwnedNodeEdgePoint()
+                    .stream().filter(nep -> nep.getMappedServiceInterfacePoint() != null)
+                    .filter(hasSip)
+                    .map(nep -> {
+                        nepBuilder.setNodeId(node.getUuid());
+                        nepBuilder.setOwnedNodeEdgePointId(nep.getUuid());
+                        return nepBuilder.build();
+                    })
+                    .findFirst();
+
+
+            return prestoTopo.getNode().stream()
+                    .map(getSip::apply)
+                    .filter(Optional::isPresent)
+                    .findFirst().orElse(Optional.empty());
+
         } catch (ReadFailedException e) {
             throw new FailureResult("Cannot read {0} topology", TapiConstants.PRESTO_SYSTEM_TOPO);
         }
-        return result;
     }
 }
