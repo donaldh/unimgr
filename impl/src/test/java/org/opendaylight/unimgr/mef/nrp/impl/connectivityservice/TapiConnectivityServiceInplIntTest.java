@@ -86,7 +86,9 @@ public class TapiConnectivityServiceInplIntTest extends AbstractTestWithTopo {
                 .build();
 
         RequestValidator validator = mock(RequestValidator.class);
-        when(validator.checkValid(any())).thenReturn(new RequestValidator.ValidationResult());
+        when(validator.checkValid(any(CreateConnectivityServiceInput.class))).thenReturn(new RequestValidator.ValidationResult());
+        when(validator.checkValid(any(UpdateConnectivityServiceInput.class))).thenReturn(new RequestValidator.ValidationResult());
+
 
         mockPool = mock(ConnectivityServiceIdResourcePool.class);
 

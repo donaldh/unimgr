@@ -17,10 +17,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
-import org.opendaylight.unimgr.mef.nrp.api.ActivationDriver;
-import org.opendaylight.unimgr.mef.nrp.api.EndPoint;
-import org.opendaylight.unimgr.mef.nrp.api.FailureResult;
-import org.opendaylight.unimgr.mef.nrp.api.TapiConstants;
+import org.opendaylight.unimgr.mef.nrp.api.*;
 import org.opendaylight.unimgr.mef.nrp.common.NrpDao;
 import org.opendaylight.unimgr.mef.nrp.impl.ActivationTransaction;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev180321.EndPoint7;
@@ -34,9 +31,9 @@ import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev18030
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.topology.rev180307.OwnedNodeEdgePointRef;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.topology.rev180307.link.NodeEdgePointBuilder;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.topology.rev180307.node.OwnedNodeEdgePoint;
-import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.topology.rev180307.node.edge.point.MappedServiceInterfacePoint;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.topology.rev180307.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.topology.rev180307.topology.context.Topology;
+import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -50,6 +47,7 @@ public class UpdateConnectivityAction implements Callable<RpcResult<UpdateConnec
     private TapiConnectivityServiceImpl service;
     private final UpdateConnectivityServiceInput input;
     private EndPoint endpoint;
+    private NrpDao nrpDao;
 
     UpdateConnectivityAction(TapiConnectivityServiceImpl tapiConnectivityService,
                              UpdateConnectivityServiceInput input) {
@@ -65,19 +63,18 @@ public class UpdateConnectivityAction implements Callable<RpcResult<UpdateConnec
 
         LOG.debug("running UpdateConnectivityService task");
 
-        NrpDao nrpDao = new NrpDao(service.getBroker().newReadOnlyTransaction());
+        nrpDao = new NrpDao(service.getBroker().newReadWriteTransaction());
         try {
             // TODO validate input
-            // RequestValidator.ValidationResult validationResult =
-            // validateInput();
-            // if (!validationResult.isValid()) {
-            // RpcResultBuilder<UpdateConnectivityServiceOutput> res =
-            // RpcResultBuilder.failed();
-            // validationResult.getProblems().forEach(p ->
-            // res.withError(RpcError.ErrorType.APPLICATION, p));
-            // return res.build();
-            //
-            // }
+             RequestValidator.ValidationResult validationResult = service.getValidator().checkValid(input);
+
+             if (!validationResult.isValid()) {
+                 RpcResultBuilder<UpdateConnectivityServiceOutput> res =
+                 RpcResultBuilder.failed();
+                 validationResult.getProblems().forEach(p ->
+                 res.withError(RpcError.ErrorType.APPLICATION, p));
+                 return res.build();
+             }
 
             endpoint = new EndPoint(input.getEndPoint(), input.getEndPoint().getAugmentation(EndPoint7.class));
 
@@ -89,7 +86,9 @@ public class UpdateConnectivityAction implements Callable<RpcResult<UpdateConnec
                 if (txResult.isSuccessful()) {
                     LOG.info("ConnectivityService construct updated successfully, request = {} ", input);
 
-                    ConnectivityService service = nrpDao.getConnectivityService(serviceId);
+                    //XXX we might be also supporting CS constraints update
+                    ConnectivityService service = nrpDao.updateCsEndPoint(serviceId, input.getEndPoint());
+
                     UpdateConnectivityServiceOutput result = new UpdateConnectivityServiceOutputBuilder()
                             .setService(new ServiceBuilder(service).build()).build();
                     return RpcResultBuilder.success(result).build();

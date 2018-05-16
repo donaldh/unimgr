@@ -44,6 +44,7 @@ import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.common.rev180307.Uuid
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.CreateConnectivityServiceInput;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.CreateConnectivityServiceInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.CreateConnectivityServiceOutput;
+import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.UpdateConnectivityServiceInput;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.create.connectivity.service.input.EndPoint;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.create.connectivity.service.input.EndPointBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -85,7 +86,8 @@ public class TapiConnectivityServiceImplTest {
 
         decomposer = mock(RequestDecomposer.class);
         validator = mock(RequestValidator.class);
-        when(validator.checkValid(any())).thenReturn(new RequestValidator.ValidationResult());
+        when(validator.checkValid(any(CreateConnectivityServiceInput.class))).thenReturn(new RequestValidator.ValidationResult());
+        when(validator.checkValid(any(UpdateConnectivityServiceInput.class))).thenReturn(new RequestValidator.ValidationResult());
 
         connectivityService = new TapiConnectivityServiceImpl();
         connectivityService.setDriverRepo(repo);

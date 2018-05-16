@@ -19,7 +19,11 @@ import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.unimgr.mef.nrp.api.TapiConstants;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev180321.EndPoint1;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev180321.EndPoint1Builder;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev180321.EndPoint7;
 import org.opendaylight.yang.gen.v1.urn.odl.unimgr.yang.unimgr.ext.rev170531.NodeAdiAugmentation;
 import org.opendaylight.yang.gen.v1.urn.odl.unimgr.yang.unimgr.ext.rev170531.NodeAdiAugmentationBuilder;
 import org.opendaylight.yang.gen.v1.urn.odl.unimgr.yang.unimgr.ext.rev170531.NodeSvmAugmentation;
@@ -41,6 +45,9 @@ import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev18030
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.connectivity.context.ConnectionKey;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.connectivity.context.ConnectivityService;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.connectivity.context.ConnectivityServiceKey;
+import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.connectivity.service.EndPoint;
+import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.connectivity.service.EndPointBuilder;
+import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.connectivity.service.EndPointKey;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.topology.rev180307.Context1;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.topology.rev180307.OwnedNodeEdgePointRef;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.topology.rev180307.node.OwnedNodeEdgePoint;
@@ -65,12 +72,16 @@ public class NrpDao  {
     private static final Logger LOG = LoggerFactory.getLogger(NrpDao.class);
     private final ReadWriteTransaction tx;
     private final ReadTransaction rtx;
+    private final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.Context1> CS_CTX
+            = ctx().augmentation(org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.Context1.class);
+
 
 
     public NrpDao(ReadWriteTransaction tx) {
         if(tx == null) throw new NullPointerException();
         this.tx = tx;
         this.rtx = tx;
+
     }
     public NrpDao(ReadOnlyTransaction tx) {
         this.rtx = tx;
@@ -326,19 +337,33 @@ public class NrpDao  {
 
     public List<ConnectivityService> getConnectivityServiceList() {
         try {
-            org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.Context1 connections = rtx.read(LogicalDatastoreType.OPERATIONAL,
-                    ctx().augmentation(org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.Context1.class))
+            org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.Context1 connectivity = rtx
+                    .read(LogicalDatastoreType.OPERATIONAL, CS_CTX)
                     .checkedGet().orNull();
-            return connections == null ? null : connections.getConnectivityService();
+            return connectivity == null ? null : connectivity.getConnectivityService();
         } catch (ReadFailedException e) {
             LOG.warn("reading connectivity services failed", e);
             return null;
         }
     }
 
+    public ConnectivityService getConnectivityService(String idOrName) {
+        ConnectivityService cs = getConnectivityService(new Uuid(idOrName));
+        if(cs != null) return cs;
+
+        List<ConnectivityService> csList = getConnectivityServiceList();
+        if(csList != null) {
+            return csList.stream()
+                    .filter(child -> child.getName() != null && child.getName().stream().anyMatch(n -> idOrName.equals(n.getValue())))
+                    .findFirst().orElse(null);
+
+        }
+        return null;
+    }
+
     public ConnectivityService getConnectivityService(Uuid id) {
         try {
-            return rtx.read(LogicalDatastoreType.OPERATIONAL, ctx().augmentation(org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.Context1.class).child(ConnectivityService.class, new ConnectivityServiceKey(id)))
+            return rtx.read(LogicalDatastoreType.OPERATIONAL, CS_CTX.child(ConnectivityService.class, new ConnectivityServiceKey(id)))
                     .checkedGet().orNull();
 
         } catch (ReadFailedException e) {
@@ -365,13 +390,9 @@ public class NrpDao  {
         return rtx.read(LogicalDatastoreType.OPERATIONAL, key).checkedGet().orNull();
     }
 
-    public ConnectivityService getConnectivityService(String id) {
-        return getConnectivityService(new Uuid(id));
-    }
-
     public Connection getConnection(Uuid connectionId) {
         try {
-            return rtx.read(LogicalDatastoreType.OPERATIONAL, ctx().augmentation(org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.Context1.class).child(Connection.class, new ConnectionKey(connectionId)))
+            return rtx.read(LogicalDatastoreType.OPERATIONAL, CS_CTX.child(Connection.class, new ConnectionKey(connectionId)))
                     .checkedGet().orNull();
 
         } catch (ReadFailedException e) {
@@ -400,7 +421,33 @@ public class NrpDao  {
             tx.delete(LogicalDatastoreType.OPERATIONAL,cepKey);
         }
         LOG.debug("removing connection {}", connectionId.getValue());
-        tx.delete(LogicalDatastoreType.OPERATIONAL, ctx().augmentation(org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.Context1.class)
-                .child(Connection.class, new ConnectionKey(connectionId)));
+        tx.delete(LogicalDatastoreType.OPERATIONAL, CS_CTX.child(Connection.class, new ConnectionKey(connectionId)));
+    }
+
+    public ConnectivityService updateCsEndPoint(String serviceId, org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307
+            .update.connectivity.service.input.EndPoint endPoint) throws TransactionCommitFailedException {
+        Objects.requireNonNull(endPoint);
+        Objects.requireNonNull(serviceId);
+        org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.connectivity.service.EndPoint ep = new EndPointBuilder(endPoint).build();
+
+
+        KeyedInstanceIdentifier<EndPoint, EndPointKey> epId = CS_CTX
+                .child(ConnectivityService.class, new ConnectivityServiceKey(new Uuid(serviceId)))
+                .child(EndPoint.class, new EndPointKey(endPoint.getLocalId()));
+
+        tx.put(LogicalDatastoreType.OPERATIONAL, epId, ep);
+        if(endPoint.getAugmentation(EndPoint7.class) != null) {
+            tx.put(LogicalDatastoreType.OPERATIONAL, epId.augmentation(EndPoint1.class), new EndPoint1Builder(endPoint.getAugmentation(EndPoint7.class)).build());
+        }
+        //XXX do we need to support name as well?
+        ConnectivityService cs = getConnectivityService(serviceId);
+        try {
+            tx.submit().checkedGet();
+        } catch (TransactionCommitFailedException e) {
+            LOG.warn("Problem with updatign connectivity service endpoint", e);
+            throw e;
+        }
+
+        return cs;
     }
 }
