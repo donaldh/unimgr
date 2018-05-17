@@ -69,7 +69,7 @@ public class LegatoEecProfileController extends UnimgrDataTreeChangeListener<Pro
         }
     }
 
-    private void addToOperationalDB(Profile profile) {
+    public void addToOperationalDB(Profile profile) {
         try {
             assert profile != null;
             EecProfiles eecProfiles = new EecProfilesBuilder().setProfile(Collections.singletonList(profile)).build();
@@ -87,16 +87,22 @@ public class LegatoEecProfileController extends UnimgrDataTreeChangeListener<Pro
             LOG.info("  Node removed  " + removedDataObject.getRootNode().getIdentifier());
             try {
                 assert removedDataObject.getRootNode().getDataBefore() != null;
-                LegatoUtils
-                        .deleteFromOperationalDB(
-                                InstanceIdentifier.create(MefGlobal.class).child(EecProfiles.class).child(Profile.class,
-                                        new ProfileKey(removedDataObject.getRootNode().getDataBefore().getId())),
-                                dataBroker);
+                deleteFromOperationalDB(removedDataObject.getRootNode().getDataBefore());
             } catch (Exception ex) {
                 LOG.error("error: ", ex);
             }
         }
     }
+
+    public void deleteFromOperationalDB(Profile profile) {
+            assert profile != null;
+            LegatoUtils
+                    .deleteFromOperationalDB(
+                            InstanceIdentifier.create(MefGlobal.class).child(EecProfiles.class)
+                                    .child(Profile.class, new ProfileKey(profile.getId())),
+                            dataBroker);
+    }
+
 
     @Override
     public void update(DataTreeModification<Profile> modifiedDataObject) {
@@ -105,19 +111,24 @@ public class LegatoEecProfileController extends UnimgrDataTreeChangeListener<Pro
             LOG.info(" inside updateNode()");
             try {
                 assert modifiedDataObject.getRootNode().getDataAfter() != null;
-                InstanceIdentifier<Profile> instanceIdentifier = InstanceIdentifier.create(MefGlobal.class)
-                        .child(EecProfiles.class)
-                        .child(Profile.class, new ProfileKey(modifiedDataObject.getRootNode().getDataAfter().getId()));
-                Optional<Profile> OptionalProfile = (Optional<Profile>) LegatoUtils.readProfile(
-                        LegatoConstants.EEC_PROFILES, dataBroker, LogicalDatastoreType.CONFIGURATION,
-                        instanceIdentifier);
-                if (OptionalProfile.isPresent()) {
-                    LegatoUtils.deleteFromOperationalDB(instanceIdentifier, dataBroker);
-                    addToOperationalDB(OptionalProfile.get());
-                }
+                updateFromOperationalDB(modifiedDataObject.getRootNode().getDataAfter());
             } catch (Exception ex) {
                 LOG.error("error: ", ex);
             }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void updateFromOperationalDB(Profile profile) {
+        assert profile != null;
+        InstanceIdentifier<Profile> instanceIdentifier = InstanceIdentifier.create(MefGlobal.class)
+                .child(EecProfiles.class).child(Profile.class, new ProfileKey(profile.getId()));
+        Optional<Profile> OptionalProfile =
+                (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.EEC_PROFILES,
+                        dataBroker, LogicalDatastoreType.CONFIGURATION, instanceIdentifier);
+        if (OptionalProfile.isPresent()) {
+            LegatoUtils.deleteFromOperationalDB(instanceIdentifier, dataBroker);
+            addToOperationalDB(OptionalProfile.get());
         }
     }
 

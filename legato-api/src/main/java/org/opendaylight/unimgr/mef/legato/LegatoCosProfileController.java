@@ -68,10 +68,10 @@ public class LegatoCosProfileController extends UnimgrDataTreeChangeListener<Pro
     public void addToOperationalDB(Profile profile) {
         try {
             assert profile != null;
-        CosProfiles cosProfiles = new CosProfilesBuilder().setProfile(Collections.singletonList(profile)).build();
-        InstanceIdentifier<CosProfiles> profilesTx = InstanceIdentifier.create(MefGlobal.class)
+            CosProfiles cosProfiles = new CosProfilesBuilder().setProfile(Collections.singletonList(profile)).build();
+            InstanceIdentifier<CosProfiles> profilesTx = InstanceIdentifier.create(MefGlobal.class)
                 .child(CosProfiles.class);
-        LegatoUtils.addToOperationalDB(cosProfiles, profilesTx, dataBroker);
+            LegatoUtils.addToOperationalDB(cosProfiles, profilesTx, dataBroker);
         } catch (Exception ex) {
             LOG.error("error: ", ex);
         }
@@ -84,15 +84,19 @@ public class LegatoCosProfileController extends UnimgrDataTreeChangeListener<Pro
             LOG.info("  Node removed  " + removedDataObject.getRootNode().getIdentifier());
             try {
                 assert removedDataObject.getRootNode().getDataBefore() != null;
-                LegatoUtils
-                        .deleteFromOperationalDB(
-                                InstanceIdentifier.create(MefGlobal.class).child(CosProfiles.class).child(Profile.class,
-                                        new ProfileKey(removedDataObject.getRootNode().getDataBefore().getId())),
-                                dataBroker);
+                deleteFromOperationalDB(removedDataObject.getRootNode().getDataBefore());
             } catch (Exception ex) {
                 LOG.error("error: ", ex);
             }
         }
+    }
+
+
+    public void deleteFromOperationalDB(Profile profile) {
+        assert profile != null;
+        LegatoUtils.deleteFromOperationalDB(InstanceIdentifier.create(MefGlobal.class)
+                .child(CosProfiles.class).child(Profile.class, new ProfileKey(profile.getId())),
+                dataBroker);
     }
 
     @Override
@@ -102,20 +106,24 @@ public class LegatoCosProfileController extends UnimgrDataTreeChangeListener<Pro
             LOG.info("  Node modified  " + modifiedDataObject.getRootNode().getIdentifier());
             try {
                 assert modifiedDataObject.getRootNode().getDataAfter() != null;
-                InstanceIdentifier<Profile> instanceIdentifier = InstanceIdentifier.create(MefGlobal.class)
-                        .child(CosProfiles.class)
-                        .child(Profile.class, new ProfileKey(modifiedDataObject.getRootNode().getDataAfter().getId()));
-                ;
-                Optional<Profile> OptionalProfile = (Optional<Profile>) LegatoUtils.readProfile(
-                        LegatoConstants.COS_PROFILES, dataBroker, LogicalDatastoreType.CONFIGURATION,
-                        instanceIdentifier);
-                if (OptionalProfile.isPresent()) {
-                    LegatoUtils.deleteFromOperationalDB(instanceIdentifier, dataBroker);
-                    addToOperationalDB(OptionalProfile.get());
-                }
+                updateFromOperationalDB(modifiedDataObject.getRootNode().getDataAfter());
             } catch (Exception ex) {
                 LOG.error("error: ", ex);
             }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void updateFromOperationalDB(Profile profile) {
+        assert profile != null;
+        InstanceIdentifier<Profile> instanceIdentifier = InstanceIdentifier.create(MefGlobal.class)
+                .child(CosProfiles.class).child(Profile.class, new ProfileKey(profile.getId()));
+        Optional<Profile> OptionalProfile =
+                (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.COS_PROFILES,
+                        dataBroker, LogicalDatastoreType.CONFIGURATION, instanceIdentifier);
+        if (OptionalProfile.isPresent()) {
+            LegatoUtils.deleteFromOperationalDB(instanceIdentifier, dataBroker);
+            addToOperationalDB(OptionalProfile.get());
         }
     }
 

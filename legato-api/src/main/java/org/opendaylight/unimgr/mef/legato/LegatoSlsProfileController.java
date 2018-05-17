@@ -80,8 +80,7 @@ public class LegatoSlsProfileController  extends UnimgrDataTreeChangeListener<Pr
     }
 
 
-/* Add node in Operational DB*/
-    private void addToOperationalDB(Profile profileObj) {
+    public void addToOperationalDB(Profile profileObj) {
         LOG.info(" inside addNode()");
         try {
             assert profileObj != null;
@@ -99,35 +98,37 @@ public class LegatoSlsProfileController  extends UnimgrDataTreeChangeListener<Pr
     public void update(DataTreeModification<Profile> modifiedDataObject) {
         if (modifiedDataObject.getRootNode() != null && modifiedDataObject.getRootPath() != null) {
             LOG.info("  Node modified  " + modifiedDataObject.getRootNode().getIdentifier());
-
-            updateNode(modifiedDataObject.getRootNode().getDataAfter());
+            try {
+                assert modifiedDataObject.getRootNode().getDataAfter() != null;
+                updateNode(modifiedDataObject.getRootNode().getDataAfter());
+            } catch (Exception ex) {
+                LOG.error("error: ", ex);
+            }
         }
     }
 
 
-    /* Update node in Operational DB*/
     @SuppressWarnings("unchecked")
-    private void updateNode(Profile profile) {
+    public void updateNode(Profile profile) {
         LOG.info(" inside updateNode()");
 
-        try {
-            assert profile != null;
-            Optional<Profile> OptionalProfile = (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.SLS_PROFILES, dataBroker, LogicalDatastoreType.CONFIGURATION,
-                    InstanceIdentifier.create(MefGlobal.class).child(SlsProfiles.class).child(Profile.class,
-                            new ProfileKey(profile.getId())));
+        assert profile != null;
+        Optional<Profile> OptionalProfile =
+                (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.SLS_PROFILES,
+                        dataBroker, LogicalDatastoreType.CONFIGURATION,
+                        InstanceIdentifier.create(MefGlobal.class).child(SlsProfiles.class)
+                                .child(Profile.class, new ProfileKey(profile.getId())));
 
-            if (OptionalProfile.isPresent()) {
+        if (OptionalProfile.isPresent()) {
 
-                LegatoUtils.deleteFromOperationalDB(InstanceIdentifier.create(MefGlobal.class).child(SlsProfiles.class)
-                        .child(Profile.class, new ProfileKey(profile.getId())), dataBroker);
+            LegatoUtils
+                    .deleteFromOperationalDB(
+                            InstanceIdentifier.create(MefGlobal.class).child(SlsProfiles.class)
+                                    .child(Profile.class, new ProfileKey(profile.getId())),
+                            dataBroker);
 
-                addToOperationalDB(OptionalProfile.get());
-            }
-
-        } catch (Exception ex) {
-            LOG.error("error: ", ex);
+            addToOperationalDB(OptionalProfile.get());
         }
-
         LOG.info(" ********** END updateNode() ****************** ");
     }
 
@@ -141,14 +142,16 @@ public class LegatoSlsProfileController  extends UnimgrDataTreeChangeListener<Pr
         }
     }
 
-    /* Delete node in Operational DB*/
-    private void deleteNode(Profile profileObj) {
+    public void deleteNode(Profile profileObj) {
         LOG.info(" inside deleteNode()");
 
         try {
             assert profileObj != null;
-            LegatoUtils.deleteFromOperationalDB(InstanceIdentifier.create(MefGlobal.class).child(SlsProfiles.class)
-                    .child(Profile.class, new ProfileKey(profileObj.getId())), dataBroker);
+            LegatoUtils
+                    .deleteFromOperationalDB(
+                            InstanceIdentifier.create(MefGlobal.class).child(SlsProfiles.class)
+                                    .child(Profile.class, new ProfileKey(profileObj.getId())),
+                            dataBroker);
 
         } catch (Exception ex) {
             LOG.error("error: ", ex);

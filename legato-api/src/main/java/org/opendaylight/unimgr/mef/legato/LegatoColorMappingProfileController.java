@@ -43,7 +43,6 @@ public class LegatoColorMappingProfileController extends UnimgrDataTreeChangeLis
     public LegatoColorMappingProfileController(DataBroker dataBroker) {
         super(dataBroker);
         registerListener();
-        // TODO Auto-generated constructor stub
     }
 
     private void registerListener() {
@@ -69,13 +68,13 @@ public class LegatoColorMappingProfileController extends UnimgrDataTreeChangeLis
         }
     }
 
-    private void addToOperationalDB(Profile profile) {
+    public void addToOperationalDB(Profile profile) {
         try {
             assert profile != null;
         ColorMappingProfiles colorMappingProfiles = new ColorMappingProfilesBuilder().setProfile(Collections.singletonList(profile)).build();   
         InstanceIdentifier<ColorMappingProfiles> profilesTx = InstanceIdentifier.create(MefGlobal.class)
                 .child(ColorMappingProfiles.class);
-        LegatoUtils.addToOperationalDB(colorMappingProfiles, profilesTx, dataBroker);
+            LegatoUtils.addToOperationalDB(colorMappingProfiles, profilesTx, dataBroker);
         } catch (Exception ex) {
             LOG.error("error: ", ex);
         }
@@ -88,11 +87,23 @@ public class LegatoColorMappingProfileController extends UnimgrDataTreeChangeLis
             LOG.info("  Node removed  " + removedDataObject.getRootNode().getIdentifier());
             try {
                 assert removedDataObject.getRootNode().getDataBefore() != null;
-                LegatoUtils.deleteFromOperationalDB(InstanceIdentifier.create(MefGlobal.class).child(ColorMappingProfiles.class)
-                        .child(Profile.class, new ProfileKey(removedDataObject.getRootNode().getDataBefore().getId())),dataBroker);
+                deleteFromOperationalDB(removedDataObject.getRootNode().getDataBefore());
             } catch (Exception ex) {
                 LOG.error("error: ", ex);
             }
+        }
+    }
+
+
+    public void deleteFromOperationalDB(Profile profile) {
+        try {
+            assert profile != null;
+            LegatoUtils.deleteFromOperationalDB(
+                    InstanceIdentifier.create(MefGlobal.class).child(ColorMappingProfiles.class)
+                            .child(Profile.class, new ProfileKey(profile.getId())),
+                    dataBroker);
+        } catch (Exception ex) {
+            LOG.error("error: ", ex);
         }
     }
 
@@ -103,17 +114,26 @@ public class LegatoColorMappingProfileController extends UnimgrDataTreeChangeLis
             LOG.info("  Node modified  " + modifiedDataObject.getRootNode().getIdentifier());
             try {
                 assert modifiedDataObject.getRootNode().getDataAfter() != null;
-                InstanceIdentifier<Profile> instanceIdentifier = InstanceIdentifier.create(MefGlobal.class)
-                        .child(ColorMappingProfiles.class).child(Profile.class, new ProfileKey(modifiedDataObject.getRootNode().getDataAfter().getId()));
-                Optional<Profile> OptionalProfile = (Optional<Profile>) LegatoUtils.readProfile(
-                        LegatoConstants.CMP_PROFILES, dataBroker, LogicalDatastoreType.CONFIGURATION, instanceIdentifier);
-                if (OptionalProfile.isPresent()) {
-                    LegatoUtils.deleteFromOperationalDB(instanceIdentifier,dataBroker);
-                    addToOperationalDB(OptionalProfile.get());
-                }
+                updateFromOperationalDB(modifiedDataObject.getRootNode().getDataAfter());
             } catch (Exception ex) {
                 LOG.error("error: ", ex);
             }
+        }
+    }
+
+
+    @SuppressWarnings("unchecked")
+    public void updateFromOperationalDB(Profile profile) {
+        assert profile != null;
+        InstanceIdentifier<Profile> instanceIdentifier =
+                InstanceIdentifier.create(MefGlobal.class).child(ColorMappingProfiles.class)
+                        .child(Profile.class, new ProfileKey(profile.getId()));
+        Optional<Profile> OptionalProfile =
+                (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.CMP_PROFILES,
+                        dataBroker, LogicalDatastoreType.CONFIGURATION, instanceIdentifier);
+        if (OptionalProfile.isPresent()) {
+            LegatoUtils.deleteFromOperationalDB(instanceIdentifier, dataBroker);
+            addToOperationalDB(OptionalProfile.get());
         }
     }
 

@@ -74,8 +74,7 @@ private static final Logger LOG = LoggerFactory.getLogger(LegatoL2cpPeeringContr
     }
 
 
-    /* Add node in Operational DB*/
-    private void addToOperationalDB(Profile profileObj) {
+    public void addToOperationalDB(Profile profileObj) {
 
         LOG.info(" inside addNode()");
 
@@ -92,56 +91,68 @@ private static final Logger LOG = LoggerFactory.getLogger(LegatoL2cpPeeringContr
     }
 
 
-    /* Update node in Operational DB*/
-    @SuppressWarnings("unchecked")
     @Override
     public void update(DataTreeModification<Profile> modifiedDataObject) {
         if (modifiedDataObject.getRootNode() != null && modifiedDataObject.getRootPath() != null) {
-            LOG.info( "ClassName :: LegatoL2cpPeeringController, Method:: update(), Message:: Node modified  " + modifiedDataObject.getRootNode().getIdentifier());
+            LOG.info(
+                    "ClassName :: LegatoL2cpPeeringController, Method:: update(), Message:: Node modified  "
+                            + modifiedDataObject.getRootNode().getIdentifier());
 
-            Profile profile = modifiedDataObject.getRootNode().getDataAfter();
-            
             try {
-                assert profile != null;
-                Optional<Profile> OptionalProfile = (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.L2CP_PEERING_PROFILES, dataBroker, LogicalDatastoreType.CONFIGURATION,
-                        InstanceIdentifier.create(MefGlobal.class).child(L2cpPeeringProfiles.class).child(Profile.class,
-                                new ProfileKey(profile.getId())));
-
-                if (OptionalProfile.isPresent()) {
-
-                    LegatoUtils.deleteFromOperationalDB(InstanceIdentifier.create(MefGlobal.class).child(L2cpPeeringProfiles.class)
-                            .child(Profile.class, new ProfileKey(profile.getId())), dataBroker);
-
-                    addToOperationalDB(OptionalProfile.get());
-                }
-
+                assert modifiedDataObject.getRootNode().getDataAfter() != null;
+                updateFromOperationalDB(modifiedDataObject.getRootNode().getDataAfter());
             } catch (Exception ex) {
                 LOG.error("error: ", ex);
             }
         }
-        
     }
 
+    @SuppressWarnings("unchecked")
+    public void updateFromOperationalDB(Profile profile) {
+        assert profile != null;
+        Optional<Profile> OptionalProfile = (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.L2CP_PEERING_PROFILES, dataBroker, LogicalDatastoreType.CONFIGURATION,
+                InstanceIdentifier.create(MefGlobal.class).child(L2cpPeeringProfiles.class).child(Profile.class,
+                        new ProfileKey(profile.getId())));
 
-    /* Delete node in Operational DB*/
+        if (OptionalProfile.isPresent()) {
+
+            LegatoUtils.deleteFromOperationalDB(
+                    InstanceIdentifier.create(MefGlobal.class).child(L2cpPeeringProfiles.class)
+                            .child(Profile.class, new ProfileKey(profile.getId())),
+                    dataBroker);
+
+            addToOperationalDB(OptionalProfile.get());
+        }
+
+    }
+
     @Override
     public void remove(DataTreeModification<Profile> removedDataObject) {
         if (removedDataObject.getRootNode() != null && removedDataObject.getRootPath() != null) {
-            LOG.info( "ClassName :: LegatoL2cpPeeringController, Method:: remove(), Message:: Node removed  " + removedDataObject.getRootNode().getIdentifier());
-            
-            Profile profileObj = removedDataObject.getRootNode().getDataBefore();
-            try {
-                assert profileObj != null;
-                LegatoUtils.deleteFromOperationalDB(InstanceIdentifier.create(MefGlobal.class).child(L2cpPeeringProfiles.class)
-                        .child(Profile.class, new ProfileKey(profileObj.getId())), dataBroker);
+            LOG.info(
+                    "ClassName :: LegatoL2cpPeeringController, Method:: remove(), Message:: Node removed  "
+                            + removedDataObject.getRootNode().getIdentifier());
 
+            try {
+                assert removedDataObject.getRootNode().getDataBefore() != null;
+                deleteFromOperationalDB(removedDataObject.getRootNode().getDataBefore());
             } catch (Exception ex) {
                 LOG.error("error: ", ex);
             }
         }
-        
     }
 
+    public void deleteFromOperationalDB(Profile profile) {
+        try {
+            assert profile != null;
+            LegatoUtils.deleteFromOperationalDB(
+                    InstanceIdentifier.create(MefGlobal.class).child(L2cpPeeringProfiles.class)
+                            .child(Profile.class, new ProfileKey(profile.getId())),
+                    dataBroker);
+        } catch (Exception ex) {
+            LOG.error("error: ", ex);
+        }
+    }
 
     @Override
     public void close() throws Exception {
