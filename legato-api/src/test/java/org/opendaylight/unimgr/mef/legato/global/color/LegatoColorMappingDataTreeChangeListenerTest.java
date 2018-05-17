@@ -36,7 +36,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
  *
  */
 @RunWith(PowerMockRunner.class)
-public class LegatoColorMappingProfileImplTest {
+public class LegatoColorMappingDataTreeChangeListenerTest {
 
     private LegatoColorMappingProfileController legatoColorMappingProfileController;
 
@@ -47,14 +47,14 @@ public class LegatoColorMappingProfileImplTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testL2cpEecDataTreeChangeListener() {
+    public void testColMappingDataTreeChangeListener() {
         Collection<DataTreeModification<Profile>> collection = new ArrayList<DataTreeModification<Profile>>();
-        DataTreeModification<Profile> evc = getDataTree(ModificationType.WRITE);
-        collection.add(evc);
-        evc = getDataTree(ModificationType.DELETE);
-        collection.add(evc);
-        evc = getDataTree(ModificationType.SUBTREE_MODIFIED);
-        collection.add(evc);
+        DataTreeModification<Profile> profile = getDataTree(ModificationType.WRITE);
+        collection.add(profile);
+        profile = getDataTree(ModificationType.DELETE);
+        collection.add(profile);
+        profile = getDataTree(ModificationType.SUBTREE_MODIFIED);
+        collection.add(profile);
         legatoColorMappingProfileController.onDataTreeChanged(collection);
         verify(legatoColorMappingProfileController, times(1)).add(any(DataTreeModification.class));
         verify(legatoColorMappingProfileController, times(1)).remove(any(DataTreeModification.class));
@@ -62,7 +62,7 @@ public class LegatoColorMappingProfileImplTest {
     }
 
     private DataTreeModification<Profile> getDataTree(final ModificationType modificationType) {
-        final DataObjectModification<Profile> evcDataObjModification = new DataObjectModification<Profile>() {
+        final DataObjectModification<Profile> proDataObjModification = new DataObjectModification<Profile>() {
             @Override
             public Collection<DataObjectModification<? extends DataObject>> getModifiedChildren() {
                 // TODO Auto-generated method stub
@@ -122,7 +122,7 @@ public class LegatoColorMappingProfileImplTest {
             }
             @Override
             public DataObjectModification<Profile> getRootNode() {
-                return evcDataObjModification;
+                return proDataObjModification;
             }
         };
 

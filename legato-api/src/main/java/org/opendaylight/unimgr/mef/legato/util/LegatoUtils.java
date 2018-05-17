@@ -9,7 +9,6 @@ package org.opendaylight.unimgr.mef.legato.util;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
@@ -26,12 +25,22 @@ import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.types.rev171215.VlanIdType;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.nrm.connectivity.rev180321.carrier.eth.connectivity.end.point.resource.CeVlanIdListAndUntagBuilder;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.nrm.connectivity.rev180321.vlan.id.list.and.untag.VlanId;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.nrm.connectivity.rev180321.vlan.id.list.and.untag.VlanIdBuilder;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev180321.*;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev180321.CreateConnectivityServiceInput1;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev180321.CreateConnectivityServiceInput1Builder;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev180321.EndPoint2;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev180321.EndPoint2Builder;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev180321.EndPoint7;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev180321.EndPoint7Builder;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev180321.UpdateConnectivityServiceInput1;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev180321.UpdateConnectivityServiceInput1Builder;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev180321.nrp.connectivity.service.attrs.NrpCarrierEthConnectivityResource;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev180321.nrp.connectivity.service.attrs.NrpCarrierEthConnectivityResourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev180321.nrp.connectivity.service.end.point.attrs.NrpCarrierEthConnectivityEndPointResource;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.nrp._interface.rev180321.nrp.connectivity.service.end.point.attrs.NrpCarrierEthConnectivityEndPointResourceBuilder;
-import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.common.rev180307.*;
+import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.common.rev180307.LayerProtocolName;
+import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.common.rev180307.PortDirection;
+import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.common.rev180307.PortRole;
+import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.common.rev180307.Uuid;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.CreateConnectivityServiceInput;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.CreateConnectivityServiceInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.ServiceType;
@@ -45,7 +54,6 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.CheckedFuture;
 
@@ -344,14 +352,18 @@ public class LegatoUtils {
         return result;
     }
 
+    @SuppressWarnings("deprecation")
     public static <T extends DataObject> void addToOperationalDB(T typeOfProfile,
             InstanceIdentifier<T> profilesTx, DataBroker dataBroker) {
-        WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
-        tx.merge(LogicalDatastoreType.OPERATIONAL, profilesTx, typeOfProfile);
+        LOG.info("Received a request to add node {}", profilesTx);
+
+        WriteTransaction transaction = dataBroker.newWriteOnlyTransaction();
+        transaction.merge(LogicalDatastoreType.OPERATIONAL, profilesTx, typeOfProfile);
+        
         try {
-            tx.submit().checkedGet();
+            transaction.submit().checkedGet();
         } catch (org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException e) {
-            LOG.error("Error in adding data to OperationalDB(). Err: ", e);
+            LOG.error("Unable to add node in OperationalDB(). Err: ", e);
         }
 
     }
@@ -359,6 +371,7 @@ public class LegatoUtils {
     @SuppressWarnings("deprecation")
     public static boolean updateEvcInOperationalDB(Evc evc,
             InstanceIdentifier<SubscriberServices> nodeIdentifier, DataBroker dataBroker) {
+        LOG.info("Received a request to add node {}", nodeIdentifier);
 
         boolean result = false;
 
@@ -373,6 +386,7 @@ public class LegatoUtils {
             transaction.submit().checkedGet();
             result = true;
         } catch (org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException e) {
+            LOG.error("Unable to add node in OperationalDB() ", nodeIdentifier, e);
         }
         return result;
 

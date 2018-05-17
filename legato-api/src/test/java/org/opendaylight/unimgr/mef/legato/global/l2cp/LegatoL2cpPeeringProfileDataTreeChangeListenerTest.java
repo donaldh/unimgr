@@ -6,11 +6,12 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.unimgr.mef.legato.global.eec;
+package org.opendaylight.unimgr.mef.legato.global.l2cp;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import org.junit.Before;
@@ -19,10 +20,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
-import org.opendaylight.unimgr.mef.legato.LegatoEecProfileController;
+import org.opendaylight.unimgr.mef.legato.LegatoL2cpPeeringController;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.l2cp.peering.profiles.Profile;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.eec.profiles.Profile;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.opendaylight.yangtools.yang.binding.ChildOf;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -31,39 +32,40 @@ import org.opendaylight.yangtools.yang.binding.Identifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+
 /**
  * @author Arif.Hussain@Xoriant.Com
  *
  */
 @RunWith(PowerMockRunner.class)
-public class LegatoEecProfileImplTest {
+public class LegatoL2cpPeeringProfileDataTreeChangeListenerTest {
 
-    private LegatoEecProfileController legatoEecProfileController;
+    private LegatoL2cpPeeringController legatoL2cpPeeringController;
 
     @Before
     public void setUp() throws Exception {
-        legatoEecProfileController = mock(LegatoEecProfileController.class, Mockito.CALLS_REAL_METHODS);
+        legatoL2cpPeeringController = mock(LegatoL2cpPeeringController.class, Mockito.CALLS_REAL_METHODS);
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testEecProfileDataTreeChangeListener() {
+    public void testL2cpPeeringDataTreeChangeListener() {
         Collection<DataTreeModification<Profile>> collection = new ArrayList<DataTreeModification<Profile>>();
-        DataTreeModification<Profile> evc = getDataTree(ModificationType.WRITE);
-        collection.add(evc);
-        evc = getDataTree(ModificationType.DELETE);
-        collection.add(evc);
-        evc = getDataTree(ModificationType.SUBTREE_MODIFIED);
-        collection.add(evc);
-        legatoEecProfileController.onDataTreeChanged(collection);
-        verify(legatoEecProfileController, times(1)).add(any(DataTreeModification.class));
-        verify(legatoEecProfileController, times(1)).remove(any(DataTreeModification.class));
-        verify(legatoEecProfileController, times(1)).update(any(DataTreeModification.class));
+        DataTreeModification<Profile> profile = getDataTree(ModificationType.WRITE);
+        collection.add(profile);
+        profile = getDataTree(ModificationType.DELETE);
+        collection.add(profile);
+        profile = getDataTree(ModificationType.SUBTREE_MODIFIED);
+        collection.add(profile);
+        legatoL2cpPeeringController.onDataTreeChanged(collection);
+        verify(legatoL2cpPeeringController, times(1)).add(any(DataTreeModification.class));
+        verify(legatoL2cpPeeringController, times(1)).remove(any(DataTreeModification.class));
+        verify(legatoL2cpPeeringController, times(1)).update(any(DataTreeModification.class));
     }
 
 
     private DataTreeModification<Profile> getDataTree(final ModificationType modificationType) {
-        final DataObjectModification<Profile> evcDataObjModification = new DataObjectModification<Profile>() {
+        final DataObjectModification<Profile> proDataObjModification = new DataObjectModification<Profile>() {
             @Override
             public Collection<DataObjectModification<? extends DataObject>> getModifiedChildren() {
                 // TODO Auto-generated method stub
@@ -123,7 +125,7 @@ public class LegatoEecProfileImplTest {
             }
             @Override
             public DataObjectModification<Profile> getRootNode() {
-                return evcDataObjModification;
+                return proDataObjModification;
             }
         };
         return modifiedPro;

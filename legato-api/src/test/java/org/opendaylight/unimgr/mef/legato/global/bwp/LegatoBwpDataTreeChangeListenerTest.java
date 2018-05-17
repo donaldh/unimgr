@@ -47,14 +47,14 @@ public class LegatoBwpDataTreeChangeListenerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testL2cpEecDataTreeChangeListener() {
+    public void testBwpDataTreeChangeListener() {
         Collection<DataTreeModification<Profile>> collection = new ArrayList<DataTreeModification<Profile>>();
-        DataTreeModification<Profile> evc = getDataTree(ModificationType.WRITE);
-        collection.add(evc);
-        evc = getDataTree(ModificationType.DELETE);
-        collection.add(evc);
-        evc = getDataTree(ModificationType.SUBTREE_MODIFIED);
-        collection.add(evc);
+        DataTreeModification<Profile> profile = getDataTree(ModificationType.WRITE);
+        collection.add(profile);
+        profile = getDataTree(ModificationType.DELETE);
+        collection.add(profile);
+        profile = getDataTree(ModificationType.SUBTREE_MODIFIED);
+        collection.add(profile);
         legatoBwpProfileController.onDataTreeChanged(collection);
         verify(legatoBwpProfileController, times(1)).add(any(DataTreeModification.class));
         verify(legatoBwpProfileController, times(1)).remove(any(DataTreeModification.class));
@@ -62,7 +62,7 @@ public class LegatoBwpDataTreeChangeListenerTest {
     }
 
     private DataTreeModification<Profile> getDataTree(final ModificationType modificationType) {
-        final DataObjectModification<Profile> evcDataObjModification = new DataObjectModification<Profile>() {
+        final DataObjectModification<Profile> proDataObjModification = new DataObjectModification<Profile>() {
             @Override
             public Collection<DataObjectModification<? extends DataObject>> getModifiedChildren() {
                 // TODO Auto-generated method stub
@@ -122,7 +122,7 @@ public class LegatoBwpDataTreeChangeListenerTest {
             }
             @Override
             public DataObjectModification<Profile> getRootNode() {
-                return evcDataObjModification;
+                return proDataObjModification;
             }
         };
 

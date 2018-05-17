@@ -5,7 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.unimgr.mef.legato.global.bwp;
+package org.opendaylight.unimgr.mef.legato.global.l2cp;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -24,24 +24,23 @@ import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
-import org.opendaylight.unimgr.mef.legato.LegatoBwpProfileController;
+import org.opendaylight.unimgr.mef.legato.LegatoL2cpPeeringController;
 import org.opendaylight.unimgr.mef.legato.util.LegatoConstants;
 import org.opendaylight.unimgr.mef.legato.util.LegatoUtils;
 import org.opendaylight.unimgr.mef.legato.utils.Constants;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.MefGlobal;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.BwpFlowParameterProfiles;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.bwp.flow.parameter.profiles.Profile;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.bwp.flow.parameter.profiles.ProfileKey;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.L2cpPeeringProfiles;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.l2cp.peering.profiles.Profile;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.l2cp.peering.profiles.ProfileKey;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.types.rev171215.Identifier1024;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.powermock.modules.junit4.PowerMockRunner;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.CheckedFuture;
 
-
 @SuppressWarnings("deprecation")
 @RunWith(PowerMockRunner.class)
-public class LegatoBwpProfileUnitTest {
+public class LegatoL2cpPeeringProfileUnitTest {
 
     @Mock
     private DataBroker dataBroker;
@@ -50,49 +49,48 @@ public class LegatoBwpProfileUnitTest {
     @SuppressWarnings("rawtypes")
     @Mock
     private CheckedFuture checkedFuture;
-    
+
     @Before
     public void setUp() throws Exception {
-        mock(LegatoBwpProfileController.class, Mockito.CALLS_REAL_METHODS);
+        mock(LegatoL2cpPeeringController.class, Mockito.CALLS_REAL_METHODS);
     }
-
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testBwpAddToOperationalDB() {
-        BwpFlowParameterProfiles profile = mock(BwpFlowParameterProfiles.class);
-        InstanceIdentifier<BwpFlowParameterProfiles> profilesTx =
-                InstanceIdentifier.create(MefGlobal.class).child(BwpFlowParameterProfiles.class);
+    public void testL2cpPeeringAddToOperationalDB() {
+        L2cpPeeringProfiles l2cpPeeringProfiles = mock(L2cpPeeringProfiles.class);
+        InstanceIdentifier<L2cpPeeringProfiles> instanceIdentifier = InstanceIdentifier
+                .builder(MefGlobal.class).child(L2cpPeeringProfiles.class).build();
 
         when(dataBroker.newWriteOnlyTransaction()).thenReturn(transaction);
         doNothing().when(transaction).merge(any(LogicalDatastoreType.class),
-                any(InstanceIdentifier.class), any(BwpFlowParameterProfiles.class));
+                any(InstanceIdentifier.class), any(L2cpPeeringProfiles.class));
         when(transaction.submit()).thenReturn(checkedFuture);
-        LegatoUtils.addToOperationalDB(profile, profilesTx, dataBroker);
+        LegatoUtils.addToOperationalDB(l2cpPeeringProfiles, instanceIdentifier, dataBroker);
         verify(transaction).merge(any(LogicalDatastoreType.class), any(InstanceIdentifier.class),
-                any(BwpFlowParameterProfiles.class));
+                any(L2cpPeeringProfiles.class));
         verify(transaction).submit();
     }
 
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testBwpUpdateFromOperationalDB() throws ReadFailedException {
-
+    public void testL2cpPeeringUpdateFromOperationalDB() throws ReadFailedException {
         final InstanceIdentifier<Profile> PROFILE_ID =
-                InstanceIdentifier.create(MefGlobal.class).child(BwpFlowParameterProfiles.class)
+                InstanceIdentifier.create(MefGlobal.class).child(L2cpPeeringProfiles.class)
                         .child(Profile.class, new ProfileKey(new Identifier1024(Constants.ONE)));
 
         ReadOnlyTransaction readTransaction = mock(ReadOnlyTransaction.class);
         when(dataBroker.newReadOnlyTransaction()).thenReturn(readTransaction);
-        CheckedFuture<Optional<Profile>, ReadFailedException> nodeFuture =
-                mock(CheckedFuture.class);
+        CheckedFuture<Optional<Profile>, ReadFailedException> proFuture = mock(CheckedFuture.class);
+
         Optional<Profile> optProfile = mock(Optional.class);
         when(readTransaction.read(any(LogicalDatastoreType.class), any(InstanceIdentifier.class)))
-                .thenReturn(nodeFuture);
-        when(nodeFuture.checkedGet()).thenReturn(optProfile);
+                .thenReturn(proFuture);
+        when(proFuture.checkedGet()).thenReturn(optProfile);
+
         Optional<Profile> expectedOpt =
-                (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.BWP_PROFILES,
+                (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.L2CP_PEERING_PROFILES,
                         dataBroker, LogicalDatastoreType.CONFIGURATION, PROFILE_ID);
         verify(readTransaction).read(any(LogicalDatastoreType.class),
                 any(InstanceIdentifier.class));
@@ -107,27 +105,29 @@ public class LegatoBwpProfileUnitTest {
         verify(transaction).delete(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
         verify(transaction).submit();
 
-        BwpFlowParameterProfiles bwpProfile = mock(BwpFlowParameterProfiles.class);
+        L2cpPeeringProfiles l2cpPeeringProfiles = mock(L2cpPeeringProfiles.class);
+        InstanceIdentifier<L2cpPeeringProfiles> instanceIdentifier = InstanceIdentifier
+                .builder(MefGlobal.class).child(L2cpPeeringProfiles.class).build();
 
-        InstanceIdentifier<BwpFlowParameterProfiles> profilesTx =
-                InstanceIdentifier.create(MefGlobal.class).child(BwpFlowParameterProfiles.class);
         WriteTransaction transaction2 = Mockito.mock(WriteTransaction.class);
         when(dataBroker.newWriteOnlyTransaction()).thenReturn(transaction2);
         doNothing().when(transaction2).merge(any(LogicalDatastoreType.class),
-                any(InstanceIdentifier.class), any(BwpFlowParameterProfiles.class));
+                any(InstanceIdentifier.class), any(L2cpPeeringProfiles.class));
         when(transaction2.submit()).thenReturn(checkedFuture);
-        LegatoUtils.addToOperationalDB(bwpProfile, profilesTx, dataBroker);
+        LegatoUtils.addToOperationalDB(l2cpPeeringProfiles, instanceIdentifier, dataBroker);
         verify(transaction2).merge(any(LogicalDatastoreType.class), any(InstanceIdentifier.class),
-                any(BwpFlowParameterProfiles.class));
+                any(L2cpPeeringProfiles.class));
         verify(transaction2).submit();
     }
 
 
+
     @SuppressWarnings("unchecked")
     @Test
-    public void testBwpDeleteFromOperationalDB() {
+    public void testL2cpPeeringDeleteFromOperationalDB() {
+
         final InstanceIdentifier<Profile> PROFILE_ID =
-                InstanceIdentifier.create(MefGlobal.class).child(BwpFlowParameterProfiles.class)
+                InstanceIdentifier.create(MefGlobal.class).child(L2cpPeeringProfiles.class)
                         .child(Profile.class, new ProfileKey(new Identifier1024(Constants.ONE)));
 
         when(dataBroker.newWriteOnlyTransaction()).thenReturn(transaction);
@@ -138,6 +138,4 @@ public class LegatoBwpProfileUnitTest {
         verify(transaction).delete(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
         verify(transaction).submit();
     }
-
-
 }

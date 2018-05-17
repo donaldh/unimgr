@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.unimgr.mef.legato.global.cos;
+package org.opendaylight.unimgr.mef.legato.global.l2cp;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -19,10 +19,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
-import org.opendaylight.unimgr.mef.legato.LegatoCosProfileController;
+import org.opendaylight.unimgr.mef.legato.LegatoL2cpEecController;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.cos.profiles.Profile;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.l2cp.eec.profiles.Profile;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.opendaylight.yangtools.yang.binding.ChildOf;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -31,38 +31,40 @@ import org.opendaylight.yangtools.yang.binding.Identifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+
 /**
  * @author Arif.Hussain@Xoriant.Com
  *
  */
 @RunWith(PowerMockRunner.class)
-public class LegatoCosProfileImplTest {
+public class LegatoL2cpEecProfileDataTreeChangeListenerTest {
 
-    private LegatoCosProfileController legatoCosProfileController;
+    private LegatoL2cpEecController legatoL2cpEecController;
 
     @Before
     public void setUp() throws Exception {
-        legatoCosProfileController = mock(LegatoCosProfileController.class, Mockito.CALLS_REAL_METHODS);
+        legatoL2cpEecController = mock(LegatoL2cpEecController.class, Mockito.CALLS_REAL_METHODS);
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testCosProfileDataTreeChangeListener() {
+    public void testL2cpEecDataTreeChangeListener() {
         Collection<DataTreeModification<Profile>> collection = new ArrayList<DataTreeModification<Profile>>();
-        DataTreeModification<Profile> evc = getDataTree(ModificationType.WRITE);
-        collection.add(evc);
-        evc = getDataTree(ModificationType.DELETE);
-        collection.add(evc);
-        evc = getDataTree(ModificationType.SUBTREE_MODIFIED);
-        collection.add(evc);
-        legatoCosProfileController.onDataTreeChanged(collection);
-        verify(legatoCosProfileController, times(1)).add(any(DataTreeModification.class));
-        verify(legatoCosProfileController, times(1)).remove(any(DataTreeModification.class));
-        verify(legatoCosProfileController, times(1)).update(any(DataTreeModification.class));
-    } 
+        DataTreeModification<Profile> profile = getDataTree(ModificationType.WRITE);
+        collection.add(profile);
+        profile = getDataTree(ModificationType.DELETE);
+        collection.add(profile);
+        profile = getDataTree(ModificationType.SUBTREE_MODIFIED);
+        collection.add(profile);
+        legatoL2cpEecController.onDataTreeChanged(collection);
+        verify(legatoL2cpEecController, times(1)).add(any(DataTreeModification.class));
+        verify(legatoL2cpEecController, times(1)).remove(any(DataTreeModification.class));
+        verify(legatoL2cpEecController, times(1)).update(any(DataTreeModification.class));
+    }
+
 
     private DataTreeModification<Profile> getDataTree(final ModificationType modificationType) {
-        final DataObjectModification<Profile> evcDataObjModification = new DataObjectModification<Profile>() {
+        final DataObjectModification<Profile> proDataObjModification = new DataObjectModification<Profile>() {
             @Override
             public Collection<DataObjectModification<? extends DataObject>> getModifiedChildren() {
                 // TODO Auto-generated method stub
@@ -122,7 +124,7 @@ public class LegatoCosProfileImplTest {
             }
             @Override
             public DataObjectModification<Profile> getRootNode() {
-                return evcDataObjModification;
+                return proDataObjModification;
             }
         };
         return modifiedPro;

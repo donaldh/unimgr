@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.unimgr.mef.legato.global.sls;
+package org.opendaylight.unimgr.mef.legato.global.cos;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -19,10 +19,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
-import org.opendaylight.unimgr.mef.legato.LegatoSlsProfileController;
+import org.opendaylight.unimgr.mef.legato.LegatoCosProfileController;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.sls.profiles.Profile;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.cos.profiles.Profile;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.opendaylight.yangtools.yang.binding.ChildOf;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -36,33 +36,33 @@ import org.powermock.modules.junit4.PowerMockRunner;
  *
  */
 @RunWith(PowerMockRunner.class)
-public class LegatoSlsProfileImplTest {
+public class LegatoCosProfileDataTreeChangeListenerTest {
 
-    private LegatoSlsProfileController legatoSlsProfileController;
+    private LegatoCosProfileController legatoCosProfileController;
 
     @Before
     public void setUp() throws Exception {
-        legatoSlsProfileController = mock(LegatoSlsProfileController.class, Mockito.CALLS_REAL_METHODS);
+        legatoCosProfileController = mock(LegatoCosProfileController.class, Mockito.CALLS_REAL_METHODS);
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testL2cpEecDataTreeChangeListener() {
+    public void testCosProfileDataTreeChangeListener() {
         Collection<DataTreeModification<Profile>> collection = new ArrayList<DataTreeModification<Profile>>();
-        DataTreeModification<Profile> evc = getDataTree(ModificationType.WRITE);
-        collection.add(evc);
-        evc = getDataTree(ModificationType.DELETE);
-        collection.add(evc);
-        evc = getDataTree(ModificationType.SUBTREE_MODIFIED);
-        collection.add(evc);
-        legatoSlsProfileController.onDataTreeChanged(collection);
-        verify(legatoSlsProfileController, times(1)).add(any(DataTreeModification.class));
-        verify(legatoSlsProfileController, times(1)).remove(any(DataTreeModification.class));
-        verify(legatoSlsProfileController, times(1)).update(any(DataTreeModification.class));
-    }
+        DataTreeModification<Profile> profile = getDataTree(ModificationType.WRITE);
+        collection.add(profile);
+        profile = getDataTree(ModificationType.DELETE);
+        collection.add(profile);
+        profile = getDataTree(ModificationType.SUBTREE_MODIFIED);
+        collection.add(profile);
+        legatoCosProfileController.onDataTreeChanged(collection);
+        verify(legatoCosProfileController, times(1)).add(any(DataTreeModification.class));
+        verify(legatoCosProfileController, times(1)).remove(any(DataTreeModification.class));
+        verify(legatoCosProfileController, times(1)).update(any(DataTreeModification.class));
+    } 
 
     private DataTreeModification<Profile> getDataTree(final ModificationType modificationType) {
-        final DataObjectModification<Profile> evcDataObjModification = new DataObjectModification<Profile>() {
+        final DataObjectModification<Profile> proDataObjModification = new DataObjectModification<Profile>() {
             @Override
             public Collection<DataObjectModification<? extends DataObject>> getModifiedChildren() {
                 // TODO Auto-generated method stub
@@ -122,7 +122,7 @@ public class LegatoSlsProfileImplTest {
             }
             @Override
             public DataObjectModification<Profile> getRootNode() {
-                return evcDataObjModification;
+                return proDataObjModification;
             }
         };
         return modifiedPro;

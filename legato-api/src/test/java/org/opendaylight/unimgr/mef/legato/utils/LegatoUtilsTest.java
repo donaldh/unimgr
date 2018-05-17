@@ -30,7 +30,6 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.unimgr.mef.legato.dao.EVCDao;
-import org.opendaylight.unimgr.mef.legato.util.LegatoConstants;
 import org.opendaylight.unimgr.mef.legato.util.LegatoUtils;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.MefGlobal;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.SlsProfiles;
@@ -138,9 +137,9 @@ public class LegatoUtilsTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testAddToOperationalDB() {
-        final InstanceIdentifier<SlsProfiles> SLS_PROFILES_IID_OPERATIONAL =
-                mock(InstanceIdentifier.class);
         final SlsProfiles slsProfile = mock(SlsProfiles.class);
+        InstanceIdentifier<SlsProfiles> SLS_PROFILES_IID_OPERATIONAL =
+                InstanceIdentifier.create(MefGlobal.class).child(SlsProfiles.class);
 
         when(dataBroker.newWriteOnlyTransaction()).thenReturn(transaction);
         doNothing().when(transaction).merge(any(LogicalDatastoreType.class),
