@@ -71,8 +71,8 @@ public class LegatoColorMappingProfileController extends UnimgrDataTreeChangeLis
     public void addToOperationalDB(Profile profile) {
         try {
             assert profile != null;
-        ColorMappingProfiles colorMappingProfiles = new ColorMappingProfilesBuilder().setProfile(Collections.singletonList(profile)).build();   
-        InstanceIdentifier<ColorMappingProfiles> profilesTx = InstanceIdentifier.create(MefGlobal.class)
+            ColorMappingProfiles colorMappingProfiles = new ColorMappingProfilesBuilder().setProfile(Collections.singletonList(profile)).build();
+            InstanceIdentifier<ColorMappingProfiles> profilesTx = InstanceIdentifier.create(MefGlobal.class)
                 .child(ColorMappingProfiles.class);
             LegatoUtils.addToOperationalDB(colorMappingProfiles, profilesTx, dataBroker);
         } catch (Exception ex) {
@@ -128,12 +128,12 @@ public class LegatoColorMappingProfileController extends UnimgrDataTreeChangeLis
         InstanceIdentifier<Profile> instanceIdentifier =
                 InstanceIdentifier.create(MefGlobal.class).child(ColorMappingProfiles.class)
                         .child(Profile.class, new ProfileKey(profile.getId()));
-        Optional<Profile> OptionalProfile =
+        Optional<Profile> optionalProfile =
                 (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.CMP_PROFILES,
                         dataBroker, LogicalDatastoreType.CONFIGURATION, instanceIdentifier);
-        if (OptionalProfile.isPresent()) {
+        if (optionalProfile.isPresent()) {
             LegatoUtils.deleteFromOperationalDB(instanceIdentifier, dataBroker);
-            addToOperationalDB(OptionalProfile.get());
+            addToOperationalDB(optionalProfile.get());
         }
     }
 

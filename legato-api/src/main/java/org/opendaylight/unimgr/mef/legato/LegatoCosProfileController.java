@@ -118,12 +118,12 @@ public class LegatoCosProfileController extends UnimgrDataTreeChangeListener<Pro
         assert profile != null;
         InstanceIdentifier<Profile> instanceIdentifier = InstanceIdentifier.create(MefGlobal.class)
                 .child(CosProfiles.class).child(Profile.class, new ProfileKey(profile.getId()));
-        Optional<Profile> OptionalProfile =
+        Optional<Profile> optionalProfile =
                 (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.COS_PROFILES,
                         dataBroker, LogicalDatastoreType.CONFIGURATION, instanceIdentifier);
-        if (OptionalProfile.isPresent()) {
+        if (optionalProfile.isPresent()) {
             LegatoUtils.deleteFromOperationalDB(instanceIdentifier, dataBroker);
-            addToOperationalDB(OptionalProfile.get());
+            addToOperationalDB(optionalProfile.get());
         }
     }
 

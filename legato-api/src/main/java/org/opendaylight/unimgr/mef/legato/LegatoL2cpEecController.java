@@ -34,16 +34,14 @@ import com.google.common.base.Optional;
  *
  */
 public class LegatoL2cpEecController  extends UnimgrDataTreeChangeListener<Profile> {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(LegatoL2cpEecController.class);
-    
+
     private static final InstanceIdentifier<Profile> PROFILE_ID = InstanceIdentifier
             .builder(MefGlobal.class).child(L2cpEecProfiles.class).child(Profile.class).build();
-    
-    
+
     private static final InstanceIdentifier<L2cpEecProfiles> L2CP_EEC_PROFILES_ID_OPERATIONAL = InstanceIdentifier
             .builder(MefGlobal.class).child(L2cpEecProfiles.class).build();
-            
 
     private ListenerRegistration<LegatoL2cpEecController> dataTreeChangeListenerRegistration;
 
@@ -57,14 +55,14 @@ public class LegatoL2cpEecController  extends UnimgrDataTreeChangeListener<Profi
 
         dataTreeChangeListenerRegistration = dataBroker.registerDataTreeChangeListener(
                 new DataTreeIdentifier<Profile>(LogicalDatastoreType.CONFIGURATION, PROFILE_ID), this);
-
     }
 
     @Override
     public void add(DataTreeModification<Profile> newDataObject) {
-        if(newDataObject.getRootNode() != null && newDataObject.getRootPath() != null ){
-            LOG.info( "ClassName :: LegatoL2cpEecController, Method:: add(), Message:: Node Added  " + newDataObject.getRootNode().getIdentifier());
-            
+        if (newDataObject.getRootNode() != null && newDataObject.getRootPath() != null) {
+            LOG.info("ClassName :: LegatoL2cpEecController, Method:: add(), Message:: Node Added  "
+                    + newDataObject.getRootNode().getIdentifier());
+
             addToOperationalDB(newDataObject.getRootNode().getDataAfter());
         }
     }
@@ -90,7 +88,8 @@ public class LegatoL2cpEecController  extends UnimgrDataTreeChangeListener<Profi
     @Override
     public void update(DataTreeModification<Profile> modifiedDataObject) {
         if (modifiedDataObject.getRootNode() != null && modifiedDataObject.getRootPath() != null) {
-            LOG.info( "ClassName :: LegatoL2cpEecController, Method:: update(), Message:: Node modified  " + modifiedDataObject.getRootNode().getIdentifier());
+            LOG.info("ClassName :: LegatoL2cpEecController, Method:: update(), Message:: Node modified "
+                    + modifiedDataObject.getRootNode().getIdentifier());
 
             try {
                 assert modifiedDataObject.getRootNode().getDataAfter() != null;
@@ -104,16 +103,16 @@ public class LegatoL2cpEecController  extends UnimgrDataTreeChangeListener<Profi
     @SuppressWarnings("unchecked")
     public void updateFromOperationalDB(Profile profile) {
         assert profile != null;
-        Optional<Profile> OptionalProfile = (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.l2CP_EEC_PROFILES, dataBroker, LogicalDatastoreType.CONFIGURATION,
+        Optional<Profile> optionalProfile = (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.L2CP_EEC_PROFILES, dataBroker, LogicalDatastoreType.CONFIGURATION,
                 InstanceIdentifier.create(MefGlobal.class).child(L2cpEecProfiles.class).child(Profile.class,
                         new ProfileKey(profile.getId())));
 
-        if (OptionalProfile.isPresent()) {
+        if (optionalProfile.isPresent()) {
 
             LegatoUtils.deleteFromOperationalDB(InstanceIdentifier.create(MefGlobal.class).child(L2cpEecProfiles.class)
                     .child(Profile.class, new ProfileKey(profile.getId())), dataBroker);
 
-            addToOperationalDB(OptionalProfile.get());
+            addToOperationalDB(optionalProfile.get());
         }
     }
 

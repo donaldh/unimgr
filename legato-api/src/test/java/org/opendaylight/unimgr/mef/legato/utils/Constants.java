@@ -13,7 +13,7 @@ package org.opendaylight.unimgr.mef.legato.utils;
  *
  */
 public class Constants {
- 
+
     public static final String EVC_ID_TYPE = "EVC1";
     public static final String EVC_ID = "EVC_ID";
     public static final String EVC_UNI = "EVC_UNI_LIST";
@@ -38,4 +38,5 @@ public class Constants {
     public static final int MAXFRAME_SIZE_TYPE = 1522;
     public static final int VLAN_ID_TYPE = 301;
     public static final String ONE = "1";
+    public static final String EPL = "epl";
 }

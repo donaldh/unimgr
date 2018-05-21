@@ -82,10 +82,11 @@ public class LegatoUtils {
 
             uniList.add(endPoint.getUniId().getValue().toString() + "#" + vlanId);
         }
-        
+
         evcDao.setEvcId(evc.getEvcId().getValue());
         evcDao.setMaxFrameSize((evc.getMaxFrameSize().getValue() != null) ? evc.getMaxFrameSize().getValue() : 0);
         evcDao.setConnectionType((evc.getConnectionType().getName() != null) ? evc.getConnectionType().getName() : "");
+        evcDao.setSvcType((evc.getSvcType().name() != null) ? "" : evc.getSvcType().getName());
         evcDao.setUniList(uniList);
         return evcDao;
     }
@@ -115,14 +116,15 @@ public class LegatoUtils {
     public static NrpCarrierEthConnectivityEndPointResource buildNrpCarrierEthConnectivityEndPointResource(
             String vlanId) {
 
-        NrpCarrierEthConnectivityEndPointResourceBuilder nrpCarrierEthConnectivityEndPointResourceBuilder = new NrpCarrierEthConnectivityEndPointResourceBuilder();
-        
+        NrpCarrierEthConnectivityEndPointResourceBuilder nrpCarrierEthConnectivityEndPointResourceBuilder =
+                new NrpCarrierEthConnectivityEndPointResourceBuilder();
+
         CeVlanIdListAndUntagBuilder ceVlanIdListAndUntagBuilder = new CeVlanIdListAndUntagBuilder();
         List<VlanId> vlanList = new ArrayList<>();
-        if(Integer.parseInt(vlanId) > 0){
+        if (Integer.parseInt(vlanId) > 0) {
             VlanIdBuilder vlanIdBuilder = new VlanIdBuilder().setVlanId(new PositiveInteger(Long.parseLong(vlanId)));
             vlanList.add(vlanIdBuilder.build());
-        }    
+        }
         ceVlanIdListAndUntagBuilder.setVlanId(vlanList);
         nrpCarrierEthConnectivityEndPointResourceBuilder.setCeVlanIdListAndUntag(ceVlanIdListAndUntagBuilder.build());
 
@@ -130,30 +132,37 @@ public class LegatoUtils {
     }
 
     public static NrpCarrierEthConnectivityResource buildNrpCarrierEthConnectivityResource(String maxFrameSize) {
-        NrpCarrierEthConnectivityResourceBuilder nrpCarrierEthConnectivityResourceBuilder = new NrpCarrierEthConnectivityResourceBuilder();
+        NrpCarrierEthConnectivityResourceBuilder nrpCarrierEthConnectivityResourceBuilder =
+                new NrpCarrierEthConnectivityResourceBuilder();
         return nrpCarrierEthConnectivityResourceBuilder
                 .setMaxFrameSize(new PositiveInteger(Long.parseLong(maxFrameSize))).build();
     }
 
-    public static CreateConnectivityServiceInput buildCreateConnectivityServiceInput(EVCDao evcDao, String connType) {
+    public static CreateConnectivityServiceInput buildCreateConnectivityServiceInput(EVCDao evcDao) {
 
         CreateConnectivityServiceInputBuilder createConnServiceInputBuilder = new CreateConnectivityServiceInputBuilder();
         List<org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.create.connectivity.service.input.EndPoint> endpointList;
         List<String> uniList = evcDao.getUniList();
+        boolean isExclusive = false;
 
-        switch (connType.replace("-", "").toUpperCase()) {
-        case LegatoConstants.POINTTOPOINT:
-            createConnServiceInputBuilder
-                    .setConnConstraint(new ConnConstraintBuilder().setServiceLevel(LegatoConstants.BEST_EFFORT)
-                            .setServiceType(ServiceType.POINTTOPOINTCONNECTIVITY).build());
-            break;
-        case LegatoConstants.MULTIPOINTTOMULTIPOINT:
-            createConnServiceInputBuilder
-                    .setConnConstraint(new ConnConstraintBuilder().setServiceLevel(LegatoConstants.BEST_EFFORT)
-                            .setServiceType(ServiceType.MULTIPOINTCONNECTIVITY).build());
-            break;
-        default:
-            break;
+        // if svc-type = epl/eplan then set is_exclusive flag as true
+        if (evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EPL) || evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EPLAN)) {
+            isExclusive = true;
+        }
+
+        switch (evcDao.getConnectionType().replace("-", "").toUpperCase()) {
+            case LegatoConstants.POINTTOPOINT:
+                createConnServiceInputBuilder.setConnConstraint(new ConnConstraintBuilder()
+                        .setServiceLevel(LegatoConstants.BEST_EFFORT).setIsExclusive(isExclusive)
+                        .setServiceType(ServiceType.POINTTOPOINTCONNECTIVITY).build());
+                break;
+            case LegatoConstants.MULTIPOINTTOMULTIPOINT:
+                createConnServiceInputBuilder.setConnConstraint(new ConnConstraintBuilder()
+                        .setServiceLevel(LegatoConstants.BEST_EFFORT).setIsExclusive(isExclusive)
+                        .setServiceType(ServiceType.MULTIPOINTCONNECTIVITY).build());
+                break;
+            default:
+                break;
         }
 
 
@@ -170,25 +179,31 @@ public class LegatoUtils {
     }
 
     public static UpdateConnectivityServiceInput buildUpdateConnectivityServiceInput(EVCDao evcDao,
-            String uniStr, String uuid, String connType) {
+            String uniStr, String uuid) {
+        boolean isExclusive = false;
 
         UpdateConnectivityServiceInputBuilder updateConnServiceInputBuilder = new UpdateConnectivityServiceInputBuilder();
 
-        switch (connType.replace("-", "").toUpperCase()) {
-        case LegatoConstants.POINTTOPOINT:
-            updateConnServiceInputBuilder.setConnConstraint(
-                    new org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.update.connectivity.service.input.ConnConstraintBuilder()
-                            .setServiceLevel(LegatoConstants.BEST_EFFORT)
-                            .setServiceType(ServiceType.POINTTOPOINTCONNECTIVITY).build());
-            break;
-        case LegatoConstants.MULTIPOINTTOMULTIPOINT:
-            updateConnServiceInputBuilder.setConnConstraint(
-                    new org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.update.connectivity.service.input.ConnConstraintBuilder()
-                            .setServiceLevel(LegatoConstants.BEST_EFFORT)
-                            .setServiceType(ServiceType.MULTIPOINTCONNECTIVITY).build());
-            break;
-        default:
-            break;
+        // if svc-type = epl/eplan then set is_exclusive flag as true
+        if (evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EPL) || evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EPLAN)) {
+            isExclusive = true;
+        }
+
+        switch (evcDao.getConnectionType().replace("-", "").toUpperCase()) {
+            case LegatoConstants.POINTTOPOINT:
+                updateConnServiceInputBuilder
+                        .setConnConstraint(new org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.update.connectivity.service.input.ConnConstraintBuilder()
+                                .setServiceLevel(LegatoConstants.BEST_EFFORT).setIsExclusive(isExclusive)
+                                .setServiceType(ServiceType.POINTTOPOINTCONNECTIVITY).build());
+                break;
+            case LegatoConstants.MULTIPOINTTOMULTIPOINT:
+                updateConnServiceInputBuilder
+                        .setConnConstraint(new org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.update.connectivity.service.input.ConnConstraintBuilder()
+                                .setServiceLevel(LegatoConstants.BEST_EFFORT).setIsExclusive(isExclusive)
+                                .setServiceType(ServiceType.MULTIPOINTCONNECTIVITY).build());
+                break;
+            default:
+                break;
         }
 
         updateConnServiceInputBuilder.setEndPoint(buildUpdateEndpoints(uniStr, LayerProtocolName.ETH));
@@ -201,14 +216,15 @@ public class LegatoUtils {
 
     private static List<org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.create.connectivity.service.input.EndPoint> buildCreateEndpoints(
             List<String> uniList, LayerProtocolName layerProtocolName) {
-        List<org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.create.connectivity.service.input.EndPoint> endpointList = new ArrayList<org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.create.connectivity.service.input.EndPoint>();
+        List<org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.create.connectivity.service.input.EndPoint> endpointList =
+                new ArrayList<org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.create.connectivity.service.input.EndPoint>();
 
         EndPointBuilder endPointBuilder;
         String[] uniArr;
 
         for (String uniStr : uniList) {
             uniArr = uniStr.split("#");
-            
+
             ServiceInterfacePoint sipRef = new ServiceInterfacePointBuilder()
                     .setServiceInterfacePointId(new Uuid(uniArr[0])).build();
 
@@ -268,64 +284,57 @@ public class LegatoUtils {
         try {
 
             switch (string) {
-            case LegatoConstants.SLS_PROFILES:
-                final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.sls.profiles.Profile> profileId = child
-                        .firstIdentifierOf(
-                                org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.sls.profiles.Profile.class);
-                final CheckedFuture<Optional<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.sls.profiles.Profile>, ReadFailedException> profileFuture = read
-                        .read(store, profileId);
-                return profileFuture.checkedGet();
+                case LegatoConstants.SLS_PROFILES:
+                    final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.sls.profiles.Profile> profileId =
+                            child.firstIdentifierOf(org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.sls.profiles.Profile.class);
+                    final CheckedFuture<Optional<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.sls.profiles.Profile>, ReadFailedException> profileFuture =
+                            read.read(store, profileId);
+                    return profileFuture.checkedGet();
 
-            case LegatoConstants.COS_PROFILES:
-                final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.cos.profiles.Profile> cosProfileId = child
-                        .firstIdentifierOf(
-                                org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.cos.profiles.Profile.class);
-                final CheckedFuture<Optional<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.cos.profiles.Profile>, ReadFailedException> cosProfileFuture = read
-                        .read(store, cosProfileId);
-                return cosProfileFuture.checkedGet();
+                case LegatoConstants.COS_PROFILES:
+                    final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.cos.profiles.Profile> cosProfileId =
+                            child.firstIdentifierOf(org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.cos.profiles.Profile.class);
+                    final CheckedFuture<Optional<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.cos.profiles.Profile>, ReadFailedException> cosProfileFuture =
+                            read.read(store, cosProfileId);
+                    return cosProfileFuture.checkedGet();
 
-            case LegatoConstants.BWP_PROFILES:
-                final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.bwp.flow.parameter.profiles.Profile> bwpProfileId = child
-                        .firstIdentifierOf(
-                                org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.bwp.flow.parameter.profiles.Profile.class);
-                final CheckedFuture<Optional<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.bwp.flow.parameter.profiles.Profile>, ReadFailedException> bwpProfileFuture = read
-                        .read(store, bwpProfileId);
-                return bwpProfileFuture.checkedGet();
+                case LegatoConstants.BWP_PROFILES:
+                    final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.bwp.flow.parameter.profiles.Profile> bwpProfileId =
+                            child.firstIdentifierOf(org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.bwp.flow.parameter.profiles.Profile.class);
+                    final CheckedFuture<Optional<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.bwp.flow.parameter.profiles.Profile>, ReadFailedException> bwpProfileFuture =
+                            read.read(store, bwpProfileId);
+                    return bwpProfileFuture.checkedGet();
 
-            case LegatoConstants.l2CP_EEC_PROFILES:
-                final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.l2cp.eec.profiles.Profile> l2cpEec_ProfileId = child
-                        .firstIdentifierOf(
-                                org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.l2cp.eec.profiles.Profile.class);
-                final CheckedFuture<Optional<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.l2cp.eec.profiles.Profile>, ReadFailedException> l2cpEecProfileFuture = read
-                        .read(store, l2cpEec_ProfileId);
-                return l2cpEecProfileFuture.checkedGet();
+                case LegatoConstants.L2CP_EEC_PROFILES:
+                    final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.l2cp.eec.profiles.Profile> l2cpEec_ProfileId =
+                            child.firstIdentifierOf(org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.l2cp.eec.profiles.Profile.class);
+                    final CheckedFuture<Optional<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.l2cp.eec.profiles.Profile>, ReadFailedException> l2cpEecProfileFuture =
+                            read.read(store, l2cpEec_ProfileId);
+                    return l2cpEecProfileFuture.checkedGet();
 
-            case LegatoConstants.L2CP_PEERING_PROFILES:
-                final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.l2cp.peering.profiles.Profile> l2cpPeering_ProfileId = child
-                        .firstIdentifierOf(
-                                org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.l2cp.peering.profiles.Profile.class);
-                final CheckedFuture<Optional<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.l2cp.peering.profiles.Profile>, ReadFailedException> l2cpPeeringProfileFuture = read
-                        .read(store, l2cpPeering_ProfileId);
-                return l2cpPeeringProfileFuture.checkedGet();
+                case LegatoConstants.L2CP_PEERING_PROFILES:
+                    final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.l2cp.peering.profiles.Profile> l2cpPeering_ProfileId =
+                            child.firstIdentifierOf(org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.l2cp.peering.profiles.Profile.class);
+                    final CheckedFuture<Optional<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.l2cp.peering.profiles.Profile>, ReadFailedException> l2cpPeeringProfileFuture =
+                            read.read(store, l2cpPeering_ProfileId);
+                    return l2cpPeeringProfileFuture.checkedGet();
 
-            case LegatoConstants.EEC_PROFILES:
-                final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.eec.profiles.Profile> eecProfileId = child
-                        .firstIdentifierOf(
-                                org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.eec.profiles.Profile.class);
-                final CheckedFuture<Optional<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.eec.profiles.Profile>, ReadFailedException> eecProfileFuture = read
-                        .read(store, eecProfileId);
-                return eecProfileFuture.checkedGet();
-                
-            case LegatoConstants.CMP_PROFILES:
-                final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.color.mapping.profiles.Profile> cmpProfileId = child
-                        .firstIdentifierOf(
-                                org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.color.mapping.profiles.Profile.class);
-                final CheckedFuture<Optional<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.color.mapping.profiles.Profile>, ReadFailedException> cmpProfileFuture = read
-                        .read(store, cmpProfileId);
-                return cmpProfileFuture.checkedGet();
+                case LegatoConstants.EEC_PROFILES:
+                    final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.eec.profiles.Profile> eecProfileId =
+                            child.firstIdentifierOf(org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.eec.profiles.Profile.class);
+                    final CheckedFuture<Optional<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.eec.profiles.Profile>, ReadFailedException> eecProfileFuture =
+                            read.read(store, eecProfileId);
+                    return eecProfileFuture.checkedGet();
 
-            default:
-                LOG.info("IN DEFAULT CASE :  NO MATCH");
+                case LegatoConstants.CMP_PROFILES:
+                    final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.color.mapping.profiles.Profile> cmpProfileId =
+                            child.firstIdentifierOf(org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.color.mapping.profiles.Profile.class);
+                    final CheckedFuture<Optional<org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.color.mapping.profiles.Profile>, ReadFailedException> cmpProfileFuture =
+                            read.read(store, cmpProfileId);
+                    return cmpProfileFuture.checkedGet();
+
+                default:
+                    LOG.info("IN DEFAULT CASE :  NO MATCH");
             }
         } catch (final ReadFailedException e) {
             LOG.error("Unable to read node ", e);
@@ -359,7 +368,7 @@ public class LegatoUtils {
 
         WriteTransaction transaction = dataBroker.newWriteOnlyTransaction();
         transaction.merge(LogicalDatastoreType.OPERATIONAL, profilesTx, typeOfProfile);
-        
+
         try {
             transaction.submit().checkedGet();
         } catch (org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException e) {
@@ -367,7 +376,7 @@ public class LegatoUtils {
         }
 
     }
-    
+
     @SuppressWarnings("deprecation")
     public static boolean updateEvcInOperationalDB(Evc evc,
             InstanceIdentifier<SubscriberServices> nodeIdentifier, DataBroker dataBroker) {

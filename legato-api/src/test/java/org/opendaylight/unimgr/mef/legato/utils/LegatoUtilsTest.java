@@ -132,8 +132,8 @@ public class LegatoUtilsTest {
         assertEquals(expectedOpt, optNode);
 
     }
-    
-    
+
+
     @SuppressWarnings("unchecked")
     @Test
     public void testAddToOperationalDB() {
@@ -179,11 +179,11 @@ public class LegatoUtilsTest {
         when(LegatoUtils.parseNodes(evc)).thenReturn(evcDao);
         MemberModifier.suppress(
                 MemberMatcher.method(LegatoUtils.class, Constants.CREATE_CONNECTIVITY_INPUT));
-        when(LegatoUtils.buildCreateConnectivityServiceInput(evcDao, Constants.EVC_CON_TYPE))
+        when(LegatoUtils.buildCreateConnectivityServiceInput(evcDao))
                 .thenReturn(input);
         assertNotNull(input);
         assertEquals(input,
-                LegatoUtils.buildCreateConnectivityServiceInput(evcDao, Constants.EVC_CON_TYPE));
+                LegatoUtils.buildCreateConnectivityServiceInput(evcDao));
     }
 
 
@@ -200,11 +200,10 @@ public class LegatoUtilsTest {
         uniList.add(Constants.UNI_ID2);
         MemberModifier.suppress(
                 MemberMatcher.method(LegatoUtils.class, Constants.UPDATE_CONNECTIVITY_INPUT));
-        when(LegatoUtils.buildUpdateConnectivityServiceInput(evcDao, uniList.get(0), Constants.UUID,
-                Constants.EVC_CON_TYPE)).thenReturn(input);
+        when(LegatoUtils.buildUpdateConnectivityServiceInput(evcDao, uniList.get(0), Constants.UUID)).thenReturn(input);
         assertNotNull(input);
         assertEquals(input, LegatoUtils.buildUpdateConnectivityServiceInput(evcDao, uniList.get(0),
-                Constants.UUID, Constants.EVC_CON_TYPE));
+                Constants.UUID));
     }
 
 
@@ -298,7 +297,6 @@ public class LegatoUtilsTest {
         assertEquals(updateConServInput, LegatoUtils
                 .buildUpdateConServiceAugmentation(String.valueOf(Constants.MAXFRAME_SIZE_TYPE)));
     }
-    
-    
-   
+
+
 }

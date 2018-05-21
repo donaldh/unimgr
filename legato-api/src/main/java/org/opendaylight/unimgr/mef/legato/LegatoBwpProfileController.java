@@ -128,12 +128,12 @@ public class LegatoBwpProfileController extends UnimgrDataTreeChangeListener<Pro
         InstanceIdentifier<Profile> instanceIdentifier =
                 InstanceIdentifier.create(MefGlobal.class).child(BwpFlowParameterProfiles.class)
                         .child(Profile.class, new ProfileKey(profile.getId()));
-        Optional<Profile> OptionalProfile =
+        Optional<Profile> optionalProfile =
                 (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.BWP_PROFILES,
                         dataBroker, LogicalDatastoreType.CONFIGURATION, instanceIdentifier);
-        if (OptionalProfile.isPresent()) {
+        if (optionalProfile.isPresent()) {
             LegatoUtils.deleteFromOperationalDB(instanceIdentifier, dataBroker);
-            addToOperationalDB(OptionalProfile.get());
+            addToOperationalDB(optionalProfile.get());
         }
 
     }

@@ -35,18 +35,15 @@ import com.google.common.base.Optional;
  */
 public class LegatoL2cpPeeringController extends UnimgrDataTreeChangeListener<Profile> {
 
-private static final Logger LOG = LoggerFactory.getLogger(LegatoL2cpPeeringController.class);
-    
+    private static final Logger LOG = LoggerFactory.getLogger(LegatoL2cpPeeringController.class);
+
     private static final InstanceIdentifier<Profile> PROFILE_ID = InstanceIdentifier
             .builder(MefGlobal.class).child(L2cpPeeringProfiles.class).child(Profile.class).build();
-    
-    
+
     private static final InstanceIdentifier<L2cpPeeringProfiles> L2CP_PEERING_PROFILES_ID_OPERATIONAL = InstanceIdentifier
             .builder(MefGlobal.class).child(L2cpPeeringProfiles.class).build();
-            
-    
+
     private ListenerRegistration<LegatoL2cpPeeringController> dataTreeChangeListenerRegistration;
-    
 
     public LegatoL2cpPeeringController(DataBroker dataBroker) {
         super(dataBroker);
@@ -62,15 +59,13 @@ private static final Logger LOG = LoggerFactory.getLogger(LegatoL2cpPeeringContr
     }
 
 
-
     @Override
     public void add(DataTreeModification<Profile> newDataObject) {
-        if(newDataObject.getRootNode() != null && newDataObject.getRootPath() != null ){
-            LOG.info( "ClassName :: LegatoL2cpPeeringController, Method:: add(), Message:: Node Added  " + newDataObject.getRootNode().getIdentifier());
-            
+        if (newDataObject.getRootNode() != null && newDataObject.getRootPath() != null) {
+            LOG.info( "ClassName :: LegatoL2cpPeeringController, Method:: add(), Message:: Node Added  " 
+                    + newDataObject.getRootNode().getIdentifier());
             addToOperationalDB(newDataObject.getRootNode().getDataAfter());
         }
-        
     }
 
 
@@ -110,18 +105,18 @@ private static final Logger LOG = LoggerFactory.getLogger(LegatoL2cpPeeringContr
     @SuppressWarnings("unchecked")
     public void updateFromOperationalDB(Profile profile) {
         assert profile != null;
-        Optional<Profile> OptionalProfile = (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.L2CP_PEERING_PROFILES, dataBroker, LogicalDatastoreType.CONFIGURATION,
+        Optional<Profile> optionalProfile = (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.L2CP_PEERING_PROFILES, dataBroker, LogicalDatastoreType.CONFIGURATION,
                 InstanceIdentifier.create(MefGlobal.class).child(L2cpPeeringProfiles.class).child(Profile.class,
                         new ProfileKey(profile.getId())));
 
-        if (OptionalProfile.isPresent()) {
+        if (optionalProfile.isPresent()) {
 
             LegatoUtils.deleteFromOperationalDB(
                     InstanceIdentifier.create(MefGlobal.class).child(L2cpPeeringProfiles.class)
                             .child(Profile.class, new ProfileKey(profile.getId())),
                     dataBroker);
 
-            addToOperationalDB(OptionalProfile.get());
+            addToOperationalDB(optionalProfile.get());
         }
 
     }

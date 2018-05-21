@@ -32,7 +32,7 @@ public class LegatoConstants {
 
     public static final String MULTIPOINTTOMULTIPOINT = "MULTIPOINTTOMULTIPOINT";
 
-    public static final String l2CP_EEC_PROFILES = "l2CP_EEC_PROFILES";
+    public static final String L2CP_EEC_PROFILES = "l2CP_EEC_PROFILES";
 
     public static final String L2CP_PEERING_PROFILES = "L2CP_PEERING_PROFILES";
 
@@ -42,4 +42,11 @@ public class LegatoConstants {
 
     public static final TopologyId OVSDB_TOPOLOGY_ID = new TopologyId(new Uri("ovsdb:1"));
 
+    public static final String EPL = "epl";
+
+    public static final String EVPL = "evpl";
+
+    public static final String EPLAN = "eplan";
+
+    public static final String EVPLAN = "evplan";
 }

@@ -19,6 +19,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.unimgr.api.UnimgrDataTreeChangeListener;
 import org.opendaylight.unimgr.mef.legato.dao.EVCDao;
+import org.opendaylight.unimgr.mef.legato.util.LegatoConstants;
 import org.opendaylight.unimgr.mef.legato.util.LegatoUtils;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.legato.services.rev171215.MefServices;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.legato.services.rev171215.mef.services.CarrierEthernet;
@@ -64,7 +65,7 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
 
     private ListenerRegistration<LegatoServiceController> dataTreeChangeListenerRegistration;
 
-    private static final Map<String, String> EVC_UUIDMap = new HashMap<String, String>();
+    private static final Map<String, String> EVC_UUIDMAP = new HashMap<String, String>();
 
     private TapiConnectivityService prestoConnectivityService;
 
@@ -96,12 +97,12 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
             LOG.info("  Node Added  "
                     + newDataObject.getRootNode().getIdentifier());
 
-            Optional<Evc> OptionalEvc = LegatoUtils.readEvc(dataBroker,
+            Optional<Evc> optionalEvc = LegatoUtils.readEvc(dataBroker,
                     LogicalDatastoreType.CONFIGURATION, newDataObject
                             .getRootPath().getRootIdentifier());
 
-            if (OptionalEvc.isPresent()) {
-                addNode(OptionalEvc.get());
+            if (optionalEvc.isPresent()) {
+                addNode(optionalEvc.get());
             }
         }
     }
@@ -123,12 +124,12 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
                 && modifiedDataObject.getRootPath() != null) {
             LOG.info("  Node modified  "
                     + modifiedDataObject.getRootNode().getIdentifier());
-            Optional<Evc> OptionalEvc = LegatoUtils.readEvc(dataBroker,
+            Optional<Evc> optionalEvc = LegatoUtils.readEvc(dataBroker,
                     LogicalDatastoreType.CONFIGURATION, modifiedDataObject
                             .getRootPath().getRootIdentifier());
 
-            if (OptionalEvc.isPresent()) {
-                updateNode(OptionalEvc.get());
+            if (optionalEvc.isPresent()) {
+                updateNode(optionalEvc.get());
             }
         }
     }
@@ -169,13 +170,11 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
         try {
             assert evc != null;
             deleteConnection(evc.getEvcId().getValue());
-            
         } catch (Exception ex) {
             LOG.error("error: ", ex);
         }
 
         LOG.info(" ********** END deleteNode() ****************** ");
-
     }
 
     private void createConnection(Evc evc) {
@@ -183,49 +182,67 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
 
         try {
             EVCDao evcDao =  LegatoUtils.parseNodes(evc);
-            assert evcDao != null 
+            assert evcDao != null
                     && evcDao.getUniList() != null && evcDao.getConnectionType() != null;
-            LOG.info(" connection-type :{} ", evcDao.getConnectionType());
-            
-            callCreateConnectionService(
-                        LegatoUtils.buildCreateConnectivityServiceInput(evcDao, evcDao.getConnectionType()),
-                        evcDao.getEvcId());
-            
-        } catch (Exception ex) {
+            LOG.info(" connection-type :{}, svc-type ", evcDao.getConnectionType(), evcDao.getSvcType());
 
+            if (evcDao.getSvcType() != "") {
+                if ((evcDao.getSvcType() == LegatoConstants.EPL || evcDao.getSvcType() == LegatoConstants.EVPL)
+                        && (evcDao.getConnectionType().replace("-", "").toUpperCase() != LegatoConstants.POINTTOPOINT)) {
+                    LOG.info("connection-type in payload should be point-to-point when svc-type is epl/evpl");
+                } else if ((evcDao.getSvcType() == LegatoConstants.EPLAN || evcDao.getSvcType() == LegatoConstants.EVPLAN)
+                        && (evcDao.getConnectionType().replace("-", "").toUpperCase() != LegatoConstants.MULTIPOINTTOMULTIPOINT)) {
+                    LOG.info("connection-type in payload should be multipoint-to-multipoint when svc-type is eplan/evplan");
+                } else {
+                    callCreateConnectionService(
+                            LegatoUtils.buildCreateConnectivityServiceInput(evcDao), evcDao.getEvcId());
+                }
+            } else {
+                LOG.info("svc-type in payload should not be empty");
+            }
+
+        } catch (Exception ex) {
             LOG.error("Error in createConnection(). Err: ", ex);
         }
 
     }
-    
+
     private void updateConnection(Evc evc) {
         LOG.info("inside updateConnection()");
 
         try {
-            EVCDao evcDao =  LegatoUtils.parseNodes(evc);
-            assert evcDao != null
-                    && evcDao.getUniList() != null && evcDao.getConnectionType() != null;
-            LOG.info(" connection-type :{} ", evcDao.getConnectionType());
+            EVCDao evcDao = LegatoUtils.parseNodes(evc);
+            assert evcDao != null && evcDao.getUniList() != null
+                    && evcDao.getConnectionType() != null;
+            LOG.info(" connection-type :{}, svc-type ", evcDao.getConnectionType(), evcDao.getSvcType());
 
-                if (EVC_UUIDMap.containsKey(evcDao.getEvcId())) {
-                    LOG.info(
-                            "Update UUID: {} of EVC Id: {} ",
-                            EVC_UUIDMap.get(evcDao.getEvcId()),
-                            evcDao.getEvcId());
-
-                    List<String> uniList = evcDao.getUniList();
-                    assert uniList != null && uniList.size() > 0;
-
-                    for (String uniStr : uniList) {
-                        callUpdateConnectionService(
-                                LegatoUtils.buildUpdateConnectivityServiceInput(
-                                        evcDao, uniStr, EVC_UUIDMap.get(evcDao.getEvcId()), evcDao.getConnectionType()),
-                                                evcDao.getEvcId());
-                    }
+            if (evcDao.getSvcType() != "") {
+                if ((evcDao.getSvcType() == LegatoConstants.EPL || evcDao.getSvcType() == LegatoConstants.EVPL)
+                        && (evcDao.getConnectionType().replace("-", "").toUpperCase() != LegatoConstants.POINTTOPOINT)) {
+                    LOG.info("connection-type in payload should be point-to-point when svc-type is epl/evpl");
+                } else if ((evcDao.getSvcType() == LegatoConstants.EPLAN || evcDao.getSvcType() == LegatoConstants.EVPLAN)
+                        && (evcDao.getConnectionType().replace("-", "").toUpperCase() != LegatoConstants.MULTIPOINTTOMULTIPOINT)) {
+                    LOG.info("connection-type in payload should be multipoint-to-multipoint when svc-type is eplan/evplan");
                 } else {
-                    LOG.info("UUID does not exists for EVC Id : {}",
-                            evcDao.getEvcId());
+                    if (EVC_UUIDMAP.containsKey(evcDao.getEvcId())) {
+                        LOG.info("Update UUID: {} of EVC Id: {} ",
+                                EVC_UUIDMAP.get(evcDao.getEvcId()), evcDao.getEvcId());
+
+                        List<String> uniList = evcDao.getUniList();
+                        assert uniList != null && uniList.size() > 0;
+
+                        for (String uniStr : uniList) {
+                            callUpdateConnectionService(
+                                    LegatoUtils.buildUpdateConnectivityServiceInput(evcDao, uniStr,
+                                            EVC_UUIDMAP.get(evcDao.getEvcId())), evcDao.getEvcId());
+                        }
+                    } else {
+                        LOG.info("UUID does not exists for EVC Id : {}", evcDao.getEvcId());
+                    }
                 }
+            } else {
+                LOG.info("svc-type in payload should not be empty");
+            }
         } catch (Exception ex) {
 
             LOG.error("Error in updateConnection(). Err: ", ex);
@@ -237,18 +254,18 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
         LOG.info(" inside deleteConnection()");
         try {
 
-            assert EVC_UUIDMap != null;
+            assert EVC_UUIDMAP != null;
 
-            if (EVC_UUIDMap.containsKey(evcId)) {
+            if (EVC_UUIDMAP.containsKey(evcId)) {
                 LOG.info("Deleting UUID: {} of EVC Id: {} ",
-                        EVC_UUIDMap.get(evcId), evcId);
+                        EVC_UUIDMAP.get(evcId), evcId);
                 // on successful deletion of service, remove respective element from evc_UUIDMap
                 if (callDeleteConnectionService(new DeleteConnectivityServiceInputBuilder()
-                        .setServiceIdOrName(EVC_UUIDMap.get(evcId)).build())) {
-                    EVC_UUIDMap.remove(evcId);
+                        .setServiceIdOrName(EVC_UUIDMAP.get(evcId)).build())) {
+                    EVC_UUIDMAP.remove(evcId);
                 }
 
-                // delete EVC node from OPERATIONAL DB              
+                // delete EVC node from OPERATIONAL DB
                 LegatoUtils.deleteFromOperationalDB(InstanceIdentifier
                         .create(MefServices.class).child(CarrierEthernet.class)
                         .child(SubscriberServices.class)
@@ -277,12 +294,12 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
                 LOG.info("evcId = {}, UUID = {} ", evcId, response.get()
                         .getResult().getService().getUuid().getValue());
 
-                EVC_UUIDMap.put(evcId, response.get().getResult().getService()
+                EVC_UUIDMAP.put(evcId, response.get().getResult().getService()
                         .getUuid().getValue());
 
-                LOG.info("======== {} ", EVC_UUIDMap.toString());
+                LOG.info("======== {} ", EVC_UUIDMAP.toString());
 
-                Optional<Evc> OptionalEvc = LegatoUtils.readEvc(
+                Optional<Evc> optionalEvc = LegatoUtils.readEvc(
                         dataBroker,
                         LogicalDatastoreType.CONFIGURATION,
                         InstanceIdentifier
@@ -293,13 +310,14 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
                                         new EvcKey(new EvcIdType(evcId))));
 
                 // Add Node in OPERATIONAL DB
-                if (OptionalEvc.isPresent()) {
-                    LegatoUtils.updateEvcInOperationalDB(OptionalEvc.get(), EVC_IID_OPERATIONAL,  dataBroker);
+                if (optionalEvc.isPresent()) {
+                    LegatoUtils.updateEvcInOperationalDB(optionalEvc.get(), EVC_IID_OPERATIONAL,  dataBroker);
                 }
 
-            } else
+            } else {
                 LOG.info("call Failure = {} >> {} ", response.get()
                         .isSuccessful(), response.get().getErrors());
+            }
         } catch (Exception ex) {
             LOG.error("Error in callCreateConnectionService(). Err: ", ex);
         }
@@ -316,7 +334,7 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
                 LOG.info("call Success = {}, response = {} ", response.get()
                         .isSuccessful(), response.get().getResult());
 
-                Optional<Evc> OptionalEvc = LegatoUtils.readEvc(
+                Optional<Evc> optionalEvc = LegatoUtils.readEvc(
                         dataBroker,
                         LogicalDatastoreType.CONFIGURATION,
                         InstanceIdentifier
@@ -327,19 +345,20 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
                                         new EvcKey(new EvcIdType(evcId))));
 
                 // update EVC Node in OPERATIONAL DB
-                if (OptionalEvc.isPresent()) {                  
+                if (optionalEvc.isPresent()) {
                     LegatoUtils.deleteFromOperationalDB(InstanceIdentifier
                             .create(MefServices.class)
                             .child(CarrierEthernet.class)
                             .child(SubscriberServices.class)
                             .child(Evc.class, new EvcKey(new EvcIdType(evcId))), dataBroker);
 
-                    LegatoUtils.updateEvcInOperationalDB(OptionalEvc.get(), EVC_IID_OPERATIONAL,  dataBroker);
+                    LegatoUtils.updateEvcInOperationalDB(optionalEvc.get(), EVC_IID_OPERATIONAL,  dataBroker);
                 }
 
-            } else
+            } else {
                 LOG.info("call Failure = {} >> {} ", response.get()
                         .isSuccessful(), response.get().getErrors());
+            }
         } catch (Exception ex) {
 
             LOG.error("Error in UpdateConnectivityServiceInput(). Err: ", ex);

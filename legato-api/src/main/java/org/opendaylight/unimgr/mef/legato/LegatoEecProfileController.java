@@ -95,12 +95,10 @@ public class LegatoEecProfileController extends UnimgrDataTreeChangeListener<Pro
     }
 
     public void deleteFromOperationalDB(Profile profile) {
-            assert profile != null;
-            LegatoUtils
-                    .deleteFromOperationalDB(
-                            InstanceIdentifier.create(MefGlobal.class).child(EecProfiles.class)
-                                    .child(Profile.class, new ProfileKey(profile.getId())),
-                            dataBroker);
+        assert profile != null;
+        LegatoUtils.deleteFromOperationalDB(
+                InstanceIdentifier.create(MefGlobal.class).child(EecProfiles.class)
+                        .child(Profile.class, new ProfileKey(profile.getId())), dataBroker);
     }
 
 
@@ -123,12 +121,12 @@ public class LegatoEecProfileController extends UnimgrDataTreeChangeListener<Pro
         assert profile != null;
         InstanceIdentifier<Profile> instanceIdentifier = InstanceIdentifier.create(MefGlobal.class)
                 .child(EecProfiles.class).child(Profile.class, new ProfileKey(profile.getId()));
-        Optional<Profile> OptionalProfile =
+        Optional<Profile> optionalProfile =
                 (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.EEC_PROFILES,
                         dataBroker, LogicalDatastoreType.CONFIGURATION, instanceIdentifier);
-        if (OptionalProfile.isPresent()) {
+        if (optionalProfile.isPresent()) {
             LegatoUtils.deleteFromOperationalDB(instanceIdentifier, dataBroker);
-            addToOperationalDB(OptionalProfile.get());
+            addToOperationalDB(optionalProfile.get());
         }
     }
 

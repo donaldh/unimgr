@@ -41,7 +41,7 @@ import com.google.common.util.concurrent.CheckedFuture;
 @SuppressWarnings("deprecation")
 @RunWith(PowerMockRunner.class)
 public class LegatoL2cpEecProfileUnitTest {
-    
+
     @Mock
     private DataBroker dataBroker;
     @Mock
@@ -49,7 +49,6 @@ public class LegatoL2cpEecProfileUnitTest {
     @SuppressWarnings("rawtypes")
     @Mock
     private CheckedFuture checkedFuture;
-    
     @Before
     public void setUp() throws Exception {
         mock(LegatoL2cpEecController.class, Mockito.CALLS_REAL_METHODS);
@@ -90,7 +89,7 @@ public class LegatoL2cpEecProfileUnitTest {
         when(proFuture.checkedGet()).thenReturn(optProfile);
 
         Optional<Profile> expectedOpt =
-                (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.l2CP_EEC_PROFILES,
+                (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.L2CP_EEC_PROFILES,
                         dataBroker, LogicalDatastoreType.CONFIGURATION, PROFILE_ID);
         verify(readTransaction).read(any(LogicalDatastoreType.class),
                 any(InstanceIdentifier.class));
