@@ -86,7 +86,7 @@ public class LegatoUtils {
         evcDao.setEvcId(evc.getEvcId().getValue());
         evcDao.setMaxFrameSize((evc.getMaxFrameSize().getValue() != null) ? evc.getMaxFrameSize().getValue() : 0);
         evcDao.setConnectionType((evc.getConnectionType().getName() != null) ? evc.getConnectionType().getName() : "");
-        evcDao.setSvcType((evc.getSvcType().name() != null) ? "" : evc.getSvcType().getName());
+        evcDao.setSvcType(evc.getSvcType().getName());
         evcDao.setUniList(uniList);
         return evcDao;
     }

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
@@ -184,21 +185,21 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
             EVCDao evcDao =  LegatoUtils.parseNodes(evc);
             assert evcDao != null
                     && evcDao.getUniList() != null && evcDao.getConnectionType() != null;
-            LOG.info(" connection-type :{}, svc-type ", evcDao.getConnectionType(), evcDao.getSvcType());
+            LOG.info(" connection-type :{}, svc-type :{}", evcDao.getConnectionType(), evcDao.getSvcType());
 
-            if (evcDao.getSvcType() != "") {
-                if ((evcDao.getSvcType() == LegatoConstants.EPL || evcDao.getSvcType() == LegatoConstants.EVPL)
-                        && (evcDao.getConnectionType().replace("-", "").toUpperCase() != LegatoConstants.POINTTOPOINT)) {
+            if (!evcDao.getSvcType().equalsIgnoreCase("other")) {
+                if ((evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EPL) || evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EVPL))
+                        && (!evcDao.getConnectionType().replace("-", "").equalsIgnoreCase(LegatoConstants.POINTTOPOINT))) {
                     LOG.info("connection-type in payload should be point-to-point when svc-type is epl/evpl");
-                } else if ((evcDao.getSvcType() == LegatoConstants.EPLAN || evcDao.getSvcType() == LegatoConstants.EVPLAN)
-                        && (evcDao.getConnectionType().replace("-", "").toUpperCase() != LegatoConstants.MULTIPOINTTOMULTIPOINT)) {
+                } else if ((evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EPLAN) || evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EVPLAN))
+                        && (!evcDao.getConnectionType().replace("-", "").equalsIgnoreCase(LegatoConstants.MULTIPOINTTOMULTIPOINT))) {
                     LOG.info("connection-type in payload should be multipoint-to-multipoint when svc-type is eplan/evplan");
                 } else {
                     callCreateConnectionService(
                             LegatoUtils.buildCreateConnectivityServiceInput(evcDao), evcDao.getEvcId());
                 }
             } else {
-                LOG.info("svc-type in payload should not be empty");
+                LOG.info("svc-type in payload should be epl, evpl, eplan, evplan");
             }
 
         } catch (Exception ex) {
@@ -214,14 +215,14 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
             EVCDao evcDao = LegatoUtils.parseNodes(evc);
             assert evcDao != null && evcDao.getUniList() != null
                     && evcDao.getConnectionType() != null;
-            LOG.info(" connection-type :{}, svc-type ", evcDao.getConnectionType(), evcDao.getSvcType());
+            LOG.info(" connection-type :{}, svc-type :{} ", evcDao.getConnectionType(), evcDao.getSvcType());
 
-            if (evcDao.getSvcType() != "") {
-                if ((evcDao.getSvcType() == LegatoConstants.EPL || evcDao.getSvcType() == LegatoConstants.EVPL)
-                        && (evcDao.getConnectionType().replace("-", "").toUpperCase() != LegatoConstants.POINTTOPOINT)) {
+            if (!evcDao.getSvcType().equalsIgnoreCase("other")) {
+                if ((evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EPL) || evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EVPL))
+                        && (!evcDao.getConnectionType().replace("-", "").equalsIgnoreCase(LegatoConstants.POINTTOPOINT))) {
                     LOG.info("connection-type in payload should be point-to-point when svc-type is epl/evpl");
-                } else if ((evcDao.getSvcType() == LegatoConstants.EPLAN || evcDao.getSvcType() == LegatoConstants.EVPLAN)
-                        && (evcDao.getConnectionType().replace("-", "").toUpperCase() != LegatoConstants.MULTIPOINTTOMULTIPOINT)) {
+                } else if ((evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EPLAN) || evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EVPLAN))
+                        && (!evcDao.getConnectionType().replace("-", "").equalsIgnoreCase(LegatoConstants.MULTIPOINTTOMULTIPOINT))) {
                     LOG.info("connection-type in payload should be multipoint-to-multipoint when svc-type is eplan/evplan");
                 } else {
                     if (EVC_UUIDMAP.containsKey(evcDao.getEvcId())) {
@@ -241,7 +242,7 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
                     }
                 }
             } else {
-                LOG.info("svc-type in payload should not be empty");
+                LOG.info("svc-type in payload should be epl, evpl, eplan, evplan");
             }
         } catch (Exception ex) {
 
