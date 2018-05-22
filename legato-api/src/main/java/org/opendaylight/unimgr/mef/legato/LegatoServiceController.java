@@ -8,6 +8,8 @@
 
 package org.opendaylight.unimgr.mef.legato;
 
+import com.google.common.base.Optional;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +42,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.common.base.Optional;
 
 /**
  * @author santanu.de@xoriant.com
