@@ -8,6 +8,8 @@
 
 package org.opendaylight.unimgr.mef.legato;
 
+import com.google.common.base.Optional;
+
 import java.util.Collections;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -27,7 +29,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Optional;
 
 /**
  * @author Arif.Hussain@Xoriant.Com
@@ -103,9 +104,11 @@ public class LegatoL2cpEecController  extends UnimgrDataTreeChangeListener<Profi
     @SuppressWarnings("unchecked")
     public void updateFromOperationalDB(Profile profile) {
         assert profile != null;
-        Optional<Profile> optionalProfile = (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.L2CP_EEC_PROFILES, dataBroker, LogicalDatastoreType.CONFIGURATION,
-                InstanceIdentifier.create(MefGlobal.class).child(L2cpEecProfiles.class).child(Profile.class,
-                        new ProfileKey(profile.getId())));
+        Optional<Profile> optionalProfile =
+                (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.L2CP_EEC_PROFILES,
+                        dataBroker, LogicalDatastoreType.CONFIGURATION,
+                        InstanceIdentifier.create(MefGlobal.class).child(L2cpEecProfiles.class)
+                                .child(Profile.class, new ProfileKey(profile.getId())));
 
         if (optionalProfile.isPresent()) {
 

@@ -14,6 +14,10 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.CheckedFuture;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,8 +39,6 @@ import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.types.rev171215.Identifier1024;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.powermock.modules.junit4.PowerMockRunner;
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.CheckedFuture;
 
 
 @SuppressWarnings("deprecation")
@@ -50,7 +52,7 @@ public class LegatoBwpProfileUnitTest {
     @SuppressWarnings("rawtypes")
     @Mock
     private CheckedFuture checkedFuture;
-    
+
     @Before
     public void setUp() throws Exception {
         mock(LegatoBwpProfileController.class, Mockito.CALLS_REAL_METHODS);
@@ -60,8 +62,8 @@ public class LegatoBwpProfileUnitTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testBwpAddToOperationalDB() {
-        BwpFlowParameterProfiles profile = mock(BwpFlowParameterProfiles.class);
-        InstanceIdentifier<BwpFlowParameterProfiles> profilesTx =
+        final BwpFlowParameterProfiles profile = mock(BwpFlowParameterProfiles.class);
+        final InstanceIdentifier<BwpFlowParameterProfiles> profilesTx =
                 InstanceIdentifier.create(MefGlobal.class).child(BwpFlowParameterProfiles.class);
 
         when(dataBroker.newWriteOnlyTransaction()).thenReturn(transaction);
@@ -79,7 +81,7 @@ public class LegatoBwpProfileUnitTest {
     @Test
     public void testBwpUpdateFromOperationalDB() throws ReadFailedException {
 
-        final InstanceIdentifier<Profile> PROFILE_ID =
+        final InstanceIdentifier<Profile> profileID =
                 InstanceIdentifier.create(MefGlobal.class).child(BwpFlowParameterProfiles.class)
                         .child(Profile.class, new ProfileKey(new Identifier1024(Constants.ONE)));
 
@@ -93,7 +95,7 @@ public class LegatoBwpProfileUnitTest {
         when(nodeFuture.checkedGet()).thenReturn(optProfile);
         Optional<Profile> expectedOpt =
                 (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.BWP_PROFILES,
-                        dataBroker, LogicalDatastoreType.CONFIGURATION, PROFILE_ID);
+                        dataBroker, LogicalDatastoreType.CONFIGURATION, profileID);
         verify(readTransaction).read(any(LogicalDatastoreType.class),
                 any(InstanceIdentifier.class));
         assertNotNull(expectedOpt);
@@ -103,13 +105,13 @@ public class LegatoBwpProfileUnitTest {
         doNothing().when(transaction).delete(any(LogicalDatastoreType.class),
                 any(InstanceIdentifier.class));
         when(transaction.submit()).thenReturn(checkedFuture);
-        assertEquals(true, LegatoUtils.deleteFromOperationalDB(PROFILE_ID, dataBroker));
+        assertEquals(true, LegatoUtils.deleteFromOperationalDB(profileID, dataBroker));
         verify(transaction).delete(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
         verify(transaction).submit();
 
-        BwpFlowParameterProfiles bwpProfile = mock(BwpFlowParameterProfiles.class);
+        final BwpFlowParameterProfiles bwpProfile = mock(BwpFlowParameterProfiles.class);
 
-        InstanceIdentifier<BwpFlowParameterProfiles> profilesTx =
+        final InstanceIdentifier<BwpFlowParameterProfiles> profilesTx =
                 InstanceIdentifier.create(MefGlobal.class).child(BwpFlowParameterProfiles.class);
         WriteTransaction transaction2 = Mockito.mock(WriteTransaction.class);
         when(dataBroker.newWriteOnlyTransaction()).thenReturn(transaction2);
@@ -126,7 +128,7 @@ public class LegatoBwpProfileUnitTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testBwpDeleteFromOperationalDB() {
-        final InstanceIdentifier<Profile> PROFILE_ID =
+        final InstanceIdentifier<Profile> profileID =
                 InstanceIdentifier.create(MefGlobal.class).child(BwpFlowParameterProfiles.class)
                         .child(Profile.class, new ProfileKey(new Identifier1024(Constants.ONE)));
 
@@ -134,7 +136,7 @@ public class LegatoBwpProfileUnitTest {
         doNothing().when(transaction).delete(any(LogicalDatastoreType.class),
                 any(InstanceIdentifier.class));
         when(transaction.submit()).thenReturn(checkedFuture);
-        assertEquals(true, LegatoUtils.deleteFromOperationalDB(PROFILE_ID, dataBroker));
+        assertEquals(true, LegatoUtils.deleteFromOperationalDB(profileID, dataBroker));
         verify(transaction).delete(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
         verify(transaction).submit();
     }

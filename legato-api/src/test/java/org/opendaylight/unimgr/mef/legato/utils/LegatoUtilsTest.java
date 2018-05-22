@@ -15,8 +15,13 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.CheckedFuture;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -56,8 +61,7 @@ import org.powermock.api.support.membermodification.MemberMatcher;
 import org.powermock.api.support.membermodification.MemberModifier;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.CheckedFuture;
+
 /**
 * @author Arif.Hussain@Xoriant.Com
 *
@@ -89,7 +93,7 @@ public class LegatoUtilsTest {
     @Test
     public void testReadEvc() throws ReadFailedException {
 
-        final InstanceIdentifier<Evc> EVC_IID = InstanceIdentifier.create(MefServices.class)
+        final InstanceIdentifier<Evc> evcID = InstanceIdentifier.create(MefServices.class)
                 .child(CarrierEthernet.class).child(SubscriberServices.class)
                 .child(Evc.class, new EvcKey(new EvcIdType(EVC_NODE_ID)));
 
@@ -101,7 +105,7 @@ public class LegatoUtilsTest {
                 .thenReturn(nodeFuture);
         when(nodeFuture.checkedGet()).thenReturn(optNode);
         Optional<Evc> expectedOpt =
-                LegatoUtils.readEvc(dataBroker, LogicalDatastoreType.CONFIGURATION, EVC_IID);
+                LegatoUtils.readEvc(dataBroker, LogicalDatastoreType.CONFIGURATION, evcID);
         verify(readTransaction).read(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
         assertNotNull(expectedOpt);
         assertEquals(expectedOpt, optNode);
@@ -112,7 +116,7 @@ public class LegatoUtilsTest {
     @Test
     public void testReadProfiles() throws ReadFailedException {
 
-        final InstanceIdentifier<Profile> PROFILE_ID =
+        final InstanceIdentifier<Profile> profileID =
                 InstanceIdentifier.create(MefGlobal.class).child(SlsProfiles.class)
                         .child(Profile.class, new ProfileKey(new Identifier1024(Constants.ONE)));
 
@@ -126,7 +130,7 @@ public class LegatoUtilsTest {
         when(nodeFuture.checkedGet()).thenReturn(optNode);
         Optional<Profile> expectedOpt =
                 (Optional<Profile>) LegatoUtils.readProfile(Constants.SLS_PROFILES,
-                        dataBroker, LogicalDatastoreType.CONFIGURATION, PROFILE_ID);
+                        dataBroker, LogicalDatastoreType.CONFIGURATION, profileID);
         verify(readTransaction).read(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
         assertNotNull(expectedOpt);
         assertEquals(expectedOpt, optNode);
@@ -138,14 +142,14 @@ public class LegatoUtilsTest {
     @Test
     public void testAddToOperationalDB() {
         final SlsProfiles slsProfile = mock(SlsProfiles.class);
-        InstanceIdentifier<SlsProfiles> SLS_PROFILES_IID_OPERATIONAL =
+        final InstanceIdentifier<SlsProfiles> instanceIdentifier =
                 InstanceIdentifier.create(MefGlobal.class).child(SlsProfiles.class);
 
         when(dataBroker.newWriteOnlyTransaction()).thenReturn(transaction);
         doNothing().when(transaction).merge(any(LogicalDatastoreType.class),
                 any(InstanceIdentifier.class), any(Profile.class));
         when(transaction.submit()).thenReturn(checkedFuture);
-        LegatoUtils.addToOperationalDB(slsProfile, SLS_PROFILES_IID_OPERATIONAL, dataBroker);
+        LegatoUtils.addToOperationalDB(slsProfile, instanceIdentifier, dataBroker);
         verify(transaction).merge(any(LogicalDatastoreType.class), any(InstanceIdentifier.class),
                 any(Profile.class));
         verify(transaction).submit();
@@ -155,7 +159,7 @@ public class LegatoUtilsTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testDeleteFromOperationalDB() {
-        final InstanceIdentifier<Evc> EVC_IID = InstanceIdentifier.create(MefServices.class)
+        final InstanceIdentifier<Evc> evcID = InstanceIdentifier.create(MefServices.class)
                 .child(CarrierEthernet.class).child(SubscriberServices.class)
                 .child(Evc.class, new EvcKey(new EvcIdType(EVC_NODE_ID)));
 
@@ -163,7 +167,7 @@ public class LegatoUtilsTest {
         doNothing().when(transaction).delete(any(LogicalDatastoreType.class),
                 any(InstanceIdentifier.class));
         when(transaction.submit()).thenReturn(checkedFuture);
-        assertEquals(true, LegatoUtils.deleteFromOperationalDB(EVC_IID, dataBroker));
+        assertEquals(true, LegatoUtils.deleteFromOperationalDB(evcID, dataBroker));
         verify(transaction).delete(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
         verify(transaction).submit();
     }
@@ -171,8 +175,8 @@ public class LegatoUtilsTest {
 
     @Test
     public void testBuildCreateConnectivityServiceInput() {
-        Evc evc = mock(Evc.class);
-        CreateConnectivityServiceInput input = mock(CreateConnectivityServiceInput.class);
+        final Evc evc = mock(Evc.class);
+        final CreateConnectivityServiceInput input = mock(CreateConnectivityServiceInput.class);
         final EVCDao evcDao = mock(EVCDao.class);
 
         MemberModifier.suppress(MemberMatcher.method(LegatoUtils.class, Constants.PARSE_NODES));
@@ -189,8 +193,8 @@ public class LegatoUtilsTest {
 
     @Test
     public void testBuildUpdateConnectivityServiceInput() {
-        Evc evc = mock(Evc.class);
-        UpdateConnectivityServiceInput input = mock(UpdateConnectivityServiceInput.class);
+        final Evc evc = mock(Evc.class);
+        final UpdateConnectivityServiceInput input = mock(UpdateConnectivityServiceInput.class);
         final EVCDao evcDao = mock(EVCDao.class);
         MemberModifier.suppress(MemberMatcher.method(LegatoUtils.class, Constants.PARSE_NODES));
         when(LegatoUtils.parseNodes(evc)).thenReturn(evcDao);
@@ -210,7 +214,7 @@ public class LegatoUtilsTest {
     @Test
     public void testBuildNrpCarrierEthConnectivityResource() {
 
-        NrpCarrierEthConnectivityResource nrpCarrierEthConnectivityResource =
+        final NrpCarrierEthConnectivityResource nrpCarrierEthConnectivityResource =
                 mock(NrpCarrierEthConnectivityResource.class);
 
         MemberModifier.suppress(
@@ -227,7 +231,7 @@ public class LegatoUtilsTest {
 
     @Test
     public void testBuildNrpCarrierEthConnectivityEndPointResource() {
-        NrpCarrierEthConnectivityEndPointResource input =
+        final NrpCarrierEthConnectivityEndPointResource input =
                 mock(NrpCarrierEthConnectivityEndPointResource.class);
         MemberModifier.suppress(MemberMatcher.method(LegatoUtils.class,
                 Constants.NRP_CARRIER_ETH_CON_ENDPOINT_RESOURCE));
@@ -241,7 +245,7 @@ public class LegatoUtilsTest {
 
     @Test
     public void testBuildCreateEthConnectivityEndPointAugmentation() {
-        EndPoint2 createEndPoint = mock(EndPoint2.class);
+        final EndPoint2 createEndPoint = mock(EndPoint2.class);
 
         MemberModifier.suppress(MemberMatcher.method(LegatoUtils.class,
                 Constants.CREATE_ETH_CON_ENDPOINT_AUGMENTATION));
@@ -255,7 +259,7 @@ public class LegatoUtilsTest {
 
     @Test
     public void testBuildUpdateEthConnectivityEndPointAugmentation() {
-        EndPoint7 updateEndPoint = mock(EndPoint7.class);
+        final EndPoint7 updateEndPoint = mock(EndPoint7.class);
 
         MemberModifier.suppress(MemberMatcher.method(LegatoUtils.class,
                 Constants.UPDATE_ETH_CON_ENDPOINT_AUGMENTATION));
@@ -269,7 +273,7 @@ public class LegatoUtilsTest {
 
     @Test
     public void testBuildCreateConServiceAugmentation() {
-        CreateConnectivityServiceInput1 createConServInput =
+        final CreateConnectivityServiceInput1 createConServInput =
                 mock(CreateConnectivityServiceInput1.class);
 
         MemberModifier.suppress(
@@ -285,7 +289,7 @@ public class LegatoUtilsTest {
 
     @Test
     public void testBuildUpdateConServiceAugmentation() {
-        UpdateConnectivityServiceInput1 updateConServInput =
+        final UpdateConnectivityServiceInput1 updateConServInput =
                 mock(UpdateConnectivityServiceInput1.class);
 
         MemberModifier.suppress(

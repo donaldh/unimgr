@@ -14,6 +14,10 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.CheckedFuture;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,13 +39,12 @@ import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.types.rev171215.Identifier1024;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.powermock.modules.junit4.PowerMockRunner;
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.CheckedFuture;
+
 
 @SuppressWarnings("deprecation")
 @RunWith(PowerMockRunner.class)
 public class LegatoSlsProfileUnitTest {
-    
+
     @Mock
     private DataBroker dataBroker;
     @Mock
@@ -49,7 +52,7 @@ public class LegatoSlsProfileUnitTest {
     @SuppressWarnings("rawtypes")
     @Mock
     private CheckedFuture checkedFuture;
-    
+
     @Before
     public void setUp() throws Exception {
         mock(LegatoSlsProfileController.class, Mockito.CALLS_REAL_METHODS);
@@ -59,8 +62,8 @@ public class LegatoSlsProfileUnitTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testSlsProfileAddToOperationalDB() {
-        SlsProfiles slsProfiles = mock(SlsProfiles.class);
-        InstanceIdentifier<SlsProfiles> instanceIdentifier =
+        final SlsProfiles slsProfiles = mock(SlsProfiles.class);
+        final InstanceIdentifier<SlsProfiles> instanceIdentifier =
                 InstanceIdentifier.builder(MefGlobal.class).child(SlsProfiles.class).build();
 
         when(dataBroker.newWriteOnlyTransaction()).thenReturn(transaction);
@@ -76,7 +79,7 @@ public class LegatoSlsProfileUnitTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testSlsProfileUpdateFromOperationalDB() throws ReadFailedException {
-        InstanceIdentifier<Profile> PROFILE_ID =
+        final InstanceIdentifier<Profile> profileID =
                 InstanceIdentifier.create(MefGlobal.class).child(SlsProfiles.class)
                         .child(Profile.class, new ProfileKey(new Identifier1024(Constants.ONE)));
 
@@ -91,7 +94,7 @@ public class LegatoSlsProfileUnitTest {
 
         Optional<Profile> expectedOpt =
                 (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.SLS_PROFILES,
-                        dataBroker, LogicalDatastoreType.CONFIGURATION, PROFILE_ID);
+                        dataBroker, LogicalDatastoreType.CONFIGURATION, profileID);
         verify(readTransaction).read(any(LogicalDatastoreType.class),
                 any(InstanceIdentifier.class));
         assertNotNull(expectedOpt);
@@ -101,12 +104,12 @@ public class LegatoSlsProfileUnitTest {
         doNothing().when(transaction).delete(any(LogicalDatastoreType.class),
                 any(InstanceIdentifier.class));
         when(transaction.submit()).thenReturn(checkedFuture);
-        assertEquals(true, LegatoUtils.deleteFromOperationalDB(PROFILE_ID, dataBroker));
+        assertEquals(true, LegatoUtils.deleteFromOperationalDB(profileID, dataBroker));
         verify(transaction).delete(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
         verify(transaction).submit();
 
-        SlsProfiles slsProfiles = mock(SlsProfiles.class);
-        InstanceIdentifier<SlsProfiles> instanceIdentifier =
+        final SlsProfiles slsProfiles = mock(SlsProfiles.class);
+        final InstanceIdentifier<SlsProfiles> instanceIdentifier =
                 InstanceIdentifier.builder(MefGlobal.class).child(SlsProfiles.class).build();
 
         WriteTransaction transaction2 = Mockito.mock(WriteTransaction.class);
@@ -124,7 +127,7 @@ public class LegatoSlsProfileUnitTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testSlsProfileDeleteFromOperationalDB() {
-        InstanceIdentifier<Profile> PROFILE_ID =
+        final InstanceIdentifier<Profile> profileID =
                 InstanceIdentifier.create(MefGlobal.class).child(SlsProfiles.class)
                         .child(Profile.class, new ProfileKey(new Identifier1024(Constants.ONE)));
 
@@ -132,10 +135,9 @@ public class LegatoSlsProfileUnitTest {
         doNothing().when(transaction).delete(any(LogicalDatastoreType.class),
                 any(InstanceIdentifier.class));
         when(transaction.submit()).thenReturn(checkedFuture);
-        assertEquals(true, LegatoUtils.deleteFromOperationalDB(PROFILE_ID, dataBroker));
+        assertEquals(true, LegatoUtils.deleteFromOperationalDB(profileID, dataBroker));
         verify(transaction).delete(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
         verify(transaction).submit();
     }
-
 
 }

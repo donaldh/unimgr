@@ -15,8 +15,16 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.core.Appender;
+
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.CheckedFuture;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -67,10 +75,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.CheckedFuture;
-import ch.qos.logback.classic.spi.LoggingEvent;
-import ch.qos.logback.core.Appender;
+
 
 /**
  * @author Arif.Hussain@Xoriant.Com
@@ -133,10 +138,10 @@ public class EvcUnitTest {
         endPointList.add(endPointBuilder2.build());
 
         evc = (Evc) new EvcBuilder().setKey(new EvcKey(new EvcIdType(Constants.EVC_ID_TYPE)))
-            .setMaxFrameSize(new MaxFrameSizeType(Constants.MAXFRAME_SIZE_TYPE)).setEvcId(new EvcIdType(Constants.EVC_ID_TYPE))
-            .setSvcType(MefServiceType.Epl)
-            .setConnectionType(ConnectionType.PointToPoint).setCosNames(cosNamesBuilder.build())
-            .setEndPoints(new EndPointsBuilder().setEndPoint(endPointList).build()).build();
+                .setMaxFrameSize(new MaxFrameSizeType(Constants.MAXFRAME_SIZE_TYPE))
+                .setEvcId(new EvcIdType(Constants.EVC_ID_TYPE)).setSvcType(MefServiceType.Epl)
+                .setConnectionType(ConnectionType.PointToPoint).setCosNames(cosNamesBuilder.build())
+                .setEndPoints(new EndPointsBuilder().setEndPoint(endPointList).build()).build();
 
         root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         when(mockAppender.getName()).thenReturn("MOCK");
@@ -161,7 +166,7 @@ public class EvcUnitTest {
             when(LegatoUtils.buildCreateConnectivityServiceInput(evcDao))
                             .thenReturn((CreateConnectivityServiceInput) objInputBuilder);
 
-            InstanceIdentifier<?> evcKey = InstanceIdentifier.create(MefServices.class)
+            final InstanceIdentifier<?> evcKey = InstanceIdentifier.create(MefServices.class)
                     .child(CarrierEthernet.class).child(SubscriberServices.class)
                     .child(Evc.class, new EvcKey(new EvcIdType(evc.getEvcId())));
 
@@ -178,7 +183,7 @@ public class EvcUnitTest {
             when(LegatoUtils.readEvc(any(DataBroker.class), any(LogicalDatastoreType.class),
                     evcKey)).thenReturn(optEvc);
 
-            InstanceIdentifier<SubscriberServices> EVC_IID_OPERATIONAL =
+            final InstanceIdentifier<SubscriberServices> instanceIdentifier =
                     InstanceIdentifier.builder(MefServices.class).child(CarrierEthernet.class)
                             .child(SubscriberServices.class).build();
 
@@ -186,7 +191,7 @@ public class EvcUnitTest {
                     any(InstanceIdentifier.class), any(Evc.class));
             when(dataBroker.newWriteOnlyTransaction()).thenReturn(transaction);
             assertEquals(true,
-                    LegatoUtils.updateEvcInOperationalDB(evc, EVC_IID_OPERATIONAL, dataBroker));
+                    LegatoUtils.updateEvcInOperationalDB(evc, instanceIdentifier, dataBroker));
             verify(transaction).put(any(LogicalDatastoreType.class), any(InstanceIdentifier.class),
                     any(Evc.class));
             verify(transaction).submit();
@@ -213,7 +218,7 @@ public class EvcUnitTest {
             when(LegatoUtils.buildUpdateConnectivityServiceInput(evcDao, evcDao.getUniList().get(0), Constants.UUID))
                             .thenReturn((UpdateConnectivityServiceInput) objBuilder);
 
-            InstanceIdentifier<?> evcKey = InstanceIdentifier.create(MefServices.class)
+            final InstanceIdentifier<?> evcKey = InstanceIdentifier.create(MefServices.class)
                     .child(CarrierEthernet.class).child(SubscriberServices.class)
                     .child(Evc.class, new EvcKey(new EvcIdType(Constants.EVC_ID_TYPE)));
 
@@ -238,7 +243,7 @@ public class EvcUnitTest {
             doNothing().when(transaction).put(any(LogicalDatastoreType.class),
                     any(InstanceIdentifier.class), any(Evc.class));
 
-            InstanceIdentifier<SubscriberServices> EVC_IID_OPERATIONAL =
+            final InstanceIdentifier<SubscriberServices> instanceIdentifier =
                     InstanceIdentifier.builder(MefServices.class).child(CarrierEthernet.class)
                             .child(SubscriberServices.class).build();
 
@@ -248,7 +253,7 @@ public class EvcUnitTest {
                     any(InstanceIdentifier.class), any(Evc.class));
             when(transaction2.submit()).thenReturn(checkedFuture);
             assertEquals(true,
-                    LegatoUtils.updateEvcInOperationalDB(evc, EVC_IID_OPERATIONAL, dataBroker));
+                    LegatoUtils.updateEvcInOperationalDB(evc, instanceIdentifier, dataBroker));
             verify(transaction2).put(any(LogicalDatastoreType.class), any(InstanceIdentifier.class),
                     any(Evc.class));
             verify(transaction2).submit();
@@ -262,7 +267,7 @@ public class EvcUnitTest {
         DeleteConnectivityServiceInput input = mock(DeleteConnectivityServiceInput.class);
         assertEquals(true, callDeleteConnectionService(input));
 
-        InstanceIdentifier<?> evcKey = InstanceIdentifier.create(MefServices.class)
+        final InstanceIdentifier<?> evcKey = InstanceIdentifier.create(MefServices.class)
                 .child(CarrierEthernet.class).child(SubscriberServices.class)
                 .child(Evc.class, new EvcKey(new EvcIdType(Constants.EVC_ID_TYPE)));
 

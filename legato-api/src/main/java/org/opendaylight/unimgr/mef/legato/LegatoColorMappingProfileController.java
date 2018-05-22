@@ -8,6 +8,8 @@
 
 package org.opendaylight.unimgr.mef.legato;
 
+import com.google.common.base.Optional;
+
 import java.util.Collections;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -27,7 +29,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Optional;
 
 /**
  * @author sanket.shirode@Xoriant.com
@@ -71,7 +72,8 @@ public class LegatoColorMappingProfileController extends UnimgrDataTreeChangeLis
     public void addToOperationalDB(Profile profile) {
         try {
             assert profile != null;
-            ColorMappingProfiles colorMappingProfiles = new ColorMappingProfilesBuilder().setProfile(Collections.singletonList(profile)).build();
+            ColorMappingProfiles colorMappingProfiles = new ColorMappingProfilesBuilder()
+                    .setProfile(Collections.singletonList(profile)).build();
             InstanceIdentifier<ColorMappingProfiles> profilesTx = InstanceIdentifier.create(MefGlobal.class)
                 .child(ColorMappingProfiles.class);
             LegatoUtils.addToOperationalDB(colorMappingProfiles, profilesTx, dataBroker);

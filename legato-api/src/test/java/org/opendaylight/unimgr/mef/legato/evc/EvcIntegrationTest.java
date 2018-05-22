@@ -16,10 +16,18 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.core.Appender;
+
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.CheckedFuture;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,10 +60,10 @@ import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.legato.services.rev171215.m
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.legato.services.rev171215.mef.services.carrier.ethernet.subscriber.services.evc.end.points.end.point.CeVlansBuilder;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.types.rev171215.ConnectionType;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.types.rev171215.EvcIdType;
-import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.types.rev171215.MefServiceType;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.types.rev171215.Identifier1024;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.types.rev171215.Identifier45;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.types.rev171215.MaxFrameSizeType;
+import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.types.rev171215.MefServiceType;
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.types.rev171215.VlanIdType;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.CreateConnectivityServiceOutput;
 import org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.DeleteConnectivityServiceInput;
@@ -72,10 +80,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.CheckedFuture;
-import ch.qos.logback.classic.spi.LoggingEvent;
-import ch.qos.logback.core.Appender;
 
 /**
  * @author Arif.Hussain@Xoriant.Com
@@ -153,7 +157,7 @@ public class EvcIntegrationTest {
         root.addAppender(mockAppender);
 
     }
-   
+
 
     @SuppressWarnings("unchecked")
     @Test
@@ -168,7 +172,7 @@ public class EvcIntegrationTest {
                             LegatoUtils.buildCreateConnectivityServiceInput(evcDao));
             assertTrue(result.get().isSuccessful());
 
-            InstanceIdentifier<?> evcKey = InstanceIdentifier.create(MefServices.class)
+            final InstanceIdentifier<?> evcKey = InstanceIdentifier.create(MefServices.class)
                     .child(CarrierEthernet.class).child(SubscriberServices.class)
                     .child(Evc.class, new EvcKey(new EvcIdType(evc.getEvcId())));
 
@@ -180,14 +184,14 @@ public class EvcIntegrationTest {
             when(LegatoUtils.readEvc(any(DataBroker.class), any(LogicalDatastoreType.class),
                     evcKey)).thenReturn(optEvc);
 
-            InstanceIdentifier<SubscriberServices> EVC_IID_OPERATIONAL =
+            final InstanceIdentifier<SubscriberServices> instanceIdentifier =
                     InstanceIdentifier.builder(MefServices.class).child(CarrierEthernet.class)
                             .child(SubscriberServices.class).build();
 
             doNothing().when(transaction).put(any(LogicalDatastoreType.class),
                     any(InstanceIdentifier.class), any(Evc.class));
             when(dataBroker.newWriteOnlyTransaction()).thenReturn(transaction);
-            assertEquals(true, LegatoUtils.updateEvcInOperationalDB(evc, EVC_IID_OPERATIONAL, dataBroker));
+            assertEquals(true, LegatoUtils.updateEvcInOperationalDB(evc, instanceIdentifier, dataBroker));
             verify(transaction).put(any(LogicalDatastoreType.class), any(InstanceIdentifier.class),
                     any(Evc.class));
             verify(transaction).submit();
@@ -208,7 +212,7 @@ public class EvcIntegrationTest {
                 callUpdateConnectionService(LegatoUtils.buildUpdateConnectivityServiceInput(evcDao,
                         evcDao.getUniList().get(0), Constants.UUID)));
 
-        InstanceIdentifier<?> evcKey = InstanceIdentifier.create(MefServices.class)
+        final InstanceIdentifier<?> evcKey = InstanceIdentifier.create(MefServices.class)
                 .child(CarrierEthernet.class).child(SubscriberServices.class)
                 .child(Evc.class, new EvcKey(new EvcIdType(evc.getEvcId())));
 
@@ -228,7 +232,7 @@ public class EvcIntegrationTest {
         verify(transaction).delete(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
         verify(transaction).submit();
 
-        InstanceIdentifier<SubscriberServices> EVC_IID_OPERATIONAL =
+        final InstanceIdentifier<SubscriberServices> instanceIdentifier =
                 InstanceIdentifier.builder(MefServices.class).child(CarrierEthernet.class)
                         .child(SubscriberServices.class).build();
 
@@ -237,7 +241,7 @@ public class EvcIntegrationTest {
         doNothing().when(transaction2).put(any(LogicalDatastoreType.class),
                 any(InstanceIdentifier.class), any(Evc.class));
         when(transaction2.submit()).thenReturn(checkedFuture);
-        assertEquals(true, LegatoUtils.updateEvcInOperationalDB(evc, EVC_IID_OPERATIONAL, dataBroker));
+        assertEquals(true, LegatoUtils.updateEvcInOperationalDB(evc, instanceIdentifier, dataBroker));
         verify(transaction2).put(any(LogicalDatastoreType.class), any(InstanceIdentifier.class),
                 any(Evc.class));
         verify(transaction2).submit();
@@ -266,7 +270,7 @@ public class EvcIntegrationTest {
                 .setServiceIdOrName(Constants.UUID).build();
         assertEquals(true, callDeleteConnectionService(input));
 
-        InstanceIdentifier<?> evcKey = InstanceIdentifier.create(MefServices.class)
+        final InstanceIdentifier<?> evcKey = InstanceIdentifier.create(MefServices.class)
                 .child(CarrierEthernet.class).child(SubscriberServices.class)
                 .child(Evc.class, new EvcKey(new EvcIdType(Constants.EVC_ID_TYPE)));
 

@@ -8,6 +8,8 @@
 
 package org.opendaylight.unimgr.mef.legato;
 
+import com.google.common.base.Optional;
+
 import java.util.Collections;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -27,7 +29,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Optional;
 
 /**
  * @author Arif.Hussain@Xoriant.Com
@@ -40,8 +41,8 @@ public class LegatoL2cpPeeringController extends UnimgrDataTreeChangeListener<Pr
     private static final InstanceIdentifier<Profile> PROFILE_ID = InstanceIdentifier
             .builder(MefGlobal.class).child(L2cpPeeringProfiles.class).child(Profile.class).build();
 
-    private static final InstanceIdentifier<L2cpPeeringProfiles> L2CP_PEERING_PROFILES_ID_OPERATIONAL = InstanceIdentifier
-            .builder(MefGlobal.class).child(L2cpPeeringProfiles.class).build();
+    private static final InstanceIdentifier<L2cpPeeringProfiles> L2CP_PEERING_PROFILES_ID_OPERATIONAL =
+            InstanceIdentifier.builder(MefGlobal.class).child(L2cpPeeringProfiles.class).build();
 
     private ListenerRegistration<LegatoL2cpPeeringController> dataTreeChangeListenerRegistration;
 
@@ -54,16 +55,17 @@ public class LegatoL2cpPeeringController extends UnimgrDataTreeChangeListener<Pr
         LOG.info("Initializing LegatoL2cpPeeringController:init() ");
 
         dataTreeChangeListenerRegistration = dataBroker.registerDataTreeChangeListener(
-                new DataTreeIdentifier<Profile>(LogicalDatastoreType.CONFIGURATION, PROFILE_ID), this);
-
+                new DataTreeIdentifier<Profile>(LogicalDatastoreType.CONFIGURATION, PROFILE_ID),
+                this);
     }
 
 
     @Override
     public void add(DataTreeModification<Profile> newDataObject) {
         if (newDataObject.getRootNode() != null && newDataObject.getRootPath() != null) {
-            LOG.info( "ClassName :: LegatoL2cpPeeringController, Method:: add(), Message:: Node Added  " 
-                    + newDataObject.getRootNode().getIdentifier());
+            LOG.info(
+                    "ClassName :: LegatoL2cpPeeringController, Method:: add(), Message:: Node Added  "
+                            + newDataObject.getRootNode().getIdentifier());
             addToOperationalDB(newDataObject.getRootNode().getDataAfter());
         }
     }
@@ -75,8 +77,8 @@ public class LegatoL2cpPeeringController extends UnimgrDataTreeChangeListener<Pr
 
         try {
             assert profileObj != null;
-
-            L2cpPeeringProfiles l2cpPeeringProfiles = new L2cpPeeringProfilesBuilder().setProfile(Collections.singletonList(profileObj)).build();
+            L2cpPeeringProfiles l2cpPeeringProfiles = new L2cpPeeringProfilesBuilder()
+                    .setProfile(Collections.singletonList(profileObj)).build();
             LegatoUtils.addToOperationalDB(l2cpPeeringProfiles, L2CP_PEERING_PROFILES_ID_OPERATIONAL, dataBroker);
         } catch (Exception e) {
             LOG.error("Error in addNode(). Err: ", e);
@@ -105,9 +107,11 @@ public class LegatoL2cpPeeringController extends UnimgrDataTreeChangeListener<Pr
     @SuppressWarnings("unchecked")
     public void updateFromOperationalDB(Profile profile) {
         assert profile != null;
-        Optional<Profile> optionalProfile = (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.L2CP_PEERING_PROFILES, dataBroker, LogicalDatastoreType.CONFIGURATION,
-                InstanceIdentifier.create(MefGlobal.class).child(L2cpPeeringProfiles.class).child(Profile.class,
-                        new ProfileKey(profile.getId())));
+        Optional<Profile> optionalProfile =
+                (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.L2CP_PEERING_PROFILES,
+                        dataBroker, LogicalDatastoreType.CONFIGURATION,
+                        InstanceIdentifier.create(MefGlobal.class).child(L2cpPeeringProfiles.class)
+                                .child(Profile.class, new ProfileKey(profile.getId())));
 
         if (optionalProfile.isPresent()) {
 

@@ -14,6 +14,10 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.CheckedFuture;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,13 +38,12 @@ import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global.color.mapping.profiles.ProfileKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.powermock.modules.junit4.PowerMockRunner;
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.CheckedFuture;
+
 
 @SuppressWarnings("deprecation")
 @RunWith(PowerMockRunner.class)
 public class LegatoColorMappingProfileUnitTest {
-    
+
     @Mock
     private DataBroker dataBroker;
     @Mock
@@ -57,8 +60,8 @@ public class LegatoColorMappingProfileUnitTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testColMappingAddToOperationalDB() {
-        ColorMappingProfiles colorMappingProfiles = mock(ColorMappingProfiles.class);
-        InstanceIdentifier<ColorMappingProfiles> instanceIdentifier =
+        final ColorMappingProfiles colorMappingProfiles = mock(ColorMappingProfiles.class);
+        final InstanceIdentifier<ColorMappingProfiles> instanceIdentifier =
                 InstanceIdentifier.create(MefGlobal.class).child(ColorMappingProfiles.class);
 
         when(dataBroker.newWriteOnlyTransaction()).thenReturn(transaction);
@@ -75,7 +78,7 @@ public class LegatoColorMappingProfileUnitTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testColMappingUpdateFromOperationalDB() throws ReadFailedException {
-        InstanceIdentifier<Profile> PROFILE_ID =
+        final InstanceIdentifier<Profile> profileID =
                 InstanceIdentifier.create(MefGlobal.class).child(ColorMappingProfiles.class)
                         .child(Profile.class, new ProfileKey(Constants.ONE));
         ReadOnlyTransaction readTransaction = mock(ReadOnlyTransaction.class);
@@ -89,7 +92,7 @@ public class LegatoColorMappingProfileUnitTest {
 
         Optional<Profile> expectedOpt =
                 (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.CMP_PROFILES,
-                        dataBroker, LogicalDatastoreType.CONFIGURATION, PROFILE_ID);
+                        dataBroker, LogicalDatastoreType.CONFIGURATION, profileID);
         verify(readTransaction).read(any(LogicalDatastoreType.class),
                 any(InstanceIdentifier.class));
         assertNotNull(expectedOpt);
@@ -99,13 +102,13 @@ public class LegatoColorMappingProfileUnitTest {
         doNothing().when(transaction).delete(any(LogicalDatastoreType.class),
                 any(InstanceIdentifier.class));
         when(transaction.submit()).thenReturn(checkedFuture);
-        assertEquals(true, LegatoUtils.deleteFromOperationalDB(PROFILE_ID, dataBroker));
+        assertEquals(true, LegatoUtils.deleteFromOperationalDB(profileID, dataBroker));
         verify(transaction).delete(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
         verify(transaction).submit();
 
 
-        ColorMappingProfiles colorMappingProfiles = mock(ColorMappingProfiles.class);
-        InstanceIdentifier<ColorMappingProfiles> instanceIdentifier =
+        final ColorMappingProfiles colorMappingProfiles = mock(ColorMappingProfiles.class);
+        final InstanceIdentifier<ColorMappingProfiles> instanceIdentifier =
                 InstanceIdentifier.create(MefGlobal.class).child(ColorMappingProfiles.class);
         WriteTransaction transaction2 = Mockito.mock(WriteTransaction.class);
         when(dataBroker.newWriteOnlyTransaction()).thenReturn(transaction2);
@@ -122,14 +125,14 @@ public class LegatoColorMappingProfileUnitTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testColMappingDeleteFromOperationalDB() {
-        final InstanceIdentifier<Profile> PROFILE_ID =
+        final InstanceIdentifier<Profile> profileID =
                 InstanceIdentifier.create(MefGlobal.class).child(ColorMappingProfiles.class)
                         .child(Profile.class, new ProfileKey(Constants.ONE));
         when(dataBroker.newWriteOnlyTransaction()).thenReturn(transaction);
         doNothing().when(transaction).delete(any(LogicalDatastoreType.class),
                 any(InstanceIdentifier.class));
         when(transaction.submit()).thenReturn(checkedFuture);
-        assertEquals(true, LegatoUtils.deleteFromOperationalDB(PROFILE_ID, dataBroker));
+        assertEquals(true, LegatoUtils.deleteFromOperationalDB(profileID, dataBroker));
         verify(transaction).delete(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
         verify(transaction).submit();
     }

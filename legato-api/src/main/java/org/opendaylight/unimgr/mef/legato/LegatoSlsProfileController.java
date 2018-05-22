@@ -8,6 +8,7 @@
 
 package org.opendaylight.unimgr.mef.legato;
 
+import com.google.common.base.Optional;
 
 import java.util.Collections;
 
@@ -28,7 +29,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Optional;
 
 /**
  * @author Arif.Hussain@Xoriant.Com
@@ -136,7 +136,7 @@ public class LegatoSlsProfileController  extends UnimgrDataTreeChangeListener<Pr
     public void remove(DataTreeModification<Profile> removedDataObject) {
         if (removedDataObject.getRootNode() != null && removedDataObject.getRootPath() != null) {
             LOG.info("  Node removed  " + removedDataObject.getRootNode().getIdentifier());
-            
+
             deleteNode(removedDataObject.getRootNode().getDataBefore());
         }
     }

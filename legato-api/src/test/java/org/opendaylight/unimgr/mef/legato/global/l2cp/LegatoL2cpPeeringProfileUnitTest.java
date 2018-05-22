@@ -14,6 +14,10 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.CheckedFuture;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,8 +39,7 @@ import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.types.rev171215.Identifier1024;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.powermock.modules.junit4.PowerMockRunner;
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.CheckedFuture;
+
 
 @SuppressWarnings("deprecation")
 @RunWith(PowerMockRunner.class)
@@ -58,8 +61,8 @@ public class LegatoL2cpPeeringProfileUnitTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testL2cpPeeringAddToOperationalDB() {
-        L2cpPeeringProfiles l2cpPeeringProfiles = mock(L2cpPeeringProfiles.class);
-        InstanceIdentifier<L2cpPeeringProfiles> instanceIdentifier = InstanceIdentifier
+        final L2cpPeeringProfiles l2cpPeeringProfiles = mock(L2cpPeeringProfiles.class);
+        final InstanceIdentifier<L2cpPeeringProfiles> instanceIdentifier = InstanceIdentifier
                 .builder(MefGlobal.class).child(L2cpPeeringProfiles.class).build();
 
         when(dataBroker.newWriteOnlyTransaction()).thenReturn(transaction);
@@ -76,7 +79,7 @@ public class LegatoL2cpPeeringProfileUnitTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testL2cpPeeringUpdateFromOperationalDB() throws ReadFailedException {
-        final InstanceIdentifier<Profile> PROFILE_ID =
+        final InstanceIdentifier<Profile> profileID =
                 InstanceIdentifier.create(MefGlobal.class).child(L2cpPeeringProfiles.class)
                         .child(Profile.class, new ProfileKey(new Identifier1024(Constants.ONE)));
 
@@ -91,7 +94,7 @@ public class LegatoL2cpPeeringProfileUnitTest {
 
         Optional<Profile> expectedOpt =
                 (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.L2CP_PEERING_PROFILES,
-                        dataBroker, LogicalDatastoreType.CONFIGURATION, PROFILE_ID);
+                        dataBroker, LogicalDatastoreType.CONFIGURATION, profileID);
         verify(readTransaction).read(any(LogicalDatastoreType.class),
                 any(InstanceIdentifier.class));
         assertNotNull(expectedOpt);
@@ -101,12 +104,12 @@ public class LegatoL2cpPeeringProfileUnitTest {
         doNothing().when(transaction).delete(any(LogicalDatastoreType.class),
                 any(InstanceIdentifier.class));
         when(transaction.submit()).thenReturn(checkedFuture);
-        assertEquals(true, LegatoUtils.deleteFromOperationalDB(PROFILE_ID, dataBroker));
+        assertEquals(true, LegatoUtils.deleteFromOperationalDB(profileID, dataBroker));
         verify(transaction).delete(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
         verify(transaction).submit();
 
-        L2cpPeeringProfiles l2cpPeeringProfiles = mock(L2cpPeeringProfiles.class);
-        InstanceIdentifier<L2cpPeeringProfiles> instanceIdentifier = InstanceIdentifier
+        final L2cpPeeringProfiles l2cpPeeringProfiles = mock(L2cpPeeringProfiles.class);
+        final InstanceIdentifier<L2cpPeeringProfiles> instanceIdentifier = InstanceIdentifier
                 .builder(MefGlobal.class).child(L2cpPeeringProfiles.class).build();
 
         WriteTransaction transaction2 = Mockito.mock(WriteTransaction.class);
@@ -126,7 +129,7 @@ public class LegatoL2cpPeeringProfileUnitTest {
     @Test
     public void testL2cpPeeringDeleteFromOperationalDB() {
 
-        final InstanceIdentifier<Profile> PROFILE_ID =
+        final InstanceIdentifier<Profile> profileID =
                 InstanceIdentifier.create(MefGlobal.class).child(L2cpPeeringProfiles.class)
                         .child(Profile.class, new ProfileKey(new Identifier1024(Constants.ONE)));
 
@@ -134,7 +137,7 @@ public class LegatoL2cpPeeringProfileUnitTest {
         doNothing().when(transaction).delete(any(LogicalDatastoreType.class),
                 any(InstanceIdentifier.class));
         when(transaction.submit()).thenReturn(checkedFuture);
-        assertEquals(true, LegatoUtils.deleteFromOperationalDB(PROFILE_ID, dataBroker));
+        assertEquals(true, LegatoUtils.deleteFromOperationalDB(profileID, dataBroker));
         verify(transaction).delete(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
         verify(transaction).submit();
     }

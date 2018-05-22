@@ -14,6 +14,10 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.CheckedFuture;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,8 +39,7 @@ import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.global.rev171215.mef.global
 import org.opendaylight.yang.gen.v1.urn.mef.yang.mef.types.rev171215.Identifier1024;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.powermock.modules.junit4.PowerMockRunner;
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.CheckedFuture;
+
 
 @SuppressWarnings("deprecation")
 @RunWith(PowerMockRunner.class)
@@ -58,8 +61,8 @@ public class LegatoEecProfileUnitTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testEecProfileAddToOperationalDB() {
-        EecProfiles eecProfiles = mock(EecProfiles.class);
-        InstanceIdentifier<EecProfiles> instanceIdentifier =
+        final EecProfiles eecProfiles = mock(EecProfiles.class);
+        final InstanceIdentifier<EecProfiles> instanceIdentifier =
                 InstanceIdentifier.create(MefGlobal.class).child(EecProfiles.class);
 
         when(dataBroker.newWriteOnlyTransaction()).thenReturn(transaction);
@@ -76,7 +79,7 @@ public class LegatoEecProfileUnitTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testEecProfileUpdateFromOperationalDB() throws ReadFailedException {
-        final InstanceIdentifier<Profile> PROFILE_ID =
+        final InstanceIdentifier<Profile> profileID =
                 InstanceIdentifier.create(MefGlobal.class).child(EecProfiles.class)
                         .child(Profile.class, new ProfileKey(new Identifier1024(Constants.ONE)));
 
@@ -91,7 +94,7 @@ public class LegatoEecProfileUnitTest {
 
         Optional<Profile> expectedOpt =
                 (Optional<Profile>) LegatoUtils.readProfile(LegatoConstants.EEC_PROFILES,
-                        dataBroker, LogicalDatastoreType.CONFIGURATION, PROFILE_ID);
+                        dataBroker, LogicalDatastoreType.CONFIGURATION, profileID);
         verify(readTransaction).read(any(LogicalDatastoreType.class),
                 any(InstanceIdentifier.class));
         assertNotNull(expectedOpt);
@@ -101,12 +104,12 @@ public class LegatoEecProfileUnitTest {
         doNothing().when(transaction).delete(any(LogicalDatastoreType.class),
                 any(InstanceIdentifier.class));
         when(transaction.submit()).thenReturn(checkedFuture);
-        assertEquals(true, LegatoUtils.deleteFromOperationalDB(PROFILE_ID, dataBroker));
+        assertEquals(true, LegatoUtils.deleteFromOperationalDB(profileID, dataBroker));
         verify(transaction).delete(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
         verify(transaction).submit();
 
-        EecProfiles eecProfiles = mock(EecProfiles.class);
-        InstanceIdentifier<EecProfiles> instanceIdentifier =
+        final EecProfiles eecProfiles = mock(EecProfiles.class);
+        final InstanceIdentifier<EecProfiles> instanceIdentifier =
                 InstanceIdentifier.create(MefGlobal.class).child(EecProfiles.class);
 
         WriteTransaction transaction2 = Mockito.mock(WriteTransaction.class);
@@ -125,7 +128,7 @@ public class LegatoEecProfileUnitTest {
     @Test
     public void testEecProfileDeleteFromOperationalDB() {
 
-        final InstanceIdentifier<Profile> PROFILE_ID =
+        final InstanceIdentifier<Profile> profileID =
                 InstanceIdentifier.create(MefGlobal.class).child(EecProfiles.class)
                         .child(Profile.class, new ProfileKey(new Identifier1024(Constants.ONE)));
 
@@ -133,7 +136,7 @@ public class LegatoEecProfileUnitTest {
         doNothing().when(transaction).delete(any(LogicalDatastoreType.class),
                 any(InstanceIdentifier.class));
         when(transaction.submit()).thenReturn(checkedFuture);
-        assertEquals(true, LegatoUtils.deleteFromOperationalDB(PROFILE_ID, dataBroker));
+        assertEquals(true, LegatoUtils.deleteFromOperationalDB(profileID, dataBroker));
         verify(transaction).delete(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
         verify(transaction).submit();
     }
