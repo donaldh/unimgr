@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
-import org.apache.commons.lang3.StringUtils;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
@@ -189,15 +188,22 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
             LOG.info(" connection-type :{}, svc-type :{}", evcDao.getConnectionType(), evcDao.getSvcType());
 
             if (!evcDao.getSvcType().equalsIgnoreCase("other")) {
-                if ((evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EPL) || evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EVPL))
-                        && (!evcDao.getConnectionType().replace("-", "").equalsIgnoreCase(LegatoConstants.POINTTOPOINT))) {
-                    LOG.info("connection-type in payload should be point-to-point when svc-type is epl/evpl");
-                } else if ((evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EPLAN) || evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EVPLAN))
-                        && (!evcDao.getConnectionType().replace("-", "").equalsIgnoreCase(LegatoConstants.MULTIPOINTTOMULTIPOINT))) {
-                    LOG.info("connection-type in payload should be multipoint-to-multipoint when svc-type is eplan/evplan");
+                if ((evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EPL)
+                        || evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EVPL))
+                        && (!evcDao.getConnectionType().replace("-", "")
+                                .equalsIgnoreCase(LegatoConstants.POINTTOPOINT))) {
+                    LOG.info(
+                            "connection-type in payload should be point-to-point when svc-type is epl/evpl");
+                } else if ((evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EPLAN)
+                        || evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EVPLAN))
+                        && (!evcDao.getConnectionType().replace("-", "")
+                                .equalsIgnoreCase(LegatoConstants.MULTIPOINTTOMULTIPOINT))) {
+                    LOG.info(
+                            "connection-type in payload should be multipoint-to-multipoint when svc-type is eplan/evplan");
                 } else {
                     callCreateConnectionService(
-                            LegatoUtils.buildCreateConnectivityServiceInput(evcDao), evcDao.getEvcId());
+                            LegatoUtils.buildCreateConnectivityServiceInput(evcDao),
+                            evcDao.getEvcId());
                 }
             } else {
                 LOG.info("svc-type in payload should be epl, evpl, eplan, evplan");
@@ -219,12 +225,18 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
             LOG.info(" connection-type :{}, svc-type :{} ", evcDao.getConnectionType(), evcDao.getSvcType());
 
             if (!evcDao.getSvcType().equalsIgnoreCase("other")) {
-                if ((evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EPL) || evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EVPL))
-                        && (!evcDao.getConnectionType().replace("-", "").equalsIgnoreCase(LegatoConstants.POINTTOPOINT))) {
-                    LOG.info("connection-type in payload should be point-to-point when svc-type is epl/evpl");
-                } else if ((evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EPLAN) || evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EVPLAN))
-                        && (!evcDao.getConnectionType().replace("-", "").equalsIgnoreCase(LegatoConstants.MULTIPOINTTOMULTIPOINT))) {
-                    LOG.info("connection-type in payload should be multipoint-to-multipoint when svc-type is eplan/evplan");
+                if ((evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EPL)
+                        || evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EVPL))
+                        && (!evcDao.getConnectionType().replace("-", "")
+                                .equalsIgnoreCase(LegatoConstants.POINTTOPOINT))) {
+                    LOG.info(
+                            "connection-type in payload should be point-to-point when svc-type is epl/evpl");
+                } else if ((evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EPLAN)
+                        || evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EVPLAN))
+                        && (!evcDao.getConnectionType().replace("-", "")
+                                .equalsIgnoreCase(LegatoConstants.MULTIPOINTTOMULTIPOINT))) {
+                    LOG.info(
+                            "connection-type in payload should be multipoint-to-multipoint when svc-type is eplan/evplan");
                 } else {
                     if (EVC_UUIDMAP.containsKey(evcDao.getEvcId())) {
                         LOG.info("Update UUID: {} of EVC Id: {} ",
@@ -236,7 +248,8 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
                         for (String uniStr : uniList) {
                             callUpdateConnectionService(
                                     LegatoUtils.buildUpdateConnectivityServiceInput(evcDao, uniStr,
-                                            EVC_UUIDMAP.get(evcDao.getEvcId())), evcDao.getEvcId());
+                                            EVC_UUIDMAP.get(evcDao.getEvcId())),
+                                    evcDao.getEvcId());
                         }
                     } else {
                         LOG.info("UUID does not exists for EVC Id : {}", evcDao.getEvcId());
@@ -313,7 +326,8 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
 
                 // Add Node in OPERATIONAL DB
                 if (optionalEvc.isPresent()) {
-                    LegatoUtils.updateEvcInOperationalDB(optionalEvc.get(), EVC_IID_OPERATIONAL,  dataBroker);
+                    LegatoUtils.updateEvcInOperationalDB(optionalEvc.get(), EVC_IID_OPERATIONAL,
+                            dataBroker);
                 }
 
             } else {

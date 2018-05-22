@@ -142,13 +142,15 @@ public class LegatoUtils {
 
     public static CreateConnectivityServiceInput buildCreateConnectivityServiceInput(EVCDao evcDao) {
 
-        CreateConnectivityServiceInputBuilder createConnServiceInputBuilder = new CreateConnectivityServiceInputBuilder();
+        CreateConnectivityServiceInputBuilder createConnServiceInputBuilder =
+                new CreateConnectivityServiceInputBuilder();
         List<org.opendaylight.yang.gen.v1.urn.onf.otcc.yang.tapi.connectivity.rev180307.create.connectivity.service.input.EndPoint> endpointList;
         List<String> uniList = evcDao.getUniList();
         boolean isExclusive = false;
 
         // if svc-type = epl/eplan then set is_exclusive flag as true
-        if (evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EPL) || evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EPLAN)) {
+        if (evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EPL)
+                || evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EPLAN)) {
             isExclusive = true;
         }
 
@@ -184,10 +186,12 @@ public class LegatoUtils {
             String uniStr, String uuid) {
         boolean isExclusive = false;
 
-        UpdateConnectivityServiceInputBuilder updateConnServiceInputBuilder = new UpdateConnectivityServiceInputBuilder();
+        UpdateConnectivityServiceInputBuilder updateConnServiceInputBuilder =
+                new UpdateConnectivityServiceInputBuilder();
 
         // if svc-type = epl/eplan then set is_exclusive flag as true
-        if (evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EPL) || evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EPLAN)) {
+        if (evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EPL)
+                || evcDao.getSvcType().equalsIgnoreCase(LegatoConstants.EPLAN)) {
             isExclusive = true;
         }
 
@@ -208,7 +212,8 @@ public class LegatoUtils {
                 break;
         }
 
-        updateConnServiceInputBuilder.setEndPoint(buildUpdateEndpoints(uniStr, LayerProtocolName.ETH));
+        updateConnServiceInputBuilder
+                .setEndPoint(buildUpdateEndpoints(uniStr, LayerProtocolName.ETH));
         updateConnServiceInputBuilder.addAugmentation(UpdateConnectivityServiceInput1.class,
                 LegatoUtils.buildUpdateConServiceAugmentation(evcDao.getMaxFrameSize().toString()));
         updateConnServiceInputBuilder.setServiceIdOrName(uuid);
@@ -230,10 +235,10 @@ public class LegatoUtils {
             ServiceInterfacePoint sipRef = new ServiceInterfacePointBuilder()
                     .setServiceInterfacePointId(new Uuid(uniArr[0])).build();
 
-            endPointBuilder = new EndPointBuilder().setRole(PortRole.SYMMETRIC).setLocalId("e:" + uniArr[0])
-                    .setServiceInterfacePoint(sipRef).setDirection(PortDirection.BIDIRECTIONAL)
-                    .setLayerProtocolName(layerProtocolName)
-                    .addAugmentation(EndPoint2.class,
+            endPointBuilder = new EndPointBuilder().setRole(PortRole.SYMMETRIC)
+                    .setLocalId("e:" + uniArr[0]).setServiceInterfacePoint(sipRef)
+                    .setDirection(PortDirection.BIDIRECTIONAL)
+                    .setLayerProtocolName(layerProtocolName).addAugmentation(EndPoint2.class,
                             LegatoUtils.buildCreateEthConnectivityEndPointAugmentation(uniArr[1]));
 
             endpointList.add(endPointBuilder.build());
