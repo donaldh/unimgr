@@ -60,12 +60,9 @@ public class LegatoL2cpEecController  extends UnimgrDataTreeChangeListener<Profi
 
     @Override
     public void add(DataTreeModification<Profile> newDataObject) {
-        if (newDataObject.getRootNode() != null && newDataObject.getRootPath() != null) {
-            LOG.info("ClassName :: LegatoL2cpEecController, Method:: add(), Message:: Node Added  "
-                    + newDataObject.getRootNode().getIdentifier());
-
-            addToOperationalDB(newDataObject.getRootNode().getDataAfter());
-        }
+        LOG.info("ClassName :: LegatoL2cpEecController, Method:: add(), Message:: Node Added  "
+                + newDataObject.getRootNode().getIdentifier());
+        addToOperationalDB(newDataObject.getRootNode().getDataAfter());
     }
 
     public void addToOperationalDB(Profile profileObj) {

@@ -60,10 +60,8 @@ public class LegatoCosProfileController extends UnimgrDataTreeChangeListener<Pro
 
     @Override
     public void add(DataTreeModification<Profile> newDataObject) {
-        if (newDataObject.getRootNode() != null && newDataObject.getRootPath() != null) {
-            LOG.info("  Node Added  " + newDataObject.getRootNode().getIdentifier());
-            addToOperationalDB(newDataObject.getRootNode().getDataAfter());
-        }
+        LOG.info("  Node Added  " + newDataObject.getRootNode().getIdentifier());
+        addToOperationalDB(newDataObject.getRootNode().getDataAfter());
     }
 
     public void addToOperationalDB(Profile profile) {

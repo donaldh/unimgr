@@ -93,18 +93,14 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
 
     @Override
     public void add(DataTreeModification<Evc> newDataObject) {
-        if (newDataObject.getRootNode() != null
-                && newDataObject.getRootPath() != null) {
-            LOG.info("  Node Added  "
-                    + newDataObject.getRootNode().getIdentifier());
+        LOG.info("  Node Added  " + newDataObject.getRootNode().getIdentifier());
 
-            Optional<Evc> optionalEvc = LegatoUtils.readEvc(dataBroker,
-                    LogicalDatastoreType.CONFIGURATION, newDataObject
-                            .getRootPath().getRootIdentifier());
+        Optional<Evc> optionalEvc =
+                LegatoUtils.readEvc(dataBroker, LogicalDatastoreType.CONFIGURATION, newDataObject
+                        .getRootPath().getRootIdentifier());
 
-            if (optionalEvc.isPresent()) {
-                addNode(optionalEvc.get());
-            }
+        if (optionalEvc.isPresent()) {
+            addNode(optionalEvc.get());
         }
     }
 

@@ -62,12 +62,9 @@ public class LegatoL2cpPeeringController extends UnimgrDataTreeChangeListener<Pr
 
     @Override
     public void add(DataTreeModification<Profile> newDataObject) {
-        if (newDataObject.getRootNode() != null && newDataObject.getRootPath() != null) {
-            LOG.info(
-                    "ClassName :: LegatoL2cpPeeringController, Method:: add(), Message:: Node Added  "
-                            + newDataObject.getRootNode().getIdentifier());
-            addToOperationalDB(newDataObject.getRootNode().getDataAfter());
-        }
+        LOG.info("ClassName :: LegatoL2cpPeeringController, Method:: add(), Message:: Node Added  "
+                + newDataObject.getRootNode().getIdentifier());
+        addToOperationalDB(newDataObject.getRootNode().getDataAfter());
     }
 
 

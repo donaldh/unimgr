@@ -72,10 +72,8 @@ public class LegatoSlsProfileController  extends UnimgrDataTreeChangeListener<Pr
 
     @Override
     public void add(DataTreeModification<Profile> newDataObject) {
-        if (newDataObject.getRootNode() != null && newDataObject.getRootPath() != null) {
-            LOG.info("  Node Added  " + newDataObject.getRootNode().getIdentifier());
-            addToOperationalDB(newDataObject.getRootNode().getDataAfter());
-        }
+        LOG.info("  Node Added  " + newDataObject.getRootNode().getIdentifier());
+        addToOperationalDB(newDataObject.getRootNode().getDataAfter());
     }
 
 
