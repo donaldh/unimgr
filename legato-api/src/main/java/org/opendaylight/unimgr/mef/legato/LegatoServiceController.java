@@ -106,29 +106,24 @@ public class LegatoServiceController extends UnimgrDataTreeChangeListener<Evc> {
 
     @Override
     public void remove(DataTreeModification<Evc> removedDataObject) {
-        if (removedDataObject.getRootNode() != null
-                && removedDataObject.getRootPath() != null) {
-            LOG.info("  Node removed  "
-                    + removedDataObject.getRootNode().getIdentifier());
+        LOG.info("  Node removed  "
+                + removedDataObject.getRootNode().getIdentifier());
 
-            deleteNode(removedDataObject.getRootNode().getDataBefore());
-        }
+        deleteNode(removedDataObject.getRootNode().getDataBefore());
     }
 
     @Override
     public void update(DataTreeModification<Evc> modifiedDataObject) {
-        if (modifiedDataObject.getRootNode() != null
-                && modifiedDataObject.getRootPath() != null) {
-            LOG.info("  Node modified  "
-                    + modifiedDataObject.getRootNode().getIdentifier());
-            Optional<Evc> optionalEvc = LegatoUtils.readEvc(dataBroker,
-                    LogicalDatastoreType.CONFIGURATION, modifiedDataObject
-                            .getRootPath().getRootIdentifier());
+        LOG.info("  Node modified  "
+                + modifiedDataObject.getRootNode().getIdentifier());
+        Optional<Evc> optionalEvc = LegatoUtils.readEvc(dataBroker,
+                LogicalDatastoreType.CONFIGURATION, modifiedDataObject
+                        .getRootPath().getRootIdentifier());
 
-            if (optionalEvc.isPresent()) {
-                updateNode(optionalEvc.get());
-            }
+        if (optionalEvc.isPresent()) {
+            updateNode(optionalEvc.get());
         }
+
     }
 
     private void addNode(Evc evc) {
