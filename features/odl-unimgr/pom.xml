@@ -24,10 +24,7 @@
     <controller.mdsal.version>1.6.0</controller.mdsal.version>
     <restconf.version>1.6.0</restconf.version>
     <yangtools.version>1.2.0</yangtools.version>
-    <dlux.version>0.6.0</dlux.version>
-    <dluxapps.version>0.6.0</dluxapps.version>
     <ovsdb.version>1.5.0</ovsdb.version>
-    <netvirt.version>1.5.0</netvirt.version>
     <vpnservice.version>0.5.0</vpnservice.version>
     <mdsal.model.version>0.11.0</mdsal.model.version>
 
@@ -62,40 +59,9 @@
       <classifier>features</classifier>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.ovsdb</groupId>
-      <artifactId>odl-ovsdb-southbound-impl</artifactId>
-      <version>${ovsdb.version}</version>
-      <type>xml</type>
-      <classifier>features</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.unimgr</groupId>
-      <artifactId>odl-unimgr-api</artifactId>
-      <version>${project.version}</version>
-      <type>xml</type>
-      <classifier>features</classifier>
-    </dependency>
-    <dependency>
       <groupId>org.opendaylight.unimgr</groupId>
       <artifactId>unimgr-impl</artifactId>
       <version>${project.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>ch.qos.logback</groupId>
-          <artifactId>logback-core</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>ch.qos.logback</groupId>
-          <artifactId>logback-classic</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.unimgr</groupId>
-      <artifactId>unimgr-impl</artifactId>
-      <version>${project.version}</version>
-      <type>xml</type>
-      <classifier>config</classifier>
       <exclusions>
         <exclusion>
           <groupId>ch.qos.logback</groupId>
