@@ -176,7 +176,7 @@ public class OvsActivator implements ResourceActivator {
 		//modify flow with new queue number
 		 Table table = OpenFlowUtils.getTable(node);
         TableTransaction tableTransaction = new TableTransaction(dataBroker, node, table);
-		tableTransaction.writeFlow(OpenFlowUtils.createVlanIngressFlow(ovsActivatorHelper.getOpenFlowPortName(), new VlanUtils(dataBroker, endPoint.getNepRef().getNodeId().getValue()).getVlanID(serviceName) , ovsActivatorHelper.getCeVlanId(true),
+		tableTransaction.writeFlow(OpenFlowUtils.createVlanIngressFlow(ovsActivatorHelper.getOpenFlowPortName(), new VlanUtils(dataBroker, endPoint.getNepRef().getNodeId().getValue()).getVlanID(serviceName) , ovsActivatorHelper.getCeVlanId(),
 				serviceName, topologyTransaction.readInterswitchLinks(node), queueNumber));
 	}
 
