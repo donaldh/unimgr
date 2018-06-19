@@ -1,0 +1,690 @@
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (mmap) failed to map 88080384 bytes for committing reserved memory.
+# Possible reasons:
+#   The system is out of physical RAM or swap space
+#   In 32 bit mode, the process size limit was hit
+# Possible solutions:
+#   Reduce memory load on the system
+#   Increase physical memory or swap space
+#   Check if swap backing store is full
+#   Use 64 bit Java on a 64 bit OS
+#   Decrease Java heap size (-Xmx/-Xms)
+#   Decrease number of Java threads
+#   Decrease Java thread stack sizes (-Xss)
+#   Set larger code cache with -XX:ReservedCodeCacheSize=
+# This output file may be truncated or incomplete.
+#
+#  Out of Memory Error (os_linux.cpp:2640), pid=16461, tid=0x00007f6c51359700
+#
+# JRE version: Java(TM) SE Runtime Environment (8.0_144-b01) (build 1.8.0_144-b01)
+# Java VM: Java HotSpot(TM) 64-Bit Server VM (25.144-b01 mixed mode linux-amd64 compressed oops)
+# Failed to write core dump. Core dumps have been disabled. To enable core dumping, try "ulimit -c unlimited" before starting Java again
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x00007f6c640fc000):  VMThread [stack: 0x00007f6c51259000,0x00007f6c5135a000] [id=16465]
+
+Stack: [0x00007f6c51259000,0x00007f6c5135a000],  sp=0x00007f6c51357fa0,  free space=1019k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [libjvm.so+0xacb18a]  VMError::report_and_die()+0x2ba
+V  [libjvm.so+0x4ff4db]  report_vm_out_of_memory(char const*, int, unsigned long, VMErrorType, char const*)+0x8b
+V  [libjvm.so+0x927d23]  os::Linux::commit_memory_impl(char*, unsigned long, bool)+0x103
+V  [libjvm.so+0x928279]  os::pd_commit_memory(char*, unsigned long, unsigned long, bool)+0x29
+V  [libjvm.so+0x92249a]  os::commit_memory(char*, unsigned long, unsigned long, bool)+0x2a
+V  [libjvm.so+0x996ff3]  PSVirtualSpace::expand_by(unsigned long)+0x53
+V  [libjvm.so+0x9983f8]  PSYoungGen::resize_generation(unsigned long, unsigned long)+0xf8
+V  [libjvm.so+0x997552]  PSYoungGen::resize(unsigned long, unsigned long)+0x22
+V  [libjvm.so+0x99482b]  PSScavenge::invoke_no_policy()+0xf3b
+V  [libjvm.so+0x994fb1]  PSScavenge::invoke()+0x41
+V  [libjvm.so+0x94bce0]  ParallelScavengeHeap::failed_mem_allocate(unsigned long)+0x70
+V  [libjvm.so+0xaccba7]  VM_ParallelGCFailedAllocation::doit()+0x97
+V  [libjvm.so+0xad4685]  VM_Operation::evaluate()+0x55
+V  [libjvm.so+0xad2a5a]  VMThread::evaluate_operation(VM_Operation*)+0xba
+V  [libjvm.so+0xad2dde]  VMThread::loop()+0x1ce
+V  [libjvm.so+0xad3250]  VMThread::run()+0x70
+V  [libjvm.so+0x92a338]  java_start(Thread*)+0x108
+
+VM_Operation (0x00007f6c6c562450): ParallelGCFailedAllocation, mode: safepoint, requested by thread 0x00007f6c6400b000
+
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+  0x00007f6c64823800 JavaThread "Service Thread" daemon [_thread_blocked, id=16472, stack(0x00007f6c5022c000,0x00007f6c5032d000)]
+  0x00007f6c647bd000 JavaThread "C1 CompilerThread1" daemon [_thread_blocked, id=16471, stack(0x00007f6c5032d000,0x00007f6c5042e000)]
+  0x00007f6c64738800 JavaThread "C2 CompilerThread0" daemon [_thread_blocked, id=16470, stack(0x00007f6c5042e000,0x00007f6c5052f000)]
+  0x00007f6c6413c800 JavaThread "Signal Dispatcher" daemon [_thread_blocked, id=16469, stack(0x00007f6c50b4a000,0x00007f6c50c4b000)]
+  0x00007f6c64108000 JavaThread "Finalizer" daemon [_thread_blocked, id=16467, stack(0x00007f6c51057000,0x00007f6c51158000)]
+  0x00007f6c64103800 JavaThread "Reference Handler" daemon [_thread_blocked, id=16466, stack(0x00007f6c51158000,0x00007f6c51259000)]
+  0x00007f6c6400b000 JavaThread "main" [_thread_blocked, id=16462, stack(0x00007f6c6c469000,0x00007f6c6c56a000)]
+
+Other Threads:
+=>0x00007f6c640fc000 VMThread [stack: 0x00007f6c51259000,0x00007f6c5135a000] [id=16465]
+  0x00007f6c6482f000 WatcherThread [stack: 0x00007f6c5012b000,0x00007f6c5022c000] [id=16473]
+
+VM state:at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread:  ([mutex/lock_event])
+[0x00007f6c64007530] Threads_lock - owner thread: 0x00007f6c640fc000
+[0x00007f6c64007a30] Heap_lock - owner thread: 0x00007f6c6400b000
+
+Heap:
+ PSYoungGen      total 256512K, used 8696K [0x00000000e0f00000, 0x00000000f1200000, 0x0000000100000000)
+  eden space 247808K, 0% used [0x00000000e0f00000,0x00000000e0f00000,0x00000000f0100000)
+  from space 8704K, 99% used [0x00000000f0100000,0x00000000f097e030,0x00000000f0980000)
+  to   space 8192K, 0% used [0x00000000f0a00000,0x00000000f0a00000,0x00000000f1200000)
+ ParOldGen       total 64512K, used 22590K [0x00000000a2c00000, 0x00000000a6b00000, 0x00000000e0f00000)
+  object space 64512K, 35% used [0x00000000a2c00000,0x00000000a420fb78,0x00000000a6b00000)
+ Metaspace       used 24757K, capacity 25928K, committed 26112K, reserved 1073152K
+  class space    used 2400K, capacity 2776K, committed 2816K, reserved 1048576K
+
+Card table byte_map: [0x00007f6c68d0c000,0x00007f6c68ff7000] byte_map_base: 0x00007f6c687f6000
+
+Marking Bits: (ParMarkBitMap*) 0x00007f6c6b931dc0
+ Begin Bits: [0x00007f6c52160000, 0x00007f6c538b0000)
+ End Bits:   [0x00007f6c538b0000, 0x00007f6c55000000)
+
+Polling page: 0x00007f6c6c57f000
+
+CodeCache: size=245760Kb used=9560Kb max_used=9936Kb free=236199Kb
+ bounds [0x00007f6c55000000, 0x00007f6c559d0000, 0x00007f6c64000000]
+ total_blobs=2884 nmethods=2554 adapters=243
+ compilation: enabled
+
+Compilation events (10 events):
+Event: 17,059 Thread 0x00007f6c64738800 nmethod 2960 0x00007f6c558dae90 code [0x00007f6c558dafe0, 0x00007f6c558db038]
+Event: 17,060 Thread 0x00007f6c64738800 2964       4       javassist.bytecode.FieldInfo::$jacocoInit (52 bytes)
+Event: 17,060 Thread 0x00007f6c64738800 nmethod 2964 0x00007f6c551202d0 code [0x00007f6c55120420, 0x00007f6c55120478]
+Event: 17,060 Thread 0x00007f6c64738800 2965       4       javassist.compiler.MemberCodeGen::$jacocoInit (54 bytes)
+Event: 17,061 Thread 0x00007f6c64738800 nmethod 2965 0x00007f6c551be650 code [0x00007f6c551be7a0, 0x00007f6c551be7f8]
+Event: 17,061 Thread 0x00007f6c64738800 2966       4       javassist.bytecode.StackMapTable$Walker::$jacocoInit (52 bytes)
+Event: 17,062 Thread 0x00007f6c64738800 nmethod 2966 0x00007f6c551d5f90 code [0x00007f6c551d60e0, 0x00007f6c551d6138]
+Event: 17,062 Thread 0x00007f6c64738800 2963  s    4       java.lang.StringBuffer::toString (36 bytes)
+Event: 17,076 Thread 0x00007f6c64738800 nmethod 2963 0x00007f6c554736d0 code [0x00007f6c55473840, 0x00007f6c55473dd8]
+Event: 17,076 Thread 0x00007f6c64738800 2957       4       org.jacoco.agent.rt.internal_6da5971.core.internal.instr.ProbeInserter::visitCode (29 bytes)
+
+GC Heap History (10 events):
+Event: 7,417 GC heap after
+Heap after GC invocations=9 (full 0):
+ PSYoungGen      total 103936K, used 6629K [0x00000000e0f00000, 0x00000000eb700000, 0x0000000100000000)
+  eden space 97280K, 0% used [0x00000000e0f00000,0x00000000e0f00000,0x00000000e6e00000)
+  from space 6656K, 99% used [0x00000000e6e00000,0x00000000e7479658,0x00000000e7480000)
+  to   space 8192K, 0% used [0x00000000eaf00000,0x00000000eaf00000,0x00000000eb700000)
+ ParOldGen       total 64512K, used 5790K [0x00000000a2c00000, 0x00000000a6b00000, 0x00000000e0f00000)
+  object space 64512K, 8% used [0x00000000a2c00000,0x00000000a31a7ba0,0x00000000a6b00000)
+ Metaspace       used 13279K, capacity 13618K, committed 13824K, reserved 1060864K
+  class space    used 1294K, capacity 1423K, committed 1536K, reserved 1048576K
+}
+Event: 8,440 GC heap before
+{Heap before GC invocations=10 (full 0):
+ PSYoungGen      total 103936K, used 103909K [0x00000000e0f00000, 0x00000000eb700000, 0x0000000100000000)
+  eden space 97280K, 100% used [0x00000000e0f00000,0x00000000e6e00000,0x00000000e6e00000)
+  from space 6656K, 99% used [0x00000000e6e00000,0x00000000e7479658,0x00000000e7480000)
+  to   space 8192K, 0% used [0x00000000eaf00000,0x00000000eaf00000,0x00000000eb700000)
+ ParOldGen       total 64512K, used 5790K [0x00000000a2c00000, 0x00000000a6b00000, 0x00000000e0f00000)
+  object space 64512K, 8% used [0x00000000a2c00000,0x00000000a31a7ba0,0x00000000a6b00000)
+ Metaspace       used 14433K, capacity 14838K, committed 15232K, reserved 1062912K
+  class space    used 1400K, capacity 1573K, committed 1664K, reserved 1048576K
+Event: 8,468 GC heap after
+Heap after GC invocations=10 (full 0):
+ PSYoungGen      total 162816K, used 7733K [0x00000000e0f00000, 0x00000000eb900000, 0x0000000100000000)
+  eden space 154624K, 0% used [0x00000000e0f00000,0x00000000e0f00000,0x00000000ea600000)
+  from space 8192K, 94% used [0x00000000eaf00000,0x00000000eb68d528,0x00000000eb700000)
+  to   space 9216K, 0% used [0x00000000ea600000,0x00000000ea600000,0x00000000eaf00000)
+ ParOldGen       total 64512K, used 9446K [0x00000000a2c00000, 0x00000000a6b00000, 0x00000000e0f00000)
+  object space 64512K, 14% used [0x00000000a2c00000,0x00000000a3539bb0,0x00000000a6b00000)
+ Metaspace       used 14433K, capacity 14838K, committed 15232K, reserved 1062912K
+  class space    used 1400K, capacity 1573K, committed 1664K, reserved 1048576K
+}
+Event: 10,082 GC heap before
+{Heap before GC invocations=11 (full 0):
+ PSYoungGen      total 162816K, used 162357K [0x00000000e0f00000, 0x00000000eb900000, 0x0000000100000000)
+  eden space 154624K, 100% used [0x00000000e0f00000,0x00000000ea600000,0x00000000ea600000)
+  from space 8192K, 94% used [0x00000000eaf00000,0x00000000eb68d528,0x00000000eb700000)
+  to   space 9216K, 0% used [0x00000000ea600000,0x00000000ea600000,0x00000000eaf00000)
+ ParOldGen       total 64512K, used 9446K [0x00000000a2c00000, 0x00000000a6b00000, 0x00000000e0f00000)
+  object space 64512K, 14% used [0x00000000a2c00000,0x00000000a3539bb0,0x00000000a6b00000)
+ Metaspace       used 17433K, capacity 18192K, committed 18432K, reserved 1064960K
+  class space    used 1694K, capacity 1940K, committed 2048K, reserved 1048576K
+Event: 10,106 GC heap after
+Heap after GC invocations=11 (full 0):
+ PSYoungGen      total 163840K, used 5900K [0x00000000e0f00000, 0x00000000f1300000, 0x0000000100000000)
+  eden space 154624K, 0% used [0x00000000e0f00000,0x00000000e0f00000,0x00000000ea600000)
+  from space 9216K, 64% used [0x00000000ea600000,0x00000000eabc3030,0x00000000eaf00000)
+  to   space 9216K, 0% used [0x00000000f0a00000,0x00000000f0a00000,0x00000000f1300000)
+ ParOldGen       total 64512K, used 15838K [0x00000000a2c00000, 0x00000000a6b00000, 0x00000000e0f00000)
+  object space 64512K, 24% used [0x00000000a2c00000,0x00000000a3b77bb0,0x00000000a6b00000)
+ Metaspace       used 17433K, capacity 18192K, committed 18432K, reserved 1064960K
+  class space    used 1694K, capacity 1940K, committed 2048K, reserved 1048576K
+}
+Event: 11,471 GC heap before
+{Heap before GC invocations=12 (full 0):
+ PSYoungGen      total 163840K, used 151204K [0x00000000e0f00000, 0x00000000f1300000, 0x0000000100000000)
+  eden space 154624K, 93% used [0x00000000e0f00000,0x00000000e9ce61f8,0x00000000ea600000)
+  from space 9216K, 64% used [0x00000000ea600000,0x00000000eabc3030,0x00000000eaf00000)
+  to   space 9216K, 0% used [0x00000000f0a00000,0x00000000f0a00000,0x00000000f1300000)
+ ParOldGen       total 64512K, used 15838K [0x00000000a2c00000, 0x00000000a6b00000, 0x00000000e0f00000)
+  object space 64512K, 24% used [0x00000000a2c00000,0x00000000a3b77bb0,0x00000000a6b00000)
+ Metaspace       used 20256K, capacity 21148K, committed 21248K, reserved 1069056K
+  class space    used 1965K, capacity 2262K, committed 2304K, reserved 1048576K
+Event: 11,487 GC heap after
+Heap after GC invocations=12 (full 0):
+ PSYoungGen      total 256000K, used 5165K [0x00000000e0f00000, 0x00000000f1200000, 0x0000000100000000)
+  eden space 247808K, 0% used [0x00000000e0f00000,0x00000000e0f00000,0x00000000f0100000)
+  from space 8192K, 63% used [0x00000000f0a00000,0x00000000f0f0b568,0x00000000f1200000)
+  to   space 8704K, 0% used [0x00000000f0100000,0x00000000f0100000,0x00000000f0980000)
+ ParOldGen       total 64512K, used 19214K [0x00000000a2c00000, 0x00000000a6b00000, 0x00000000e0f00000)
+  object space 64512K, 29% used [0x00000000a2c00000,0x00000000a3ec3bb0,0x00000000a6b00000)
+ Metaspace       used 20256K, capacity 21148K, committed 21248K, reserved 1069056K
+  class space    used 1965K, capacity 2262K, committed 2304K, reserved 1048576K
+}
+Event: 11,488 GC heap before
+{Heap before GC invocations=13 (full 1):
+ PSYoungGen      total 256000K, used 5165K [0x00000000e0f00000, 0x00000000f1200000, 0x0000000100000000)
+  eden space 247808K, 0% used [0x00000000e0f00000,0x00000000e0f00000,0x00000000f0100000)
+  from space 8192K, 63% used [0x00000000f0a00000,0x00000000f0f0b568,0x00000000f1200000)
+  to   space 8704K, 0% used [0x00000000f0100000,0x00000000f0100000,0x00000000f0980000)
+ ParOldGen       total 64512K, used 19214K [0x00000000a2c00000, 0x00000000a6b00000, 0x00000000e0f00000)
+  object space 64512K, 29% used [0x00000000a2c00000,0x00000000a3ec3bb0,0x00000000a6b00000)
+ Metaspace       used 20256K, capacity 21148K, committed 21248K, reserved 1069056K
+  class space    used 1965K, capacity 2262K, committed 2304K, reserved 1048576K
+Event: 11,677 GC heap after
+Heap after GC invocations=13 (full 1):
+ PSYoungGen      total 256000K, used 0K [0x00000000e0f00000, 0x00000000f1200000, 0x0000000100000000)
+  eden space 247808K, 0% used [0x00000000e0f00000,0x00000000e0f00000,0x00000000f0100000)
+  from space 8192K, 0% used [0x00000000f0a00000,0x00000000f0a00000,0x00000000f1200000)
+  to   space 8704K, 0% used [0x00000000f0100000,0x00000000f0100000,0x00000000f0980000)
+ ParOldGen       total 64512K, used 21795K [0x00000000a2c00000, 0x00000000a6b00000, 0x00000000e0f00000)
+  object space 64512K, 33% used [0x00000000a2c00000,0x00000000a4148d80,0x00000000a6b00000)
+ Metaspace       used 20125K, capacity 20938K, committed 21248K, reserved 1069056K
+  class space    used 1946K, capacity 2227K, committed 2304K, reserved 1048576K
+}
+Event: 17,100 GC heap before
+{Heap before GC invocations=14 (full 1):
+ PSYoungGen      total 256000K, used 247808K [0x00000000e0f00000, 0x00000000f1200000, 0x0000000100000000)
+  eden space 247808K, 100% used [0x00000000e0f00000,0x00000000f0100000,0x00000000f0100000)
+  from space 8192K, 0% used [0x00000000f0a00000,0x00000000f0a00000,0x00000000f1200000)
+  to   space 8704K, 0% used [0x00000000f0100000,0x00000000f0100000,0x00000000f0980000)
+ ParOldGen       total 64512K, used 21795K [0x00000000a2c00000, 0x00000000a6b00000, 0x00000000e0f00000)
+  object space 64512K, 33% used [0x00000000a2c00000,0x00000000a4148d80,0x00000000a6b00000)
+ Metaspace       used 24757K, capacity 25928K, committed 26112K, reserved 1073152K
+  class space    used 2400K, capacity 2776K, committed 2816K, reserved 1048576K
+
+Deoptimization events (10 events):
+Event: 3,684 Thread 0x00007f6c6400b000 Uncommon trap: reason=unstable_if action=reinterpret pc=0x00007f6c5511b760 method=java.lang.CharacterData.of(I)Ljava/lang/CharacterData; @ 4
+Event: 4,721 Thread 0x00007f6c6400b000 Uncommon trap: reason=unstable_if action=reinterpret pc=0x00007f6c55572a1c method=java.util.HashMap.getNode(ILjava/lang/Object;)Ljava/util/HashMap$Node; @ 84
+Event: 4,893 Thread 0x00007f6c6400b000 Uncommon trap: reason=unstable_if action=reinterpret pc=0x00007f6c555efd0c method=javassist.bytecode.CodeIterator.nextOpcode([BI)I @ 51
+Event: 5,245 Thread 0x00007f6c6400b000 Uncommon trap: reason=unstable_if action=reinterpret pc=0x00007f6c5521c4d4 method=java.util.regex.Pattern$Slice.match(Ljava/util/regex/Matcher;ILjava/lang/CharSequence;)Z @ 18
+Event: 5,246 Thread 0x00007f6c6400b000 Uncommon trap: reason=class_check action=maybe_recompile pc=0x00007f6c551b4370 method=java.util.regex.Pattern$Curly.match0(Ljava/util/regex/Matcher;IILjava/lang/CharSequence;)Z @ 170
+Event: 5,252 Thread 0x00007f6c6400b000 Uncommon trap: reason=class_check action=maybe_recompile pc=0x00007f6c551b4370 method=java.util.regex.Pattern$Curly.match0(Ljava/util/regex/Matcher;IILjava/lang/CharSequence;)Z @ 170
+Event: 5,366 Thread 0x00007f6c6400b000 Uncommon trap: reason=unstable_if action=reinterpret pc=0x00007f6c556b62fc method=javassist.bytecode.LongVector.elementAt(I)Ljavassist/bytecode/ConstInfo; @ 20
+Event: 6,746 Thread 0x00007f6c6400b000 Uncommon trap: reason=class_check action=maybe_recompile pc=0x00007f6c551b4370 method=java.util.regex.Pattern$Curly.match0(Ljava/util/regex/Matcher;IILjava/lang/CharSequence;)Z @ 170
+Event: 6,750 Thread 0x00007f6c6400b000 Uncommon trap: reason=class_check action=maybe_recompile pc=0x00007f6c551b4370 method=java.util.regex.Pattern$Curly.match0(Ljava/util/regex/Matcher;IILjava/lang/CharSequence;)Z @ 170
+Event: 6,758 Thread 0x00007f6c6400b000 Uncommon trap: reason=unstable_if action=reinterpret pc=0x00007f6c551c2ee0 method=java.util.regex.Pattern$Slice.match(Ljava/util/regex/Matcher;ILjava/lang/CharSequence;)Z @ 18
+
+Internal exceptions (8 events):
+Event: 0,162 Thread 0x00007f6c6400b000 Exception <a 'java/lang/NoSuchMethodError': Method sun.misc.Unsafe.defineClass(Ljava/lang/String;[BII)Ljava/lang/Class; name or signature does not match> (0x00000000e0f07ca8) thrown at [/HUDSON3/workspace/8-2-build-linux-amd64/jdk8u144/9417/hotspot/src/sh
+Event: 0,162 Thread 0x00007f6c6400b000 Exception <a 'java/lang/NoSuchMethodError': Method sun.misc.Unsafe.prefetchRead(Ljava/lang/Object;J)V name or signature does not match> (0x00000000e0f07f90) thrown at [/HUDSON3/workspace/8-2-build-linux-amd64/jdk8u144/9417/hotspot/src/share/vm/prims/jni.c
+Event: 2,708 Thread 0x00007f6c6400b000 Exception <a 'java/security/PrivilegedActionException'> (0x00000000e123b878) thrown at [/HUDSON3/workspace/8-2-build-linux-amd64/jdk8u144/9417/hotspot/src/share/vm/prims/jvm.cpp, line 1390]
+Event: 2,709 Thread 0x00007f6c6400b000 Exception <a 'java/security/PrivilegedActionException'> (0x00000000e123bc70) thrown at [/HUDSON3/workspace/8-2-build-linux-amd64/jdk8u144/9417/hotspot/src/share/vm/prims/jvm.cpp, line 1390]
+Event: 2,709 Thread 0x00007f6c6400b000 Exception <a 'java/security/PrivilegedActionException'> (0x00000000e123e690) thrown at [/HUDSON3/workspace/8-2-build-linux-amd64/jdk8u144/9417/hotspot/src/share/vm/prims/jvm.cpp, line 1390]
+Event: 2,709 Thread 0x00007f6c6400b000 Exception <a 'java/security/PrivilegedActionException'> (0x00000000e123ea88) thrown at [/HUDSON3/workspace/8-2-build-linux-amd64/jdk8u144/9417/hotspot/src/share/vm/prims/jvm.cpp, line 1390]
+Event: 3,109 Thread 0x00007f6c6400b000 Exception <a 'java/lang/NoSuchFieldError': method resolution failed> (0x00000000e23babe0) thrown at [/HUDSON3/workspace/8-2-build-linux-amd64/jdk8u144/9417/hotspot/src/share/vm/prims/methodHandles.cpp, line 1146]
+Event: 3,115 Thread 0x00007f6c6400b000 Exception <a 'java/lang/NoSuchFieldError': method resolution failed> (0x00000000e23c8f40) thrown at [/HUDSON3/workspace/8-2-build-linux-amd64/jdk8u144/9417/hotspot/src/share/vm/prims/methodHandles.cpp, line 1146]
+
+Events (10 events):
+Event: 13,187 Thread 0x00007f6c6400b000 DEOPT UNPACKING pc=0x00007f6c55047633 sp=0x00007f6c6c5661e0 mode 0
+Event: 13,767 Thread 0x00007f6c6400b000 DEOPT PACKING pc=0x00007f6c5525e42a sp=0x00007f6c6c566410
+Event: 13,768 Thread 0x00007f6c6400b000 DEOPT UNPACKING pc=0x00007f6c55047633 sp=0x00007f6c6c5661e0 mode 0
+Event: 13,768 Thread 0x00007f6c6400b000 DEOPT PACKING pc=0x00007f6c5525e42a sp=0x00007f6c6c566410
+Event: 13,768 Thread 0x00007f6c6400b000 DEOPT UNPACKING pc=0x00007f6c55047633 sp=0x00007f6c6c5661e0 mode 0
+Event: 13,768 Thread 0x00007f6c6400b000 DEOPT PACKING pc=0x00007f6c5525e4b6 sp=0x00007f6c6c566410
+Event: 13,768 Thread 0x00007f6c6400b000 DEOPT UNPACKING pc=0x00007f6c55047633 sp=0x00007f6c6c5661e0 mode 0
+Event: 15,061 Thread 0x00007f6c6400b000 DEOPT PACKING pc=0x00007f6c5585e4fc sp=0x00007f6c6c562bc0
+Event: 15,061 Thread 0x00007f6c6400b000 DEOPT UNPACKING pc=0x00007f6c55047633 sp=0x00007f6c6c5628e0 mode 0
+Event: 17,093 Executing VM operation: ParallelGCFailedAllocation
+
+
+Dynamic libraries:
+00400000-00401000 r-xp 00000000 08:01 1065330                            /usr/lib/jvm/java-8-oracle/jre/bin/java
+00600000-00601000 rw-p 00000000 08:01 1065330                            /usr/lib/jvm/java-8-oracle/jre/bin/java
+01bee000-01c0f000 rw-p 00000000 00:00 0                                  [heap]
+a2c00000-a6b00000 rw-p 00000000 00:00 0 
+a6b00000-e0f00000 ---p 00000000 00:00 0 
+e0f00000-f1200000 rw-p 00000000 00:00 0 
+f6600000-100000000 ---p 00000000 00:00 0 
+100000000-1002c0000 rw-p 00000000 00:00 0 
+1002c0000-140000000 ---p 00000000 00:00 0 
+7f6c20000000-7f6c20021000 rw-p 00000000 00:00 0 
+7f6c20021000-7f6c24000000 ---p 00000000 00:00 0 
+7f6c27e00000-7f6c27ec0000 rw-p 00000000 00:00 0 
+7f6c27ec0000-7f6c28000000 ---p 00000000 00:00 0 
+7f6c28000000-7f6c299ca000 rw-p 00000000 00:00 0 
+7f6c299ca000-7f6c2c000000 ---p 00000000 00:00 0 
+7f6c2c000000-7f6c2c021000 rw-p 00000000 00:00 0 
+7f6c2c021000-7f6c30000000 ---p 00000000 00:00 0 
+7f6c30000000-7f6c30c44000 rw-p 00000000 00:00 0 
+7f6c30c44000-7f6c34000000 ---p 00000000 00:00 0 
+7f6c34000000-7f6c34021000 rw-p 00000000 00:00 0 
+7f6c34021000-7f6c38000000 ---p 00000000 00:00 0 
+7f6c381ff000-7f6c383ff000 rw-p 00000000 00:00 0 
+7f6c383ff000-7f6c385ff000 rw-p 00000000 00:00 0 
+7f6c385ff000-7f6c387ff000 rw-p 00000000 00:00 0 
+7f6c387ff000-7f6c389ff000 rw-p 00000000 00:00 0 
+7f6c389ff000-7f6c38bff000 rw-p 00000000 00:00 0 
+7f6c38bff000-7f6c38dff000 rw-p 00000000 00:00 0 
+7f6c38dff000-7f6c38fff000 rw-p 00000000 00:00 0 
+7f6c38fff000-7f6c3c000000 rw-p 00000000 00:00 0 
+7f6c3c000000-7f6c3c021000 rw-p 00000000 00:00 0 
+7f6c3c021000-7f6c40000000 ---p 00000000 00:00 0 
+7f6c40000000-7f6c40021000 rw-p 00000000 00:00 0 
+7f6c40021000-7f6c44000000 ---p 00000000 00:00 0 
+7f6c44000000-7f6c44021000 rw-p 00000000 00:00 0 
+7f6c44021000-7f6c48000000 ---p 00000000 00:00 0 
+7f6c48000000-7f6c48290000 rw-p 00000000 00:00 0 
+7f6c48290000-7f6c4c000000 ---p 00000000 00:00 0 
+7f6c4c000000-7f6c4c02c000 rw-p 00000000 00:00 0 
+7f6c4c02c000-7f6c50000000 ---p 00000000 00:00 0 
+7f6c50118000-7f6c5012b000 r--s 00345000 08:01 1065222                    /usr/lib/jvm/java-8-oracle/jre/lib/resources.jar
+7f6c5012b000-7f6c5012c000 ---p 00000000 00:00 0 
+7f6c5012c000-7f6c5022c000 rw-p 00000000 00:00 0 
+7f6c5022c000-7f6c5022f000 ---p 00000000 00:00 0 
+7f6c5022f000-7f6c5032d000 rw-p 00000000 00:00 0 
+7f6c5032d000-7f6c50330000 ---p 00000000 00:00 0 
+7f6c50330000-7f6c5042e000 rw-p 00000000 00:00 0 
+7f6c5042e000-7f6c50431000 ---p 00000000 00:00 0 
+7f6c50431000-7f6c5052f000 rw-p 00000000 00:00 0 
+7f6c5052f000-7f6c50540000 r-xp 00000000 08:01 1065152                    /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libnio.so
+7f6c50540000-7f6c5073f000 ---p 00011000 08:01 1065152                    /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libnio.so
+7f6c5073f000-7f6c50740000 rw-p 00010000 08:01 1065152                    /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libnio.so
+7f6c50740000-7f6c50756000 r-xp 00000000 08:01 1065127                    /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libnet.so
+7f6c50756000-7f6c50956000 ---p 00016000 08:01 1065127                    /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libnet.so
+7f6c50956000-7f6c50957000 rw-p 00016000 08:01 1065127                    /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libnet.so
+7f6c50957000-7f6c5095a000 r--s 0001a000 08:01 1065226                    /usr/lib/jvm/java-8-oracle/jre/lib/jce.jar
+7f6c5095a000-7f6c5095f000 r--s 0009a000 08:01 1065071                    /usr/lib/jvm/java-8-oracle/jre/lib/jsse.jar
+7f6c5095f000-7f6c50965000 r--s 0003d000 08:01 671272                     /home/mef-dev/.m2/repository/org/jacoco/org.jacoco.agent/0.7.7.201606060606/org.jacoco.agent-0.7.7.201606060606-runtime.jar
+7f6c50965000-7f6c50967000 r--s 0000f000 08:01 1078765                    /home/mef-dev/.m2/repository/org/apache/maven/surefire/surefire-junit4/2.18.1/surefire-junit4-2.18.1.jar
+7f6c50967000-7f6c50968000 r--s 00001000 08:01 670360                     /home/mef-dev/.m2/repository/org/eclipse/jdt/org.eclipse.jdt.annotation/2.0.0/org.eclipse.jdt.annotation-2.0.0.jar
+7f6c50968000-7f6c5096b000 r--s 00006000 08:01 670357                     /home/mef-dev/.m2/repository/com/google/code/findbugs/jsr305/3.0.0/jsr305-3.0.0.jar
+7f6c5096b000-7f6c5096f000 r--s 0000f000 08:01 670350                     /home/mef-dev/.m2/repository/com/google/code/findbugs/annotations/3.0.0/annotations-3.0.0.jar
+7f6c5096f000-7f6c50970000 r--s 00002000 08:01 669574                     /home/mef-dev/.m2/repository/org/slf4j/slf4j-simple/1.7.21/slf4j-simple-1.7.21.jar
+7f6c50970000-7f6c50972000 r--s 00009000 08:01 669572                     /home/mef-dev/.m2/repository/org/slf4j/slf4j-api/1.7.21/slf4j-api-1.7.21.jar
+7f6c50972000-7f6c50975000 r--s 0000d000 08:01 278505                     /home/mef-dev/.m2/repository/org/opendaylight/yangtools/triemap/0.10.0/triemap-0.10.0.jar
+7f6c50975000-7f6c50978000 r--s 0001e000 08:01 681937                     /home/mef-dev/.m2/repository/org/opendaylight/yangtools/util/1.2.0/util-1.2.0.jar
+7f6c50978000-7f6c5097c000 r--s 00012000 08:01 683222                     /home/mef-dev/.m2/repository/org/opendaylight/mdsal/yang-binding/0.11.0/yang-binding-0.11.0.jar
+7f6c5097c000-7f6c5097d000 r--s 00002000 08:01 811336                     /home/mef-dev/.m2/repository/org/opendaylight/mdsal/mdsal-singleton-common-api/2.3.0/mdsal-singleton-common-api-2.3.0.jar
+7f6c5097d000-7f6c5097e000 r--s 00007000 08:01 683152                     /home/mef-dev/.m2/repository/org/opendaylight/mdsal/mdsal-singleton-dom-impl/2.3.0/mdsal-singleton-dom-impl-2.3.0.jar
+7f6c5097e000-7f6c50986000 r--s 0001c000 08:01 683205                     /home/mef-dev/.m2/repository/org/opendaylight/controller/sal-dom-config/1.6.0/sal-dom-config-1.6.0.jar
+7f6c50986000-7f6c50991000 r--s 00038000 08:01 683155                     /home/mef-dev/.m2/repository/org/opendaylight/controller/sal-binding-config/1.6.0/sal-binding-config-1.6.0.jar
+7f6c50991000-7f6c5099a000 r--s 00061000 08:01 669338                     /home/mef-dev/.m2/repository/org/osgi/org.osgi.core/5.0.0/org.osgi.core-5.0.0.jar
+7f6c5099a000-7f6c5099f000 r--s 00015000 08:01 683230                     /home/mef-dev/.m2/repository/org/opendaylight/controller/config-api/0.7.0/config-api-0.7.0.jar
+7f6c5099f000-7f6c509a0000 r--s 00004000 08:01 681922                     /home/mef-dev/.m2/repository/org/opendaylight/yangtools/object-cache-api/1.2.0/object-cache-api-1.2.0.jar
+7f6c509a0000-7f6c509a2000 r--s 00004000 08:01 681929                     /home/mef-dev/.m2/repository/org/opendaylight/yangtools/concepts/1.2.0/concepts-1.2.0.jar
+7f6c509a2000-7f6c509a4000 r--s 00007000 08:01 681924                     /home/mef-dev/.m2/repository/org/opendaylight/yangtools/yang-common/1.2.0/yang-common-1.2.0.jar
+7f6c509a4000-7f6c509a6000 r--s 0000a000 08:01 1069225                    /home/mef-dev/.m2/repository/org/powermock/powermock-reflect/1.6.4/powermock-reflect-1.6.4.jar
+7f6c509a6000-7f6c509a7000 r--s 00004000 08:01 1069224                    /home/mef-dev/.m2/repository/org/powermock/powermock-api-support/1.6.4/powermock-api-support-1.6.4.jar
+7f6c509a7000-7f6c509ab000 r--s 00015000 08:01 1069221                    /home/mef-dev/.m2/repository/org/powermock/powermock-api-mockito/1.6.4/powermock-api-mockito-1.6.4.jar
+7f6c509ab000-7f6c509ac000 r--s 00003000 08:01 1069219                    /home/mef-dev/.m2/repository/org/powermock/powermock-module-junit4-common/1.6.4/powermock-module-junit4-common-1.6.4.jar
+7f6c509ac000-7f6c509ae000 r--s 0000a000 08:01 1069217                    /home/mef-dev/.m2/repository/org/powermock/powermock-module-junit4/1.6.4/powermock-module-junit4-1.6.4.jar
+7f6c509ae000-7f6c509b1000 r--s 00017000 08:01 1069215                    /home/mef-dev/.m2/repository/org/powermock/powermock-core/1.6.4/powermock-core-1.6.4.jar
+7f6c509b1000-7f6c509b3000 r--s 00009000 08:01 1069213                    /home/mef-dev/.m2/repository/org/objenesis/objenesis/2.1/objenesis-2.1.jar
+7f6c509b3000-7f6c509cf000 r--s 00103000 08:01 1069211                    /home/mef-dev/.m2/repository/org/mockito/mockito-core/1.10.19/mockito-core-1.10.19.jar
+7f6c509cf000-7f6c509d1000 r--s 00009000 08:01 668275                     /home/mef-dev/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar
+7f6c509d1000-7f6c509d7000 r--s 00036000 08:01 668273                     /home/mef-dev/.m2/repository/junit/junit/4.11/junit-4.11.jar
+7f6c509d7000-7f6c509de000 r--s 00041000 08:01 1065357                    /home/mef-dev/.m2/repository/ch/qos/logback/logback-classic/1.2.2/logback-classic-1.2.2.jar
+7f6c509de000-7f6c509e9000 r--s 00069000 08:01 943533                     /home/mef-dev/.m2/repository/ch/qos/logback/logback-core/1.2.2/logback-core-1.2.2.jar
+7f6c509e9000-7f6c509f3000 r--s 00080000 08:01 945924                     /home/mef-dev/.m2/repository/org/jgrapht/jgrapht-core/1.0.1/jgrapht-core-1.0.1.jar
+7f6c509f3000-7f6c50a02000 r--s 00095000 08:01 669753                     /home/mef-dev/.m2/repository/org/apache/sshd/sshd-core/0.14.0/sshd-core-0.14.0.jar
+7f6c50a02000-7f6c50a51000 r--s 00347000 08:01 811099                     /home/mef-dev/.m2/repository/org/bouncycastle/bcprov-jdk15on/1.57/bcprov-jdk15on-1.57.jar
+7f6c50a51000-7f6c50a64000 r--s 000ab000 08:01 811104                     /home/mef-dev/.m2/repository/org/bouncycastle/bcpkix-jdk15on/1.57/bcpkix-jdk15on-1.57.jar
+7f6c50a64000-7f6c50a66000 r--s 00007000 08:01 683196                     /home/mef-dev/.m2/repository/org/opendaylight/aaa/aaa-encrypt-service/0.6.0/aaa-encrypt-service-0.6.0.jar
+7f6c50a66000-7f6c50a6b000 r--s 00034000 08:01 711708                     /home/mef-dev/.m2/repository/com/google/code/gson/gson/2.7/gson-2.7.jar
+7f6c50a6b000-7f6c50a6f000 r--s 00024000 08:01 684259                     /home/mef-dev/.m2/repository/org/codehaus/woodstox/stax2-api/3.1.4/stax2-api-3.1.4.jar
+7f6c50a6f000-7f6c50a71000 r--s 0000d000 08:01 278496                     /home/mef-dev/.m2/repository/org/opendaylight/yangtools/yang-data-codec-xml/1.2.0/yang-data-codec-xml-1.2.0.jar
+7f6c50a71000-7f6c50a73000 r--s 0000b000 08:01 684257                     /home/mef-dev/.m2/repository/org/opendaylight/yangtools/yang-data-codec-gson/1.2.0/yang-data-codec-gson-1.2.0.jar
+7f6c50a73000-7f6c50a77000 r--s 00013000 08:01 1065576                    /home/mef-dev/.m2/repository/org/opendaylight/controller/model/model-inventory/1.6.0/model-inventory-1.6.0.jar
+7f6c50a77000-7f6c50a78000 r--s 00003000 08:01 1065556                    /home/mef-dev/.m2/repository/org/opendaylight/netconf/netconf-notifications-api/1.3.0/netconf-notifications-api-1.3.0.jar
+7f6c50a78000-7f6c50a7a000 r--s 0000a000 08:01 1065552                    /home/mef-dev/.m2/repository/org/opendaylight/netconf/netconf-util/1.3.0/netconf-util-1.3.0.jar
+7f6c50a7a000-7f6c50a7d000 r--s 00011000 08:01 1069201                    /home/mef-dev/.m2/repository/openexi/nagasena-rta/0000.0002.0062.0/nagasena-rta-0000.0002.0062.0.jar
+7f6c50a7d000-7f6c50a83000 r--s 0003c000 08:01 821522                     /home/mef-dev/.m2/repository/openexi/nagasena/0000.0002.0062.0/nagasena-0000.0002.0062.0.jar
+7f6c50a83000-7f6c50a85000 r--s 00002000 08:01 1065549                    /home/mef-dev/.m2/repository/org/opendaylight/netconf/netconf-mapping-api/1.3.0/netconf-mapping-api-1.3.0.jar
+7f6c50a85000-7f6c50a88000 r--s 00013000 08:01 1065548                    /home/mef-dev/.m2/repository/org/opendaylight/netconf/netconf-netty-util/1.3.0/netconf-netty-util-1.3.0.jar
+7f6c50a88000-7f6c50a8a000 r--s 0000b000 08:01 943788                     /home/mef-dev/.m2/repository/org/opendaylight/controller/config-util/0.7.0/config-util-0.7.0.jar
+7f6c50a8a000-7f6c50a8c000 r--s 00008000 08:01 683160                     /home/mef-dev/.m2/repository/org/opendaylight/netconf/protocol-framework/1.0.0/protocol-framework-1.0.0.jar
+7f6c50a8c000-7f6c50a8e000 r--s 00003000 08:01 943801                     /home/mef-dev/.m2/repository/org/opendaylight/netconf/ietf-netconf-monitoring-extension/1.3.0/ietf-netconf-monitoring-extension-1.3.0.jar
+7f6c50a8e000-7f6c50a8f000 r--s 00006000 08:01 943790                     /home/mef-dev/.m2/repository/org/opendaylight/netconf/netconf-api/1.3.0/netconf-api-1.3.0.jar
+7f6c50a8f000-7f6c50a91000 r--s 00009000 08:01 943796                     /home/mef-dev/.m2/repository/org/opendaylight/netconf/netconf-client/1.3.0/netconf-client-1.3.0.jar
+7f6c50a91000-7f6c50a94000 r--s 00010000 08:01 943793                     /home/mef-dev/.m2/repository/org/opendaylight/netconf/ietf-netconf-yang-library/1.3.0/ietf-netconf-yang-library-1.3.0.jar
+7f6c50a94000-7f6c50aa1000 r--s 0004c000 08:01 943792                     /home/mef-dev/.m2/repository/org/opendaylight/netconf/ietf-netconf/1.3.0/ietf-netconf-1.3.0.jar
+7f6c50aa1000-7f6c50aa7000 r--s 0001e000 08:01 943802                     /home/mef-dev/.m2/repository/org/opendaylight/netconf/ietf-netconf-notifications/1.3.0/ietf-netconf-notifications-1.3.0.jar
+7f6c50aa7000-7f6c50aad000 r--s 00022000 08:01 943800                     /home/mef-dev/.m2/repository/org/opendaylight/netconf/ietf-netconf-monitoring/1.3.0/ietf-netconf-monitoring-1.3.0.jar
+7f6c50aad000-7f6c50aae000 r--s 00003000 08:01 943776                     /home/mef-dev/.m2/repository/org/opendaylight/controller/sal-connector-api/1.6.0/sal-connector-api-1.6.0.jar
+7f6c50aae000-7f6c50ab7000 r--s 0004a000 08:01 943774                     /home/mef-dev/.m2/repository/org/opendaylight/netconf/sal-netconf-connector/1.6.0/sal-netconf-connector-1.6.0.jar
+7f6c50ab7000-7f6c50ab9000 r--s 00001000 08:01 943772                     /home/mef-dev/.m2/repository/org/opendaylight/controller/threadpool-config-api/0.7.0/threadpool-config-api-0.7.0.jar
+7f6c50ab9000-7f6c50abb000 r--s 00007000 08:01 943770                     /home/mef-dev/.m2/repository/org/opendaylight/netconf/netconf-topology/1.3.0/netconf-topology-1.3.0.jar
+7f6c50abb000-7f6c50abc000 r--s 00002000 08:01 811330                     /home/mef-dev/.m2/repository/org/opendaylight/ovsdb/utils.yang-utils/1.5.0/utils.yang-utils-1.5.0.jar
+7f6c50abc000-7f6c50abd000 r--s 00006000 08:01 683177                     /home/mef-dev/.m2/repository/org/opendaylight/ovsdb/schema.openvswitch/1.5.0/schema.openvswitch-1.5.0.jar
+7f6c50abd000-7f6c50ac3000 r--s 00024000 08:01 683169                     /home/mef-dev/.m2/repository/org/opendaylight/aaa/aaa-cert/0.6.0/aaa-cert-0.6.0.jar
+7f6c50ac3000-7f6c50ac5000 r--s 00006000 08:01 821518                     /home/mef-dev/.m2/repository/io/netty/netty-resolver/4.1.8.Final/netty-resolver-4.1.8.Final.jar
+7f6c50ac5000-7f6c50ace000 r--s 00060000 08:01 821516                     /home/mef-dev/.m2/repository/io/netty/netty-transport/4.1.8.Final/netty-transport-4.1.8.Final.jar
+7f6c50ace000-7f6c50ad4000 r--s 00046000 08:01 821515                     /home/mef-dev/.m2/repository/io/netty/netty-codec/4.1.8.Final/netty-codec-4.1.8.Final.jar
+7f6c50ad4000-7f6c50ae1000 r--s 0009d000 08:01 821513                     /home/mef-dev/.m2/repository/io/netty/netty-common/4.1.8.Final/netty-common-4.1.8.Final.jar
+7f6c50ae1000-7f6c50ae5000 r--s 0003c000 08:01 821510                     /home/mef-dev/.m2/repository/io/netty/netty-buffer/4.1.8.Final/netty-buffer-4.1.8.Final.jar
+7f6c50ae5000-7f6c50aec000 r--s 0004b000 08:01 821508                     /home/mef-dev/.m2/repository/io/netty/netty-handler/4.1.8.Final/netty-handler-4.1.8.Final.jar
+7f6c50aec000-7f6c50afd000 r--s 000cf000 08:01 678045                     /home/mef-dev/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.3.2/jackson-databind-2.3.2.jar
+7f6c50afd000-7f6c50b00000 r--s 0002e000 08:01 678043                     /home/mef-dev/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.3.2/jackson-core-2.3.2.jar
+7f6c50b00000-7f6c50b02000 r--s 00007000 08:01 678041                     /home/mef-dev/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.3.2/jackson-annotations-2.3.2.jar
+7f6c50b02000-7f6c50b06000 r--s 00027000 08:01 683193                     /home/mef-dev/.m2/repository/org/opendaylight/ovsdb/library/1.5.0/library-1.5.0.jar
+7f6c50b06000-7f6c50b0a000 r--s 0003e000 08:01 683147                     /home/mef-dev/.m2/repository/org/opendaylight/ovsdb/southbound-impl/1.5.0/southbound-impl-1.5.0.jar
+7f6c50b0a000-7f6c50b0c000 r--s 00004000 08:01 683166                     /home/mef-dev/.m2/repository/org/opendaylight/mdsal/model/opendaylight-l2-types/2013.08.27.11.0/opendaylight-l2-types-2013.08.27.11.0.jar
+7f6c50b0c000-7f6c50b4a000 r--s 001fb000 08:01 724961                     /home/mef-dev/.m2/repository/org/opendaylight/unimgr/unimgr-nrp-tapi-api/0.3.1-SNAPSHOT/unimgr-nrp-tapi-api-0.3.1-SNAPSHOT.jar
+7f6c50b4a000-7f6c50b4d000 ---p 00000000 00:00 0 
+7f6c50b4d000-7f6c50c4b000 rw-p 00000000 00:00 0 
+7f6c50c4b000-7f6c51057000 r--p 00000000 08:01 788171                     /usr/lib/locale/locale-archive
+7f6c51057000-7f6c5105a000 ---p 00000000 00:00 0 
+7f6c5105a000-7f6c51158000 rw-p 00000000 00:00 0 
+7f6c51158000-7f6c5115b000 ---p 00000000 00:00 0 
+7f6c5115b000-7f6c51259000 rw-p 00000000 00:00 0 
+7f6c51259000-7f6c5125a000 ---p 00000000 00:00 0 
+7f6c5125a000-7f6c55000000 rw-p 00000000 00:00 0 
+7f6c55000000-7f6c559d0000 rwxp 00000000 00:00 0 
+7f6c559d0000-7f6c64000000 ---p 00000000 00:00 0 
+7f6c64000000-7f6c64e8f000 rw-p 00000000 00:00 0 
+7f6c64e8f000-7f6c68000000 ---p 00000000 00:00 0 
+7f6c68000000-7f6c6800e000 r--s 00059000 08:01 683154                     /home/mef-dev/.m2/repository/org/opendaylight/ovsdb/southbound-api/1.5.0/southbound-api-1.5.0.jar
+7f6c6800e000-7f6c68012000 r--s 00014000 08:01 704131                     /home/mef-dev/.m2/repository/org/opendaylight/unimgr/unimgr-api/0.3.1-SNAPSHOT/unimgr-api-0.3.1-SNAPSHOT.jar
+7f6c68012000-7f6c68014000 r--s 00009000 08:01 683157                     /home/mef-dev/.m2/repository/org/opendaylight/mdsal/model/ietf-yang-types/2010.09.24.11.0/ietf-yang-types-2010.09.24.11.0.jar
+7f6c68014000-7f6c68016000 r--s 0000b000 08:01 683149                     /home/mef-dev/.m2/repository/org/opendaylight/mdsal/model/ietf-inet-types/2010.09.24.11.0/ietf-inet-types-2010.09.24.11.0.jar
+7f6c68016000-7f6c6801b000 r--s 0001a000 08:01 683184                     /home/mef-dev/.m2/repository/org/opendaylight/mdsal/model/ietf-network-2015-06-08/1.3.0/ietf-network-2015-06-08-1.3.0.jar
+7f6c6801b000-7f6c6801f000 r--s 0002e000 08:01 725364                     /home/mef-dev/.m2/repository/org/opendaylight/unimgr/unimgr-impl/0.3.1-SNAPSHOT/unimgr-impl-0.3.1-SNAPSHOT.jar
+7f6c6801f000-7f6c68023000 r--s 00013000 08:01 811357                     /home/mef-dev/.m2/repository/org/opendaylight/controller/sal-binding-broker-impl/1.6.0/sal-binding-broker-impl-1.6.0-tests.jar
+7f6c68023000-7f6c68029000 r--s 00035000 08:01 680351                     /home/mef-dev/.m2/repository/org/opendaylight/yangtools/yang-model-util/1.2.0/yang-model-util-1.2.0.jar
+7f6c68029000-7f6c6802f000 r--s 0004c000 08:01 684264                     /home/mef-dev/.m2/repository/org/antlr/antlr4-runtime/4.7/antlr4-runtime-4.7.jar
+7f6c6802f000-7f6c6803c000 r--s 0007a000 08:01 684261                     /home/mef-dev/.m2/repository/org/opendaylight/yangtools/yang-data-impl/1.2.0/yang-data-impl-1.2.0.jar
+7f6c6803c000-7f6c68041000 r--s 00026000 08:01 943809                     /home/mef-dev/.m2/repository/org/opendaylight/mdsal/mdsal-binding-dom-codec/0.11.0/mdsal-binding-dom-codec-0.11.0.jar
+7f6c68041000-7f6c68049000 r--s 00071000 08:01 682006                     /home/mef-dev/.m2/repository/org/apache/commons/commons-lang3/3.6/commons-lang3-3.6.jar
+7f6c68049000-7f6c6804a000 r--s 00002000 08:01 684267                     /home/mef-dev/.m2/repository/org/opendaylight/yangtools/yang-parser-api/1.2.0/yang-parser-api-1.2.0.jar
+7f6c6804a000-7f6c6805d000 r--s 000be000 08:01 684265                     /home/mef-dev/.m2/repository/org/opendaylight/yangtools/yang-parser-impl/1.2.0/yang-parser-impl-1.2.0.jar
+7f6c6805d000-7f6c6805f000 r--s 00011000 08:01 683146                     /home/mef-dev/.m2/repository/org/opendaylight/mdsal/mdsal-binding-generator-util/0.11.0/mdsal-binding-generator-util-0.11.0.jar
+7f6c6805f000-7f6c68062000 r--s 00005000 08:01 683144                     /home/mef-dev/.m2/repository/org/opendaylight/mdsal/mdsal-binding-generator-api/0.11.0/mdsal-binding-generator-api-0.11.0.jar
+7f6c68062000-7f6c68064000 r--s 0003e000 08:01 683214                     /home/mef-dev/.m2/repository/org/opendaylight/mdsal/mdsal-binding-generator-impl/0.11.0/mdsal-binding-generator-impl-0.11.0.jar
+7f6c68064000-7f6c68069000 r--s 00020000 08:01 680345                     /home/mef-dev/.m2/repository/org/opendaylight/yangtools/yang-data-api/1.2.0/yang-data-api-1.2.0.jar
+7f6c68069000-7f6c6806d000 r--s 0000a000 08:01 683197                     /home/mef-dev/.m2/repository/org/opendaylight/controller/sal-core-api/1.6.0/sal-core-api-1.6.0.jar
+7f6c6806d000-7f6c68070000 r--s 00014000 08:01 680347                     /home/mef-dev/.m2/repository/org/opendaylight/yangtools/yang-data-util/1.2.0/yang-data-util-1.2.0.jar
+7f6c68070000-7f6c68072000 r--s 00004000 08:01 811345                     /home/mef-dev/.m2/repository/org/opendaylight/controller/sal-common-util/1.6.0/sal-common-util-1.6.0.jar
+7f6c68072000-7f6c68079000 r--s 00021000 08:01 680349                     /home/mef-dev/.m2/repository/org/opendaylight/yangtools/yang-model-api/1.2.0/yang-model-api-1.2.0.jar
+7f6c68079000-7f6c6807b000 r--s 00009000 08:01 811337                     /home/mef-dev/.m2/repository/org/opendaylight/controller/sal-common-impl/1.6.0/sal-common-impl-1.6.0.jar
+7f6c6807b000-7f6c68081000 r--s 0001d000 08:01 943799                     /home/mef-dev/.m2/repository/org/opendaylight/controller/sal-inmemory-datastore/1.6.0/sal-inmemory-datastore-1.6.0.jar
+7f6c68081000-7f6c68084000 r--s 0000e000 08:01 683227                     /home/mef-dev/.m2/repository/org/opendaylight/controller/sal-core-spi/1.6.0/sal-core-spi-1.6.0.jar
+7f6c68084000-7f6c68087000 r--s 00011000 08:01 811354                     /home/mef-dev/.m2/repository/org/opendaylight/mdsal/mdsal-dom-inmemory-datastore/2.3.0/mdsal-dom-inmemory-datastore-2.3.0.jar
+7f6c68087000-7f6c6808c000 r--s 0001b000 08:01 811338                     /home/mef-dev/.m2/repository/org/opendaylight/mdsal/mdsal-dom-spi/2.3.0/mdsal-dom-spi-2.3.0.jar
+7f6c6808c000-7f6c6808f000 r--s 0001c000 08:01 811335                     /home/mef-dev/.m2/repository/org/opendaylight/mdsal/mdsal-dom-broker/2.3.0/mdsal-dom-broker-2.3.0.jar
+7f6c6808f000-7f6c68091000 r--s 00005000 08:01 683138                     /home/mef-dev/.m2/repository/org/opendaylight/mdsal/mdsal-common-api/2.3.0/mdsal-common-api-2.3.0.jar
+7f6c68091000-7f6c68094000 r--s 00009000 08:01 683141                     /home/mef-dev/.m2/repository/org/opendaylight/mdsal/mdsal-dom-api/2.3.0/mdsal-dom-api-2.3.0.jar
+7f6c68094000-7f6c68096000 r--s 00003000 08:01 811362                     /home/mef-dev/.m2/repository/org/opendaylight/mdsal/mdsal-eos-common-api/2.3.0/mdsal-eos-common-api-2.3.0.jar
+7f6c68096000-7f6c68098000 r--s 00002000 08:01 811360                     /home/mef-dev/.m2/repository/org/opendaylight/mdsal/mdsal-eos-dom-api/2.3.0/mdsal-eos-dom-api-2.3.0.jar
+7f6c68098000-7f6c6809b000 r--s 00012000 08:01 821530                     /home/mef-dev/.m2/repository/com/lmax/disruptor/3.3.6/disruptor-3.3.6.jar
+7f6c6809b000-7f6c6809f000 r--s 00021000 08:01 811346                     /home/mef-dev/.m2/repository/org/opendaylight/controller/sal-broker-impl/1.6.0/sal-broker-impl-1.6.0.jar
+7f6c6809f000-7f6c680a1000 r--s 00003000 08:01 811344                     /home/mef-dev/.m2/repository/org/opendaylight/controller/sal-binding-util/1.6.0/sal-binding-util-1.6.0.jar
+7f6c680a1000-7f6c680ab000 r--s 000ae000 08:01 671512                     /home/mef-dev/.m2/repository/org/javassist/javassist/3.20.0-GA/javassist-3.20.0-GA.jar
+7f6c680ab000-7f6c680db000 r--s 00245000 08:01 670319                     /home/mef-dev/.m2/repository/com/google/guava/guava/22.0/guava-22.0.jar
+7f6c680db000-7f6c683de000 rw-p 00000000 00:00 0 
+7f6c683de000-7f6c685b8000 r--s 03d4d000 08:01 1065119                    /usr/lib/jvm/java-8-oracle/jre/lib/rt.jar
+7f6c685b8000-7f6c68918000 rw-p 00000000 00:00 0 
+7f6c68918000-7f6c68919000 ---p 00000000 00:00 0 
+7f6c68919000-7f6c68a19000 rw-p 00000000 00:00 0 
+7f6c68a19000-7f6c68a1a000 ---p 00000000 00:00 0 
+7f6c68a1a000-7f6c68b3a000 rw-p 00000000 00:00 0 
+7f6c68b3a000-7f6c68d0c000 ---p 00000000 00:00 0 
+7f6c68d0c000-7f6c68d2c000 rw-p 00000000 00:00 0 
+7f6c68d2c000-7f6c68efd000 ---p 00000000 00:00 0 
+7f6c68efd000-7f6c68f7f000 rw-p 00000000 00:00 0 
+7f6c68f7f000-7f6c68ff6000 ---p 00000000 00:00 0 
+7f6c68ff6000-7f6c6901f000 rw-p 00000000 00:00 0 
+7f6c6901f000-7f6c693b7000 ---p 00000000 00:00 0 
+7f6c693b7000-7f6c693d1000 r-xp 00000000 08:01 1065150                    /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libzip.so
+7f6c693d1000-7f6c695d1000 ---p 0001a000 08:01 1065150                    /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libzip.so
+7f6c695d1000-7f6c695d2000 rw-p 0001a000 08:01 1065150                    /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libzip.so
+7f6c695d2000-7f6c695dd000 r-xp 00000000 08:01 152771                     /lib/x86_64-linux-gnu/libnss_files-2.24.so
+7f6c695dd000-7f6c697dc000 ---p 0000b000 08:01 152771                     /lib/x86_64-linux-gnu/libnss_files-2.24.so
+7f6c697dc000-7f6c697dd000 r--p 0000a000 08:01 152771                     /lib/x86_64-linux-gnu/libnss_files-2.24.so
+7f6c697dd000-7f6c697de000 rw-p 0000b000 08:01 152771                     /lib/x86_64-linux-gnu/libnss_files-2.24.so
+7f6c697de000-7f6c697e4000 rw-p 00000000 00:00 0 
+7f6c697e4000-7f6c697ef000 r-xp 00000000 08:01 152819                     /lib/x86_64-linux-gnu/libnss_nis-2.24.so
+7f6c697ef000-7f6c699ee000 ---p 0000b000 08:01 152819                     /lib/x86_64-linux-gnu/libnss_nis-2.24.so
+7f6c699ee000-7f6c699ef000 r--p 0000a000 08:01 152819                     /lib/x86_64-linux-gnu/libnss_nis-2.24.so
+7f6c699ef000-7f6c699f0000 rw-p 0000b000 08:01 152819                     /lib/x86_64-linux-gnu/libnss_nis-2.24.so
+7f6c699f0000-7f6c69a06000 r-xp 00000000 08:01 152732                     /lib/x86_64-linux-gnu/libnsl-2.24.so
+7f6c69a06000-7f6c69c05000 ---p 00016000 08:01 152732                     /lib/x86_64-linux-gnu/libnsl-2.24.so
+7f6c69c05000-7f6c69c06000 r--p 00015000 08:01 152732                     /lib/x86_64-linux-gnu/libnsl-2.24.so
+7f6c69c06000-7f6c69c07000 rw-p 00016000 08:01 152732                     /lib/x86_64-linux-gnu/libnsl-2.24.so
+7f6c69c07000-7f6c69c09000 rw-p 00000000 00:00 0 
+7f6c69c09000-7f6c69c11000 r-xp 00000000 08:01 152746                     /lib/x86_64-linux-gnu/libnss_compat-2.24.so
+7f6c69c11000-7f6c69e10000 ---p 00008000 08:01 152746                     /lib/x86_64-linux-gnu/libnss_compat-2.24.so
+7f6c69e10000-7f6c69e11000 r--p 00007000 08:01 152746                     /lib/x86_64-linux-gnu/libnss_compat-2.24.so
+7f6c69e11000-7f6c69e12000 rw-p 00008000 08:01 152746                     /lib/x86_64-linux-gnu/libnss_compat-2.24.so
+7f6c69e12000-7f6c69e1c000 r-xp 00000000 08:01 1065188                    /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libinstrument.so
+7f6c69e1c000-7f6c6a01b000 ---p 0000a000 08:01 1065188                    /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libinstrument.so
+7f6c6a01b000-7f6c6a01c000 rw-p 00009000 08:01 1065188                    /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libinstrument.so
+7f6c6a01c000-7f6c6a047000 r-xp 00000000 08:01 1065177                    /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libjava.so
+7f6c6a047000-7f6c6a246000 ---p 0002b000 08:01 1065177                    /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libjava.so
+7f6c6a246000-7f6c6a248000 rw-p 0002a000 08:01 1065177                    /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libjava.so
+7f6c6a248000-7f6c6a255000 r-xp 00000000 08:01 1065128                    /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libverify.so
+7f6c6a255000-7f6c6a455000 ---p 0000d000 08:01 1065128                    /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libverify.so
+7f6c6a455000-7f6c6a457000 rw-p 0000d000 08:01 1065128                    /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libverify.so
+7f6c6a457000-7f6c6a45e000 r-xp 00000000 08:01 153017                     /lib/x86_64-linux-gnu/librt-2.24.so
+7f6c6a45e000-7f6c6a65d000 ---p 00007000 08:01 153017                     /lib/x86_64-linux-gnu/librt-2.24.so
+7f6c6a65d000-7f6c6a65e000 r--p 00006000 08:01 153017                     /lib/x86_64-linux-gnu/librt-2.24.so
+7f6c6a65e000-7f6c6a65f000 rw-p 00007000 08:01 153017                     /lib/x86_64-linux-gnu/librt-2.24.so
+7f6c6a65f000-7f6c6a767000 r-xp 00000000 08:01 152681                     /lib/x86_64-linux-gnu/libm-2.24.so
+7f6c6a767000-7f6c6a966000 ---p 00108000 08:01 152681                     /lib/x86_64-linux-gnu/libm-2.24.so
+7f6c6a966000-7f6c6a967000 r--p 00107000 08:01 152681                     /lib/x86_64-linux-gnu/libm-2.24.so
+7f6c6a967000-7f6c6a968000 rw-p 00108000 08:01 152681                     /lib/x86_64-linux-gnu/libm-2.24.so
+7f6c6a968000-7f6c6b63b000 r-xp 00000000 08:01 1065181                    /usr/lib/jvm/java-8-oracle/jre/lib/amd64/server/libjvm.so
+7f6c6b63b000-7f6c6b83a000 ---p 00cd3000 08:01 1065181                    /usr/lib/jvm/java-8-oracle/jre/lib/amd64/server/libjvm.so
+7f6c6b83a000-7f6c6b914000 rw-p 00cd2000 08:01 1065181                    /usr/lib/jvm/java-8-oracle/jre/lib/amd64/server/libjvm.so
+7f6c6b914000-7f6c6b95f000 rw-p 00000000 00:00 0 
+7f6c6b95f000-7f6c6bb1d000 r-xp 00000000 08:01 152638                     /lib/x86_64-linux-gnu/libc-2.24.so
+7f6c6bb1d000-7f6c6bd1c000 ---p 001be000 08:01 152638                     /lib/x86_64-linux-gnu/libc-2.24.so
+7f6c6bd1c000-7f6c6bd20000 r--p 001bd000 08:01 152638                     /lib/x86_64-linux-gnu/libc-2.24.so
+7f6c6bd20000-7f6c6bd22000 rw-p 001c1000 08:01 152638                     /lib/x86_64-linux-gnu/libc-2.24.so
+7f6c6bd22000-7f6c6bd26000 rw-p 00000000 00:00 0 
+7f6c6bd26000-7f6c6bd29000 r-xp 00000000 08:01 152658                     /lib/x86_64-linux-gnu/libdl-2.24.so
+7f6c6bd29000-7f6c6bf28000 ---p 00003000 08:01 152658                     /lib/x86_64-linux-gnu/libdl-2.24.so
+7f6c6bf28000-7f6c6bf29000 r--p 00002000 08:01 152658                     /lib/x86_64-linux-gnu/libdl-2.24.so
+7f6c6bf29000-7f6c6bf2a000 rw-p 00003000 08:01 152658                     /lib/x86_64-linux-gnu/libdl-2.24.so
+7f6c6bf2a000-7f6c6bf3f000 r-xp 00000000 08:01 1065166                    /usr/lib/jvm/java-8-oracle/jre/lib/amd64/jli/libjli.so
+7f6c6bf3f000-7f6c6c13f000 ---p 00015000 08:01 1065166                    /usr/lib/jvm/java-8-oracle/jre/lib/amd64/jli/libjli.so
+7f6c6c13f000-7f6c6c140000 rw-p 00015000 08:01 1065166                    /usr/lib/jvm/java-8-oracle/jre/lib/amd64/jli/libjli.so
+7f6c6c140000-7f6c6c158000 r-xp 00000000 08:01 152998                     /lib/x86_64-linux-gnu/libpthread-2.24.so
+7f6c6c158000-7f6c6c358000 ---p 00018000 08:01 152998                     /lib/x86_64-linux-gnu/libpthread-2.24.so
+7f6c6c358000-7f6c6c359000 r--p 00018000 08:01 152998                     /lib/x86_64-linux-gnu/libpthread-2.24.so
+7f6c6c359000-7f6c6c35a000 rw-p 00019000 08:01 152998                     /lib/x86_64-linux-gnu/libpthread-2.24.so
+7f6c6c35a000-7f6c6c35e000 rw-p 00000000 00:00 0 
+7f6c6c35e000-7f6c6c384000 r-xp 00000000 08:01 152611                     /lib/x86_64-linux-gnu/ld-2.24.so
+7f6c6c384000-7f6c6c388000 r--s 0000d000 08:01 683190                     /home/mef-dev/.m2/repository/org/opendaylight/controller/sal-common-api/1.6.0/sal-common-api-1.6.0.jar
+7f6c6c388000-7f6c6c38b000 r--s 00008000 08:01 683179                     /home/mef-dev/.m2/repository/org/opendaylight/controller/sal-binding-api/1.6.0/sal-binding-api-1.6.0.jar
+7f6c6c38b000-7f6c6c38c000 r--s 00000000 08:01 681935                     /home/mef-dev/.m2/repository/org/codehaus/mojo/animal-sniffer-annotations/1.14/animal-sniffer-annotations-1.14.jar
+7f6c6c38c000-7f6c6c38e000 r--s 00001000 08:01 670323                     /home/mef-dev/.m2/repository/com/google/j2objc/j2objc-annotations/1.1/j2objc-annotations-1.1.jar
+7f6c6c38e000-7f6c6c392000 r--s 00023000 08:01 811364                     /home/mef-dev/.m2/repository/org/opendaylight/controller/sal-binding-broker-impl/1.6.0/sal-binding-broker-impl-1.6.0.jar
+7f6c6c392000-7f6c6c394000 r--s 00002000 08:01 683228                     /home/mef-dev/.m2/repository/org/opendaylight/mdsal/model/yang-ext/2013.09.07.11.0/yang-ext-2013.09.07.11.0.jar
+7f6c6c394000-7f6c6c397000 r--s 0000c000 08:01 683200                     /home/mef-dev/.m2/repository/org/opendaylight/mdsal/model/ietf-inet-types-2013-07-15/1.3.0/ietf-inet-types-2013-07-15-1.3.0.jar
+7f6c6c397000-7f6c6c39e000 r--s 0002e000 08:01 683151                     /home/mef-dev/.m2/repository/org/opendaylight/mdsal/model/ietf-topology/2013.10.21.11.0/ietf-topology-2013.10.21.11.0.jar
+7f6c6c39e000-7f6c6c3a1000 r--s 0000b000 08:01 683231                     /home/mef-dev/.m2/repository/org/opendaylight/mdsal/model/ietf-yang-types-20130715/2013.07.15.11.0/ietf-yang-types-20130715-2013.07.15.11.0.jar
+7f6c6c3a1000-7f6c6c469000 rw-p 00000000 00:00 0 
+7f6c6c469000-7f6c6c46c000 ---p 00000000 00:00 0 
+7f6c6c46c000-7f6c6c56c000 rw-p 00000000 00:00 0 
+7f6c6c56c000-7f6c6c56d000 r--s 00002000 08:01 670321                     /home/mef-dev/.m2/repository/com/google/errorprone/error_prone_annotations/2.0.18/error_prone_annotations-2.0.18.jar
+7f6c6c56d000-7f6c6c56e000 r--s 00004000 08:01 683212                     /home/mef-dev/.m2/repository/org/opendaylight/mdsal/model/ietf-type-util/1.2.0/ietf-type-util-1.2.0.jar
+7f6c6c56e000-7f6c6c573000 r--s 00020000 08:01 812028                     /home/mef-dev/.m2/repository/org/apache/maven/surefire/surefire-api/2.18.1/surefire-api-2.18.1.jar
+7f6c6c573000-7f6c6c575000 r--s 00008000 08:01 812026                     /home/mef-dev/.m2/repository/org/apache/maven/surefire/surefire-booter/2.18.1/surefire-booter-2.18.1.jar
+7f6c6c575000-7f6c6c576000 r--s 00003000 08:01 692252                     /home/mef-dev/unimgr-santanu/legato-api/target/surefire/surefirebooter7920080966117510796.jar
+7f6c6c576000-7f6c6c57e000 rw-s 00000000 08:01 1203316                    /tmp/hsperfdata_mef-dev/16461
+7f6c6c57e000-7f6c6c57f000 rw-p 00000000 00:00 0 
+7f6c6c57f000-7f6c6c580000 ---p 00000000 00:00 0 
+7f6c6c580000-7f6c6c583000 rw-p 00000000 00:00 0 
+7f6c6c583000-7f6c6c584000 r--p 00025000 08:01 152611                     /lib/x86_64-linux-gnu/ld-2.24.so
+7f6c6c584000-7f6c6c585000 rw-p 00026000 08:01 152611                     /lib/x86_64-linux-gnu/ld-2.24.so
+7f6c6c585000-7f6c6c586000 rw-p 00000000 00:00 0 
+7ffcecbdf000-7ffcecc01000 rw-p 00000000 00:00 0                          [stack]
+7ffceccd8000-7ffceccda000 r--p 00000000 00:00 0                          [vvar]
+7ffceccda000-7ffceccdc000 r-xp 00000000 00:00 0                          [vdso]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+
+VM Arguments:
+jvm_args: -javaagent:/home/mef-dev/.m2/repository/org/jacoco/org.jacoco.agent/0.7.7.201606060606/org.jacoco.agent-0.7.7.201606060606-runtime.jar=destfile=/home/mef-dev/unimgr-santanu/legato-api/target/code-coverage/jacoco.exec,excludes=**/gen/**:**/generated-sources/**:**/generated-test-sources/**:**/yang-gen/**:**/yang-gen-config/**:**/yang-gen-sal/**:**/yang-gen-code/**:**/pax/** 
+java_command: /home/mef-dev/unimgr-santanu/legato-api/target/surefire/surefirebooter7920080966117510796.jar /home/mef-dev/unimgr-santanu/legato-api/target/surefire/surefire8194173406394567659tmp /home/mef-dev/unimgr-santanu/legato-api/target/surefire/surefire_04703603588799909301tmp
+java_class_path (initial): /home/mef-dev/unimgr-santanu/legato-api/target/surefire/surefirebooter7920080966117510796.jar:/home/mef-dev/.m2/repository/org/jacoco/org.jacoco.agent/0.7.7.201606060606/org.jacoco.agent-0.7.7.201606060606-runtime.jar
+Launcher Type: SUN_STANDARD
+
+Environment Variables:
+JAVA_HOME=/usr/lib/jvm/java-8-oracle
+PATH=/home/mef-dev/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/lib/jvm/java-8-oracle/bin:/usr/lib/jvm/java-8-oracle/db/bin:/usr/lib/jvm/java-8-oracle/jre/bin
+SHELL=/bin/bash
+DISPLAY=:0.0
+
+Signal Handlers:
+SIGSEGV: [libjvm.so+0xacba10], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGBUS: [libjvm.so+0xacba10], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGFPE: [libjvm.so+0x924ba0], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGPIPE: [libjvm.so+0x924ba0], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGXFSZ: [libjvm.so+0x924ba0], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGILL: [libjvm.so+0x924ba0], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGUSR1: SIG_DFL, sa_mask[0]=00000000000000000000000000000000, sa_flags=none
+SIGUSR2: [libjvm.so+0x9263e0], sa_mask[0]=00100000000000000000000000000000, sa_flags=SA_RESTART|SA_SIGINFO
+SIGHUP: [libjvm.so+0x9277e0], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGINT: [libjvm.so+0x9277e0], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGTERM: [libjvm.so+0x9277e0], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGQUIT: [libjvm.so+0x9277e0], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+
+
+---------------  S Y S T E M  ---------------
+
+OS:DISTRIB_ID=Ubuntu
+DISTRIB_RELEASE=17.04
+DISTRIB_CODENAME=zesty
+DISTRIB_DESCRIPTION="Ubuntu 17.04"
+
+uname:Linux 4.10.0-33-generic #37-Ubuntu SMP Fri Aug 11 10:55:28 UTC 2017 x86_64
+libc:glibc 2.24 NPTL 2.24 
+rlimit: STACK 8192k, CORE 0k, NPROC 23682, NOFILE 1048576, AS infinity
+load average:6,22 1,95 0,97
+
+/proc/meminfo:
+MemTotal:        6108596 kB
+MemFree:          278220 kB
+MemAvailable:     210376 kB
+Buffers:            2232 kB
+Cached:           148468 kB
+SwapCached:        44032 kB
+Active:          4932604 kB
+Inactive:         711076 kB
+Active(anon):    4920928 kB
+Inactive(anon):   635628 kB
+Active(file):      11676 kB
+Inactive(file):    75448 kB
+Unevictable:       34652 kB
+Mlocked:           34652 kB
+SwapTotal:        969960 kB
+SwapFree:         200124 kB
+Dirty:               336 kB
+Writeback:            48 kB
+AnonPages:       5484204 kB
+Mapped:           107432 kB
+Shmem:             55520 kB
+Slab:              62200 kB
+SReclaimable:      30728 kB
+SUnreclaim:        31472 kB
+KernelStack:       10800 kB
+PageTables:        36848 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:     4024256 kB
+Committed_AS:    9331560 kB
+VmallocTotal:   34359738367 kB
+VmallocUsed:           0 kB
+VmallocChunk:          0 kB
+HardwareCorrupted:     0 kB
+AnonHugePages:   3178496 kB
+ShmemHugePages:        0 kB
+ShmemPmdMapped:        0 kB
+CmaTotal:              0 kB
+CmaFree:               0 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+DirectMap4k:      202688 kB
+DirectMap2M:     6088704 kB
+
+
+CPU:total 2 (initial active 2) (2 cores per cpu, 1 threads per core) family 6 model 58 stepping 9, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, avx, aes, clmul, tsc, tscinvbit, tscinv
+
+/proc/cpuinfo:
+processor	: 0
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 58
+model name	: Intel(R) Core(TM) i7-3520M CPU @ 2.90GHz
+stepping	: 9
+microcode	: 0x19
+cpu MHz		: 2890.612
+cache size	: 4096 KB
+physical id	: 0
+siblings	: 2
+core id		: 0
+cpu cores	: 2
+apicid		: 0
+initial apicid	: 0
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc pni pclmulqdq ssse3 cx16 sse4_1 sse4_2 x2apic popcnt aes xsave avx rdrand hypervisor lahf_lm
+bugs		:
+bogomips	: 5781.22
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 36 bits physical, 48 bits virtual
+power management:
+
+processor	: 1
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 58
+model name	: Intel(R) Core(TM) i7-3520M CPU @ 2.90GHz
+stepping	: 9
+microcode	: 0x19
+cpu MHz		: 2890.612
+cache size	: 4096 KB
+physical id	: 0
+siblings	: 2
+core id		: 1
+cpu cores	: 2
+apicid		: 1
+initial apicid	: 1
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc pni pclmulqdq ssse3 cx16 sse4_1 sse4_2 x2apic popcnt aes xsave avx rdrand hypervisor lahf_lm
+bugs		:
+bogomips	: 5781.22
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 36 bits physical, 48 bits virtual
+power management:
+
+
+
+Memory: 4k page, physical 6108596k(278220k free), swap 969960k(200124k free)
+
+vm_info: Java HotSpot(TM) 64-Bit Server VM (25.144-b01) for linux-amd64 JRE (1.8.0_144-b01), built on Jul 21 2017 21:57:33 by "java_re" with gcc 4.3.0 20080428 (Red Hat 4.3.0-8)
+
+time: Thu May 31 15:34:35 2018
+elapsed time: 19 seconds (0d 0h 0m 19s)
+

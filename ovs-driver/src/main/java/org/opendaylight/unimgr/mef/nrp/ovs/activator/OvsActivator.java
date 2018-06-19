@@ -55,7 +55,6 @@ public class OvsActivator implements ResourceActivator {
         OvsActivatorHelper.validateExternalVLANs(endPoints);
 
         VlanUtils vlanUtils = new VlanUtils(dataBroker, endPoints.iterator().next().getNepRef().getNodeId().getValue());
-
         for (EndPoint endPoint:endPoints) {
             activateEndpoint(endPoint, serviceName, vlanUtils);
         }
@@ -168,9 +167,11 @@ public class OvsActivator implements ResourceActivator {
 
 
 		long queueNumber = queueNumberGenerator.getAndIncrement();
-        //Create egress qos
-		OvsdbUtils.createEgressQos(dataBroker, portName, interswitchPorts, ovsActivatorHelper.getQosMinRate(),
-				ovsActivatorHelper.getQosMaxRate(), serviceName, queueNumber);
+		if(ovsActivatorHelper.isIBwpConfigured()) {
+            //Create egress qos
+    		OvsdbUtils.createEgressQos(dataBroker, portName, interswitchPorts, ovsActivatorHelper.getQosMinRate(),
+    				ovsActivatorHelper.getQosMaxRate(), serviceName, queueNumber);
+		}
 
 		//modify flow with new queue number
 		 Table table = OpenFlowUtils.getTable(node);
