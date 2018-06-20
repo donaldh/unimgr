@@ -192,7 +192,7 @@ public class EvcIntegrationTest {
                     any(InstanceIdentifier.class), any(Evc.class));
             when(dataBroker.newWriteOnlyTransaction()).thenReturn(transaction);
             assertEquals(true, LegatoUtils.updateEvcInOperationalDB(evc, instanceIdentifier, dataBroker));
-            verify(transaction).put(any(LogicalDatastoreType.class), any(InstanceIdentifier.class),
+            verify(transaction).merge(any(LogicalDatastoreType.class), any(InstanceIdentifier.class),
                     any(Evc.class));
             verify(transaction).submit();
 
@@ -242,7 +242,7 @@ public class EvcIntegrationTest {
                 any(InstanceIdentifier.class), any(Evc.class));
         when(transaction2.submit()).thenReturn(checkedFuture);
         assertEquals(true, LegatoUtils.updateEvcInOperationalDB(evc, instanceIdentifier, dataBroker));
-        verify(transaction2).put(any(LogicalDatastoreType.class), any(InstanceIdentifier.class),
+        verify(transaction2).merge(any(LogicalDatastoreType.class), any(InstanceIdentifier.class),
                 any(Evc.class));
         verify(transaction2).submit();
     }

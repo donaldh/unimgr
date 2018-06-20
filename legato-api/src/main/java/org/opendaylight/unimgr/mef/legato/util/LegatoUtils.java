@@ -395,7 +395,7 @@ public class LegatoUtils {
         evcList.add(evc);
 
         final WriteTransaction transaction = dataBroker.newWriteOnlyTransaction();
-        transaction.put(LogicalDatastoreType.OPERATIONAL, nodeIdentifier,
+        transaction.merge(LogicalDatastoreType.OPERATIONAL, nodeIdentifier,
                 new SubscriberServicesBuilder().setEvc(evcList).build());
 
         try {
